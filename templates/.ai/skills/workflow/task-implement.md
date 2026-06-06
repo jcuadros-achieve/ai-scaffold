@@ -26,6 +26,20 @@ Do not continue until you receive direction.
 
 ---
 
+## Test-driven (default)
+
+Implement each step test-first, per [[test-strategy]]:
+
+1. **Red** — write a failing test for the step's behavior; confirm it fails for
+   the right reason.
+2. **Green** — write the minimum code to pass it.
+3. **Refactor** — clean up with the test green.
+
+Cover happy path, boundaries/empty, and the documented error case. If a step is
+genuinely untestable-first, say so explicitly — never skip tests silently.
+
+---
+
 ## Output format (after completion)
 
 ## Implementation complete: [title]
@@ -50,15 +64,19 @@ As specified in the plan's "What NOT to touch".
 Any deviations and their resolution. If none: `None.`
 
 ### Ready for
-`pr-write`
+`verify` (run the gates) → then `pr-write`
 
 ---
 
 ## Rules
 
 - Match the pattern file's style exactly.
-- Apply all rules from `.ai/rules/code-style.md` and `.ai/rules/security.md`.
+- Apply **all** rules in `.ai/rules/` — at minimum `code-style`, `security`,
+  `test-strategy`, and any rule relevant to the change (`performance`,
+  `resilience`, `observability`, `api-contract`).
+- Work test-first (TDD); never skip tests.
 - Never add features that are not in the plan.
-- Never skip tests.
 - Never modify files listed in "What NOT to touch".
 - Never hardcode secrets.
+- When done, hand off to `verify` before `pr-write` — do not declare success on
+  unrun tests.

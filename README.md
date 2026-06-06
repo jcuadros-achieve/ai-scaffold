@@ -13,17 +13,23 @@ which `CLAUDE.md`, `.cursorrules`, and Copilot all read).
 
 It sets up two chains of skills:
 
-- **Work chain** — `ticket-clarify → task-plan → task-implement → pr-write →
-  pr-review`, with human approval gates between understanding, planning, and
-  coding.
+- **Work chain** — `ticket-clarify → task-plan → task-implement → verify →
+  pr-write → pr-review`, with human approval gates between understanding,
+  planning, and coding, TDD during implementation, and a `verify` gate that runs
+  the real build/tests/lint/audit before a PR.
 - **Context chain** — `adr-write → ai-log-write → context-update`, an
   append-only project memory of decisions and AI sessions, with a regenerated
   `INDEX.md`.
 
-Shipped rules (`code-style`, `security`, `no-touch`, `context`) enforce technical
-consistency, protected zones, and "read the memory before proposing". The
-keystone skill `ai-init` analyzes the real codebase and replaces the generic
-templates with project-specific content.
+On-demand engineering skills (`security-review`, `refactor`, `migration`,
+`new-endpoint`, `test-gen`, `review`, `debug`) cover deeper or recurring tasks.
+
+Shipped rules enforce technical consistency, protected zones, and "read the
+memory before proposing": `code-style`, `security`, `no-touch`, `context`,
+`test-strategy` (TDD + coverage), `dependency`, `ci-gates`, `performance`,
+`observability`, `resilience`, `api-contract`, `docs`, `git-workflow`. The
+keystone skill `ai-init` analyzes the real codebase and fills the generic
+rules with project-specific facts.
 
 → Full conceptual breakdown — what it generates, the flow, and what each rule
 guarantees — in [`docs/OVERVIEW.md`](docs/OVERVIEW.md).
@@ -74,11 +80,21 @@ npx github:jcuadros-achieve/ai-scaffold status
     security.md
     no-touch.md
     context.md              ← rules for reading/writing .context/
+    test-strategy.md        ← TDD + coverage
+    dependency.md           ← supply chain
+    ci-gates.md             ← machine-enforced checks
+    performance.md
+    observability.md
+    resilience.md
+    api-contract.md
+    docs.md
+    git-workflow.md
   skills/
     workflow/
       ticket-clarify.md
       task-plan.md
-      task-implement.md
+      task-implement.md     ← TDD
+      verify.md             ← runs build/tests/lint/audit before PR
       pr-write.md
       pr-review.md
     context/
@@ -89,6 +105,9 @@ npx github:jcuadros-achieve/ai-scaffold status
     test-gen.md
     review.md
     debug.md
+    security-review.md      ← threat-model-style deep pass
+    refactor.md             ← behavior-preserving
+    migration.md            ← safe DB/data migrations
 
 .context/
   INDEX.md

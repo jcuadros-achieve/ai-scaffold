@@ -45,11 +45,25 @@ in Phase 1. Do not write to disk yet.
 - `rules/code-style.md`
 - `rules/security.md`
 - `rules/no-touch.md`
+- `rules/test-strategy.md` (real framework, coverage threshold, test layout)
+- `rules/dependency.md` (real audit command, license policy, lockfile)
+- `rules/ci-gates.md` (real CI provider, hook setup, check commands)
+- `rules/performance.md` (real budgets and hot paths)
+- `rules/observability.md` (real logger, metrics, tracing/error tools)
+- `rules/resilience.md` (real timeout/retry policy, critical dependencies)
+- `rules/api-contract.md` (real API style and versioning scheme)
+- `rules/docs.md` (where docs live, doc-comment style)
+- `rules/git-workflow.md` (branching model, PR norms, merge strategy)
 - `skills/new-endpoint.md`
 - `skills/test-gen.md`
 - `skills/review.md`
 - `skills/debug.md`
 - `full-context.md` (all of the above composed into one file)
+
+Leave `rules/context.md` and the `skills/workflow/`, `skills/context/`,
+`security-review`, `refactor`, and `migration` skills as shipped — they are
+flow definitions, not project-specific content. Only fill in a project's real
+facts where a rule has a "Run ai-init to…" line.
 
 When done, output exactly:
 

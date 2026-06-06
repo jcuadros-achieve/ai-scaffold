@@ -6,7 +6,7 @@ import { createDiff } from './differ.js'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 export const TEMPLATES_DIR = path.resolve(__dirname, '../templates')
 export const SCAFFOLD_VERSION_FILE = '.ai/.scaffold-version'
-export const SCAFFOLD_VERSION = '1.0.0'
+export const SCAFFOLD_VERSION = '1.1.0'
 
 export interface FileAction {
   type: 'create' | 'update' | 'skip' | 'symlink'

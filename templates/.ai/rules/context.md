@@ -8,7 +8,17 @@ Rules governing how the AI reads and writes `.context/`.
    the same area before starting.
 4. Never propose an approach that an ADR explicitly rejected.
 5. After generating committed code, run `ai-log-write`.
-6. An ADR is required when introducing or changing a cross-cutting pattern.
-7. Never update `INDEX.md` manually — always use `context-update`.
-8. `.context/` is append-only — never delete or rewrite ADRs.
-9. AI log entries are permanent — corrections go in new entries, not edits.
+6. An ADR is **required** when a decision is cross-cutting, hard to reverse,
+   rejects a common alternative, or has significant tradeoffs. When in doubt,
+   write it. Merging such a change without an ADR is a defect — `pr-review`
+   treats a missing required ADR as a blocker.
+7. Every ADR is **complete**: all sections filled, especially the mandatory
+   "Context for AI assistants". A stub ADR is worse than none — it looks
+   decided. Use `adr-write`; never hand-author a partial one.
+8. Never update `INDEX.md` manually — always use `context-update`.
+9. `.context/` is append-only — never delete or rewrite ADRs. Supersede instead
+   (mark the old "Superseded by ADR-NNN").
+10. AI log entries are permanent — corrections go in new entries, not edits.
+11. A "Patterns missed" action in an AI log is not resolved until the referenced
+    rule or `AI_CONTEXT.md` is actually updated; `context-update` surfaces these
+    until they are.
