@@ -1,0 +1,35 @@
+{
+  "name": "@achieve/ai-scaffold",
+  "version": "1.0.0",
+  "description": "Install and manage AI workflow structure (.ai/ and .context/) in any project",
+  "type": "module",
+  "bin": {
+    "ai-scaffold": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/jcuadros-achieve/ai-scaffold.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "node --watch dist/cli.js",
+    "prepare": "tsc"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "diff": "^5.2.0",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/diff": "^5.2.1",
+    "@types/prompts": "^2.4.9",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

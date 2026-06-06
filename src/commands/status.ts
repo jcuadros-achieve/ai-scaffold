@@ -1,0 +1,39 @@
+import chalk from 'chalk'
+import path  from 'path'
+import { planInstall, readVersionFile, SCAFFOLD_VERSION } from '../installer.js'
+
+export async function status(): Promise<void> {
+  const root = process.cwd()
+  console.log(chalk.bold('\nai-scaffold — status\n'))
+
+  const installed = readVersionFile(root)
+  if (!installed) {
+    console.log(chalk.red('  Not installed.'))
+    console.log(chalk.gray('  Run: npx @achieve/ai-scaffold install\n'))
+    return
+  }
+
+  console.log(`  Installed: ${chalk.green(installed)}`)
+  console.log(`  Latest:    ${chalk.green(SCAFFOLD_VERSION)}`)
+  if (installed !== SCAFFOLD_VERSION)
+    console.log(chalk.yellow('  Update available — run: ai-scaffold update'))
+
+  const actions = planInstall(root)
+  const changed = actions.filter(a => a.type === 'update')
+  const missing = actions.filter(a => a.type === 'create')
+
+  if (!changed.length && !missing.length) {
+    console.log(chalk.green('\n  All files up to date.\n'))
+    return
+  }
+  if (missing.length) {
+    console.log(chalk.yellow(`\n  ${missing.length} missing files:`))
+    missing.forEach(a => console.log(chalk.yellow(`    ${path.relative(root, a.dest)}`)))
+  }
+  if (changed.length) {
+    console.log(chalk.yellow(`\n  ${changed.length} files differ:`))
+    changed.forEach(a => console.log(chalk.yellow(`    ${path.relative(root, a.dest)}`)))
+  }
+  console.log(chalk.gray('\n  Run: ai-scaffold diff    to see changes'))
+  console.log(chalk.gray('  Run: ai-scaffold update  to apply them\n'))
+}
