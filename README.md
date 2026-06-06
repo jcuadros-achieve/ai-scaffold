@@ -7,19 +7,25 @@ in any project. One command to get a team working with AI consistently.
 
 ## Usage
 
+> **Preview / demo** — this runs straight from the private GitHub repo. You need
+> read access to the repo and git/SSH configured for `github.com`.
+
 ```bash
 # Fresh install in a project
-npx @achieve/ai-scaffold install
+npx github:jcuadros-achieve/ai-scaffold install
 
 # Check what would change vs latest templates
-npx @achieve/ai-scaffold diff
+npx github:jcuadros-achieve/ai-scaffold diff
 
 # Pull latest templates (shows diff, asks per file)
-npx @achieve/ai-scaffold update
+npx github:jcuadros-achieve/ai-scaffold update
 
 # Check installed version and file status
-npx @achieve/ai-scaffold status
+npx github:jcuadros-achieve/ai-scaffold status
 ```
+
+> **Future (company distribution):** once published to Artifactory/jfrog under the
+> `@achieve` scope, the same commands become `npx @achieve/ai-scaffold <command>`.
 
 ---
 
@@ -95,7 +101,7 @@ stack, conventions, patterns, domain glossary.
 When new skills or rules are added to this repo:
 
 ```bash
-npx @achieve/ai-scaffold update
+npx github:jcuadros-achieve/ai-scaffold update
 ```
 
 The updater shows a colored diff for every changed file and lets you

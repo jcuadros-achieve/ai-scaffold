@@ -9,7 +9,7 @@ export async function status(): Promise<void> {
   const installed = readVersionFile(root)
   if (!installed) {
     console.log(chalk.red('  Not installed.'))
-    console.log(chalk.gray('  Run: npx @achieve/ai-scaffold install\n'))
+    console.log(chalk.gray('  Run: npx github:jcuadros-achieve/ai-scaffold install\n'))
     return
   }
 
