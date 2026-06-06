@@ -5,6 +5,31 @@ in any project. One command to get a team working with AI consistently.
 
 ---
 
+## What it establishes
+
+ai-scaffold gives a project a **disciplined AI workflow with human gates and
+persistent memory**, driven from a single source of truth (`.ai/AI_CONTEXT.md`,
+which `CLAUDE.md`, `.cursorrules`, and Copilot all read).
+
+It sets up two chains of skills:
+
+- **Work chain** — `ticket-clarify → task-plan → task-implement → pr-write →
+  pr-review`, with human approval gates between understanding, planning, and
+  coding.
+- **Context chain** — `adr-write → ai-log-write → context-update`, an
+  append-only project memory of decisions and AI sessions, with a regenerated
+  `INDEX.md`.
+
+Shipped rules (`code-style`, `security`, `no-touch`, `context`) enforce technical
+consistency, protected zones, and "read the memory before proposing". The
+keystone skill `ai-init` analyzes the real codebase and replaces the generic
+templates with project-specific content.
+
+→ Full conceptual breakdown — what it generates, the flow, and what each rule
+guarantees — in [`docs/OVERVIEW.md`](docs/OVERVIEW.md).
+
+---
+
 ## Usage
 
 > **Preview / demo** — this runs straight from the private GitHub repo. You need

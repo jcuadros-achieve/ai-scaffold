@@ -16,6 +16,21 @@ project's own config — they are the payload copied into target projects.
 > `.ai/AI_CONTEXT.md`. This file (the one you are reading) is a real file
 > documenting the tool's own codebase, not that symlink.
 
+## What it establishes (product flow)
+
+Understanding the payload's purpose makes the code make sense. ai-scaffold sets
+up, in each target project, two chains of skills with human gates between stages:
+
+- **Work chain:** `ticket-clarify → task-plan → task-implement → pr-write →
+  pr-review` (understanding is approved before planning, the plan before coding).
+- **Context chain:** `adr-write → ai-log-write → context-update` — append-only
+  project memory (decisions + AI sessions), with a regenerated `INDEX.md`.
+
+Shipped rules (`code-style`, `security`, `no-touch`, `context`) enforce
+consistency, protected zones, and "read the memory first". `ai-init` is the
+keystone: it analyzes a real codebase and replaces the generic templates with
+project-specific content. Full breakdown: [`docs/OVERVIEW.md`](docs/OVERVIEW.md).
+
 ## Commands
 
 ```bash
