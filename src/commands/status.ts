@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import path  from 'path'
-import { planInstall, readVersionFile, SCAFFOLD_VERSION } from '../installer.js'
+import { planInstall, readVersionFile, readInstalledSelection, SCAFFOLD_VERSION } from '../installer.js'
 
 export async function status(): Promise<void> {
   const root = process.cwd()
@@ -13,12 +13,14 @@ export async function status(): Promise<void> {
     return
   }
 
+  const selected = readInstalledSelection(root) ?? []
   console.log(`  Installed: ${chalk.green(installed)}`)
   console.log(`  Latest:    ${chalk.green(SCAFFOLD_VERSION)}`)
+  console.log(`  Optional modules: ${selected.length ? selected.join(', ') : chalk.gray('core only')}`)
   if (installed !== SCAFFOLD_VERSION)
     console.log(chalk.yellow('  Update available — run: ai-scaffold update'))
 
-  const actions = planInstall(root)
+  const actions = planInstall(root, selected)
   const changed = actions.filter(a => a.type === 'update')
   const missing = actions.filter(a => a.type === 'create')
 

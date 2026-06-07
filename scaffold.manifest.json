@@ -1,0 +1,33 @@
+{
+  "_comment": "Optional, project-shape-dependent templates. Everything under templates/ NOT listed here is core and always installed. Each item is individually selectable at install time; core-only is the non-interactive default.",
+  "optional": [
+    {
+      "id": "migration",
+      "label": "Database migrations",
+      "description": "Safe expand-contract DB/data migrations. Choose if the project has a database.",
+      "kind": "skill",
+      "paths": [".ai/skills/migration.md"]
+    },
+    {
+      "id": "api-contract",
+      "label": "API contracts",
+      "description": "Versioning, backward compatibility, deprecation. Choose if the project exposes an API or public interface.",
+      "kind": "rule",
+      "paths": [".ai/rules/api-contract.md"]
+    },
+    {
+      "id": "observability",
+      "label": "Observability",
+      "description": "Structured logging, metrics, tracing. Choose for a running service (less relevant for a pure library/CLI).",
+      "kind": "rule",
+      "paths": [".ai/rules/observability.md"]
+    },
+    {
+      "id": "resilience",
+      "label": "Resilience",
+      "description": "Timeouts, retries, idempotency, graceful degradation. Choose if the project crosses network/process boundaries.",
+      "kind": "rule",
+      "paths": [".ai/rules/resilience.md"]
+    }
+  ]
+}

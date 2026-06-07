@@ -62,16 +62,22 @@ node /ABS/PATH/ai-scaffold/dist/cli.js install
 
 Two layers, deliberately separated:
 
-- **`src/installer.ts` — pure logic, no UI.** `planInstall(root)` walks
+- **`src/installer.ts` — pure logic, no UI.** `planInstall(root, selected)` walks
   `templates/` recursively and, for each file, emits a `FileAction`
   (`create` / `update` / `skip` / `symlink`) by diffing the template against the
-  target. `applyAction()` executes one action. `writeVersionFile()` /
-  `readVersionFile()` manage `.ai/.scaffold-version`. No prompts, no `console`.
+  target — skipping optional-module files whose id isn't in `selected`.
+  `applyAction()` executes one action. `loadManifest()` reads the optional-module
+  list; `writeVersionFile()` / `readVersionFile()` / `readInstalledSelection()`
+  manage `.ai/.scaffold-version` (which records the chosen modules). No prompts,
+  no `console`.
 - **`src/commands/*.ts` — UI / orchestration.** Each command calls
   `planInstall()`, renders with `src/differ.ts`, drives `prompts`, then calls
-  `applyAction()`. `update` is the same flow as `install`; `diff` is a dry run;
-  `status` compares installed vs current `SCAFFOLD_VERSION`.
-- **`src/cli.ts`** routes `argv[2]` to one of the four commands.
+  `applyAction()`. `install` parses flags (`--all`/`--core`/`--modules=`/`--yes`)
+  and, in a TTY, prompts a module checklist. `update` is the same flow,
+  pre-selecting the previously-installed modules; `diff`/`status` plan against the
+  installed selection so they don't report unselected optional files as missing.
+- **`src/cli.ts`** routes `argv[2]` to one of the four commands; flags are read
+  from `process.argv` inside the command.
 
 When adding behavior, keep planning/applying in `installer.ts` and all
 user interaction in `commands/`.
@@ -100,14 +106,31 @@ These caused real bugs and are easy to reintroduce:
 
 5. **`TEMPLATES_DIR` assumes `dist/` is a sibling of `templates/`.**
    `installer.ts` resolves `path.resolve(__dirname, '../templates')`, i.e.
-   `dist/installer.js` → `../templates`. Changing `outDir` breaks this path.
+   `dist/installer.js` → `../templates`. Changing `outDir` breaks this path. The
+   same applies to `MANIFEST_FILE` (`../scaffold.manifest.json`).
+
+6. **Core is implicit; optional is explicit.** `scaffold.manifest.json` lists
+   only the **optional** modules (and the template paths each owns); everything
+   else under `templates/` is core and always installed. A new template is core
+   by default — to make it optional, add it to the manifest. The manifest lives
+   at the repo root (sibling of `templates/`, so it is *not* copied into targets)
+   and the `paths` use the dot-prefixed rel form (`.ai/rules/x.md`) that
+   `path.relative(TEMPLATES_DIR, …)` produces.
+
+7. **The installed selection is persisted** in `.ai/.scaffold-version`
+   (`optional: [...]`). `diff`/`status`/`update` all read it via
+   `readInstalledSelection` so they stay coherent. Deselecting a module on
+   re-install does **not** delete its files (we never delete user files) — it
+   just stops tracking them; note this if it surprises you.
 
 ## Packaging & distribution
 
-- **`package.json` `files: ["dist", "templates"]`** is the publish whitelist.
-  `templates` MUST stay in it, including its dot-directories — otherwise `install`
-  copies nothing. The `files` whitelist intentionally overrides `.gitignore`
-  (which excludes `dist/`). Re-verify with `npm pack` after structural changes.
+- **`package.json` `files: ["dist", "templates", "scaffold.manifest.json"]`** is
+  the publish whitelist. `templates` MUST stay in it, including its
+  dot-directories — otherwise `install` copies nothing; the manifest MUST stay in
+  it or every module reads as core. The `files` whitelist intentionally overrides
+  `.gitignore` (which excludes `dist/`). Re-verify with `npm pack` after
+  structural changes.
 - **`prepare: tsc`** builds on install. This is what makes
   `npx github:<owner>/ai-scaffold` work: npm clones the repo, runs `prepare` to
   compile, then runs the `bin` (`dist/cli.js`).

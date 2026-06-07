@@ -16,7 +16,7 @@ const commands: Record<string, () => Promise<void>> = {
 
 if (!commands[command]) {
   console.error(chalk.red(`Unknown command: ${command}`))
-  console.log('Usage: ai-scaffold [install|update|diff|status]')
+  console.log('Usage: ai-scaffold [install|update|diff|status] [--all | --core | --modules=a,b | --yes]')
   process.exit(1)
 }
 

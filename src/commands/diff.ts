@@ -1,13 +1,14 @@
 import path from 'path'
 import chalk from 'chalk'
-import { planInstall } from '../installer.js'
+import { planInstall, readInstalledSelection } from '../installer.js'
 import { renderDiff }  from '../differ.js'
 
 export async function diff(): Promise<void> {
   const root = process.cwd()
   console.log(chalk.bold('\nai-scaffold — diff\n'))
 
-  const actions  = planInstall(root)
+  const selected = readInstalledSelection(root) ?? []
+  const actions  = planInstall(root, selected)
   const toCreate = actions.filter(a => a.type === 'create')
   const toUpdate = actions.filter(a => a.type === 'update')
 

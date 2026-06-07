@@ -58,15 +58,31 @@ npx github:jcuadros-achieve/ai-scaffold status
 > **Future (company distribution):** once published to Artifactory/jfrog under the
 > `@achieve` scope, the same commands become `npx @achieve/ai-scaffold <command>`.
 
+### Choosing what to install
+
+The **core** (universal rules + the workflow/context chains) is always installed.
+Project-shape-dependent templates are **optional modules** you select — so a CLI
+or library doesn't get database or API rules it has no use for.
+
+- **Interactive** (a TTY) — `install` shows a checklist of optional modules to
+  toggle.
+- **Non-interactive** (CI, `--yes`, piped) — **core only** by default.
+- **Flags:** `--all` (all optional), `--modules=migration,observability`
+  (specific), `--core` (core only), `--yes` (no prompts).
+
+`update` keeps the modules you previously chose (and lets you add more);
+`diff`/`status` only consider what you installed. The selection is recorded in
+`.ai/.scaffold-version`.
+
 ---
 
 ## What install does
 
-1. Copies all templates into the target project
+1. Installs core templates + the optional modules you selected
 2. Creates symlinks: `CLAUDE.md` and `.cursorrules` → `.ai/AI_CONTEXT.md`
 3. Shows a colored diff for any files that already exist
 4. Asks you to decide per file: apply incoming or keep current
-5. Creates an initial git commit: `chore: initialize AI scaffold`
+5. Records the selected modules and offers an initial git commit
 
 ---
 
@@ -84,11 +100,11 @@ npx github:jcuadros-achieve/ai-scaffold status
     dependency.md           ← supply chain
     ci-gates.md             ← machine-enforced checks
     performance.md
-    observability.md
-    resilience.md
-    api-contract.md
     docs.md
     git-workflow.md
+    observability.md        ← optional module
+    resilience.md           ← optional module
+    api-contract.md         ← optional module
   skills/
     workflow/
       ticket-clarify.md
@@ -107,7 +123,7 @@ npx github:jcuadros-achieve/ai-scaffold status
     debug.md
     security-review.md      ← threat-model-style deep pass
     refactor.md             ← behavior-preserving
-    migration.md            ← safe DB/data migrations
+    migration.md            ← optional module (safe DB/data migrations)
 
 .context/
   INDEX.md

@@ -27,6 +27,14 @@ The core idea: **one source of truth** (`AI_CONTEXT.md`) that every AI tool
 (Claude, Cursor, Copilot) consumes through symlinks, instead of N files that
 drift out of sync.
 
+**Core vs optional modules.** To stay agnostic across project types, the scaffold
+ships everything but installs selectively. The **core** (universal rules + the
+workflow/context chains) is always installed; **optional modules** —
+project-shape-dependent templates like `migration` (needs a DB), `api-contract`
+(needs an API), `observability`/`resilience` (needs a running/distributed
+service) — are chosen at install time. A CLI or pure library installs only the
+core. The selection is recorded so `update`/`diff`/`status` stay coherent.
+
 ---
 
 ## 2. The workflow it establishes
