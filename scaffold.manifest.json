@@ -6,7 +6,7 @@
       "label": "Database migrations",
       "description": "Safe expand-contract DB/data migrations. Choose if the project has a database.",
       "kind": "skill",
-      "paths": [".ai/skills/migration.md"]
+      "paths": [".ai/skills/migration.md", ".github/agents/migration.md", ".claude/commands/migration.md"]
     },
     {
       "id": "api-contract",
@@ -62,7 +62,7 @@
       "label": "Incident & hotfix",
       "description": "Production incident response: mitigate-first, hotfix, postmortem, rollback. Choose for a deployed service.",
       "kind": "skill",
-      "paths": [".ai/skills/incident.md"]
+      "paths": [".ai/skills/incident.md", ".github/agents/incident.md", ".claude/commands/incident.md"]
     }
   ]
 }

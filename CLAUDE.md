@@ -154,6 +154,24 @@ customizes, not final docs.
 AI interaction log + a regenerated `INDEX.md`); its rules live in
 `templates/.ai/rules/context.md`.
 
+## Tool adapters
+
+The `.ai/skills/*.md` playbooks are tool-agnostic and are **not** auto-discovered
+by any tool on their own. To make them invocable, `scripts/gen-adapters.mjs`
+generates thin per-skill adapters into `templates/`:
+
+- `.github/agents/<name>.md` — Copilot CLI custom agents, invoked `/agent <name>`.
+- `.claude/commands/<name>.md` — Claude Code slash commands, invoked `/<name>`.
+- `.cursor/rules/ai-scaffold.mdc` — a single Cursor context rule (Cursor has no
+  per-skill invocation) mapping skill names to playbook paths.
+
+Each adapter just points the tool at the canonical `.ai/skills/...` playbook —
+the skill content lives in one place. The adapters for optional-module skills
+(`migration`, `incident`) are listed in that module's manifest `paths`, so they
+install only when the module is selected. `scripts/` is dev-only (not in the
+`files` whitelist), so the generator ships nowhere; only its output (under
+`templates/`) is published.
+
 ## Rules for changes in this repo
 
 These are binding for any work done here. They are repo-specific, not generic
@@ -193,3 +211,7 @@ advice.
      `ai-init` customizes per project, not finished project-specific content.
    - For a cross-cutting addition, capture the reasoning where it belongs: an ADR
      in the target's `.context/adr/` is the model this tool itself promotes.
+   - After adding/renaming/removing a **skill**, rerun `node scripts/gen-adapters.mjs`
+     to regenerate its tool adapters, add a curated description to the script's
+     `DESC` map, and — if the skill is optional — add its adapter paths to the
+     module's `paths` in `scaffold.manifest.json`.

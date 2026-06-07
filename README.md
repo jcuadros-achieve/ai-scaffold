@@ -144,19 +144,43 @@ CLAUDE.md                   ← symlink → .ai/AI_CONTEXT.md
 .cursorrules                ← symlink → .ai/AI_CONTEXT.md
 .github/
   copilot-instructions.md
+  agents/                   ← one per skill — Copilot CLI: /agent <name>
+.claude/
+  commands/                 ← one per skill — Claude Code: /<name>
+.cursor/
+  rules/ai-scaffold.mdc     ← Cursor context rule (maps skill names → playbooks)
 
 .ai/.scaffold-version       ← tracks installed version
 ```
 
+> The `.ai/skills/*.md` files are tool-agnostic **playbooks**; they are not
+> invocable on their own. The adapters above are what each tool actually loads
+> (generated from the skills by `scripts/gen-adapters.mjs`).
+
 ---
+
+## Using the skills
+
+Each skill is exposed in your tool's native form (adapters point at the canonical
+`.ai/skills/` playbook):
+
+| Tool | How to invoke | Example |
+|------|---------------|---------|
+| **Copilot CLI** | `/agent <name>` (or `--agent <name>`) | `/agent verify` |
+| **Claude Code** | `/<name>` slash command | `/ticket-clarify` |
+| **Cursor** | Reference the skill by name; it follows `.cursor/rules/ai-scaffold.mdc` | "run task-plan" |
+
+Verify what Copilot loaded with `copilot --list-env` (lists agents/skills).
 
 ## After installing
 
-Run `ai-init` in your AI agent to analyze the codebase and populate
-`AI_CONTEXT.md` with real content.
+Run `ai-init` first to analyze the codebase and populate `AI_CONTEXT.md` with
+real content — **until you do, the context files are generic placeholders** and
+the tools have little project-specific guidance.
 
 ```
-ai-init
+/agent ai-init      # Copilot CLI
+/ai-init            # Claude Code
 ```
 
 This fills in the generic templates with project-specific content —

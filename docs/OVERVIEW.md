@@ -68,6 +68,12 @@ ticket-clarify → task-plan → task-implement → verify → pr-write → pr-r
 (safe expand–contract DB changes), plus `new-endpoint`, `test-gen`, `review`,
 `debug`.
 
+**Invocation.** The skills are tool-agnostic playbooks. The scaffold also installs
+per-skill **adapters** so each is invocable natively: Copilot CLI `/agent <name>`
+(`.github/agents/`), Claude Code `/<name>` (`.claude/commands/`), and a Cursor
+context rule (`.cursor/rules/`). The adapters just point the tool at the canonical
+playbook, so the skill content stays in one place.
+
 **Context chain (persistent memory):**
 
 ```
