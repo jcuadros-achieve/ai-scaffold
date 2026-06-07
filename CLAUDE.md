@@ -115,7 +115,8 @@ These caused real bugs and are easy to reintroduce:
    by default — to make it optional, add it to the manifest. The manifest lives
    at the repo root (sibling of `templates/`, so it is *not* copied into targets)
    and the `paths` use the dot-prefixed rel form (`.ai/rules/x.md`) that
-   `path.relative(TEMPLATES_DIR, …)` produces.
+   `path.relative(TEMPLATES_DIR, …)` produces. Future module ideas are mapped in
+   `docs/CANDIDATE-MODULES.md` — add on demand, not up front.
 
 7. **The installed selection is persisted** in `.ai/.scaffold-version`
    (`optional: [...]`). `diff`/`status`/`update` all read it via

@@ -74,6 +74,9 @@ or library doesn't get database or API rules it has no use for.
 `diff`/`status` only consider what you installed. The selection is recorded in
 `.ai/.scaffold-version`.
 
+Modules are added on demand, not up front. A backlog of candidate modules for
+future phases is mapped in [`docs/CANDIDATE-MODULES.md`](docs/CANDIDATE-MODULES.md).
+
 ---
 
 ## What install does
