@@ -61,9 +61,13 @@ in Phase 1. Do not write to disk yet.
 - `full-context.md` (all of the above composed into one file)
 
 Leave `rules/context.md` and the `skills/workflow/`, `skills/context/`,
-`security-review`, `refactor`, and `migration` skills as shipped — they are
-flow definitions, not project-specific content. Only fill in a project's real
-facts where a rule has a "Run ai-init to…" line.
+`security-review`, `refactor`, `migration`, and `incident` skills as shipped —
+they are flow definitions, not project-specific content. Only fill in a
+project's real facts where a rule has a "Run ai-init to…" line — including any
+**optional-module rules that were installed** (`observability`, `resilience`,
+`api-contract`, `accessibility`, `i18n`, `config-secrets`, `data-privacy`).
+Customize only rules that are actually present; never recreate ones the project
+chose not to install.
 
 When done, output exactly:
 

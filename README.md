@@ -105,6 +105,10 @@ or library doesn't get database or API rules it has no use for.
     observability.md        ← optional module
     resilience.md           ← optional module
     api-contract.md         ← optional module
+    accessibility.md        ← optional module
+    i18n.md                 ← optional module
+    config-secrets.md       ← optional module
+    data-privacy.md         ← optional module
   skills/
     workflow/
       ticket-clarify.md
@@ -124,6 +128,7 @@ or library doesn't get database or API rules it has no use for.
     security-review.md      ← threat-model-style deep pass
     refactor.md             ← behavior-preserving
     migration.md            ← optional module (safe DB/data migrations)
+    incident.md             ← optional module (incident/hotfix/rollback)
 
 .context/
   INDEX.md

@@ -28,6 +28,41 @@
       "description": "Timeouts, retries, idempotency, graceful degradation. Choose if the project crosses network/process boundaries.",
       "kind": "rule",
       "paths": [".ai/rules/resilience.md"]
+    },
+    {
+      "id": "accessibility",
+      "label": "Accessibility (a11y)",
+      "description": "Semantic HTML, keyboard, contrast, ARIA, WCAG. Choose if the project has a user-facing UI.",
+      "kind": "rule",
+      "paths": [".ai/rules/accessibility.md"]
+    },
+    {
+      "id": "i18n",
+      "label": "Internationalization (i18n)",
+      "description": "Externalized strings, locale-aware formatting, pluralization, RTL. Choose if the project serves more than one language/locale.",
+      "kind": "rule",
+      "paths": [".ai/rules/i18n.md"]
+    },
+    {
+      "id": "config-secrets",
+      "label": "Configuration & secrets",
+      "description": "Env-based config, startup validation, .env.example, secret rotation. Choose if the project has runtime configuration or secrets.",
+      "kind": "rule",
+      "paths": [".ai/rules/config-secrets.md"]
+    },
+    {
+      "id": "data-privacy",
+      "label": "Data privacy (PII)",
+      "description": "Minimization, retention/deletion, encryption, consent, no PII in logs. Choose if the project handles personal or sensitive data.",
+      "kind": "rule",
+      "paths": [".ai/rules/data-privacy.md"]
+    },
+    {
+      "id": "incident",
+      "label": "Incident & hotfix",
+      "description": "Production incident response: mitigate-first, hotfix, postmortem, rollback. Choose for a deployed service.",
+      "kind": "skill",
+      "paths": [".ai/skills/incident.md"]
     }
   ]
 }
