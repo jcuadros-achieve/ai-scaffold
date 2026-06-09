@@ -5,12 +5,13 @@
 
 Correctness first, then performance — but never ship a known scalability cliff.
 
-## Data access
+## Data access (if the project has a datastore)
 
-- **No N+1 queries.** Batch or join. Watch loops that query per-iteration.
-- **Always paginate** unbounded list endpoints and queries. Never `SELECT *`
-  without a limit on data that grows.
-- Add indexes for the columns you filter and sort on; flag missing ones.
+- **No N+1 access patterns.** Batch or join. Watch loops that query/fetch
+  per-iteration.
+- **Always paginate** unbounded lists. Never fetch a whole growing table/
+  collection without a limit.
+- Index the fields you filter and sort on; flag missing ones.
 - Cache deliberately, with an explicit invalidation story. A cache without
   invalidation is a bug.
 

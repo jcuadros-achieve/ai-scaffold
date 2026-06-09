@@ -41,6 +41,16 @@ When done, output exactly:
 Generate the content for every file below in memory, composed from what was read
 in Phase 1. Do not write to disk yet.
 
+The shipped core rules are **language-neutral principles**. Your main job here is
+to make them **concrete for this project's actual stack** — turn each principle
+into idiomatic, specific guidance for the language(s) and frameworks found in
+Phase 1. Examples:
+- TypeScript → "never use `any`; use `unknown` + type guards", `import type` order.
+- Python → typing/`mypy` strictness, `pydantic` for validation, `ruff` rules.
+- Go → `errcheck`, no `interface{}` leakage, error-wrapping conventions.
+Replace the neutral examples with the project's real conventions; don't keep a
+language's rule that doesn't apply.
+
 - `AI_CONTEXT.md`
 - `rules/code-style.md`
 - `rules/security.md`

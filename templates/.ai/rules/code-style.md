@@ -1,35 +1,38 @@
 # Code style rules
 
-> Generic defaults. Run `ai-init` to replace these with rules derived from your
-> actual codebase.
+> Language-neutral principles. Run `ai-init` to turn these into concrete,
+> idiomatic rules for this project's actual language(s).
 
-## TypeScript usage
-- Never use `any`. Use `unknown` and narrow with type guards.
-- Prefer explicit return types on exported functions.
-- Prefer `type` aliases for unions and `interface` for object shapes.
+## Type safety
+
+- Use the strictest typing your language offers; avoid dynamic-typing escape
+  hatches that defeat the checker (e.g. `any` in TypeScript, untyped `dict`
+  payloads, `interface{}`/`reflect` in Go). Type values at the boundary, then
+  trust them inward.
+- Make illegal states unrepresentable where the language allows it.
 
 ## Error handling
-- Choose one strategy per layer and stay consistent: `Result<T, E>` for
-  expected/recoverable failures, `throw` for truly exceptional cases.
-- Do not mix both styles within the same module.
-- Never swallow errors silently — log or propagate.
+
+- Pick one error strategy per layer and stay consistent (a result/either type,
+  exceptions, or returned errors — whatever your language and codebase favor).
+  Do not mix styles within a module.
+- Never swallow an error silently — log it or propagate it.
 
 ## Function size
-- Keep functions under 30 lines. If a function grows past that, extract a
-  helper with a descriptive name.
-- One function, one responsibility.
 
-## Import ordering
-Order imports in three groups, separated by a blank line:
-1. External packages
-2. Internal modules
-3. Types (use `import type`)
+- Keep functions small and single-purpose. When one grows past what fits on a
+  screen, extract a helper with a descriptive name.
 
-## Naming conventions
-- `camelCase` for variables and functions.
-- `PascalCase` for types, interfaces, and classes.
-- `UPPER_SNAKE_CASE` for constants.
-- Booleans read as predicates: `isReady`, `hasAccess`, `canRetry`.
-- Avoid abbreviations unless they are domain-standard.
+## Module & import ordering
 
-> Run ai-init to replace these with rules derived from your actual codebase.
+- Group imports/dependencies consistently (external → internal → types, or your
+  language's convention) and keep the order stable across files.
+
+## Naming
+
+- Follow your language's idiomatic conventions consistently (e.g. `camelCase` vs
+  `snake_case`). Booleans read as predicates (`isReady`, `has_access`). Avoid
+  abbreviations unless domain-standard.
+
+> Run ai-init to replace these principles with rules derived from your actual
+> codebase and language idioms.

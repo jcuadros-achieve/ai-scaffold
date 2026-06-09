@@ -2,8 +2,10 @@
 
 Files and folders that must not be modified without explicit human approval.
 
-- db/migrations/     — database migrations; changes require team review
+- migrations/        — database/data migrations; changes require team review
 - .env*              — environment files; never commit secrets
-- package-lock.json  — managed by npm; do not edit manually
+- lockfiles          — package-lock.json, poetry.lock, go.sum, Cargo.lock, …;
+                       managed by your package manager, never hand-edited
+- generated/         — generated or vendored code; regenerate, don't edit
 
 > Run ai-init to add project-specific no-touch zones.

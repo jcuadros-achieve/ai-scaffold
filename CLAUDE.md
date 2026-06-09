@@ -150,6 +150,13 @@ codebase and replace the generic templates with project-specific versions. When
 editing templates, preserve that intent — they are starting points `ai-init`
 customizes, not final docs.
 
+**Keep core rules stack-neutral.** Core rules state language-agnostic principles;
+stack-specific guidance (e.g. TS `any`, zod, npm, SQL framing) appears only as
+*examples*, and `ai-init` concretizes them per project. Do not hardcode one
+stack's idioms as a core requirement — that breaks the agnostic promise. Truly
+stack-shaped concerns belong in optional modules (see `scaffold.manifest.json`),
+not the core.
+
 `templates/.context/` holds the append-only project-memory structure (ADRs +
 AI interaction log + a regenerated `INDEX.md`); its rules live in
 `templates/.ai/rules/context.md`.
