@@ -7,15 +7,12 @@ document decisions about **this tool**; they are not installed into targets.
 |-----|-------|------|--------|-----------------|
 | [ADR-001](ADR-001-development-flow.md) | Development flow for payload, installer, and releases | 2026-06-10 | Accepted | Change-type-specific flow with decision gate, deliberate core/optional classification, four verification gates, docs in the same commit, semver releases. |
 | [ADR-002](ADR-002-claude-first-logical-templates.md) | Claude Code as primary target, logical template layout, install-time generation | 2026-06-10 | Accepted | Canonical skills/rules in `.claude/` (Copilot reads them natively); `templates/` in logical layout with a mapping table in the installer; derived files generated at install time; adapters and `.ai/` removed; breaking 2.0.0. |
+| [ADR-003](ADR-003-chain-transitions-context-merge.md) | Explicit chain transitions; context capture at work-chain edges | 2026-06-10 | Accepted | Every work-chain skill ends with a Hand-off proposing the next step (human decides); `task-implement` logs the session and `pr-write` drafts required ADRs + refreshes the index automatically. |
 
 ## Pending decisions (agreed direction, ADR to be written before implementing)
 
 From the design reviews of 2026-06-10:
 
-- **ADR-003 — Explicit chain transitions; context chain merged at work-chain
-  edges.** Each work-chain skill ends by proposing the next step (human
-  decides); `task-implement` / `pr-write` close by invoking the context skills
-  so memory persists at every gate instead of depending on a manual final step.
 - **ADR-004 — Model tiers as skill metadata.** Skills declare effort semantics
   (`tier: fast | deep`), never model IDs; install-time generation concretizes
   the tier per tool where the tool supports it.
