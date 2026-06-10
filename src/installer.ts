@@ -8,7 +8,7 @@ export const TEMPLATES_DIR = path.resolve(__dirname, '../templates')
 export const MANIFEST_FILE = path.resolve(__dirname, '../scaffold.manifest.json')
 export const SCAFFOLD_VERSION_FILE = '.claude/.scaffold-version'
 export const LEGACY_VERSION_FILE = '.ai/.scaffold-version'
-export const SCAFFOLD_VERSION = '2.2.0'
+export const SCAFFOLD_VERSION = '2.3.0'
 
 export interface FileAction {
   type: 'create' | 'update' | 'skip' | 'symlink'
@@ -25,6 +25,16 @@ export interface OptionalModule {
   description: string
   kind:        string
   paths:       string[]
+}
+
+/** Per-template metadata from the manifest catalog (ADR-007). */
+export interface CatalogEntry {
+  path:    string
+  kind:    string
+  version: string
+  updated: string
+  hash:    string
+  tags?:   string[]
 }
 
 interface SkillMeta { name: string; description: string }
@@ -53,6 +63,17 @@ export function loadManifest(): OptionalModule[] {
   try {
     const parsed = JSON.parse(fs.readFileSync(MANIFEST_FILE, 'utf8'))
     return Array.isArray(parsed.optional) ? parsed.optional : []
+  } catch {
+    return []
+  }
+}
+
+/** The per-template catalog (every template, core and optional). */
+export function loadCatalog(): CatalogEntry[] {
+  if (!fs.existsSync(MANIFEST_FILE)) return []
+  try {
+    const parsed = JSON.parse(fs.readFileSync(MANIFEST_FILE, 'utf8'))
+    return Array.isArray(parsed.templates) ? parsed.templates : []
   } catch {
     return []
   }
@@ -191,10 +212,21 @@ export function applyAction(action: FileAction): void {
 export function writeVersionFile(projectRoot: string, selected: string[] = []): void {
   const p = path.join(projectRoot, SCAFFOLD_VERSION_FILE)
   fs.mkdirSync(path.dirname(p), { recursive: true })
+
+  // Installed base per template (ADR-007): lets update/diff reason per file
+  // (installed base vs local file vs incoming template) instead of globally.
+  const excluded = excludedPaths(selected)
+  const templates: Record<string, { version: string; hash: string }> = {}
+  for (const entry of loadCatalog()) {
+    if (excluded.has(entry.path)) continue
+    templates[entry.path] = { version: entry.version, hash: entry.hash }
+  }
+
   fs.writeFileSync(p, JSON.stringify({
     version:     SCAFFOLD_VERSION,
     installedAt: new Date().toISOString(),
     optional:    selected,
+    templates,
   }, null, 2))
 }
 

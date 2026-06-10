@@ -81,7 +81,9 @@ or library doesn't get database or API rules it has no use for.
   (specific), `--core` (core only), `--yes` (no prompts).
 
 `update` keeps the modules you previously chose (and lets you add more);
-`diff`/`status` only consider what you installed. The selection is recorded in
+`diff`/`status` only consider what you installed. The selection — and the
+installed base version of every template (per-file version + hash, from the
+catalog in `scaffold.manifest.json`) — is recorded in
 `.claude/.scaffold-version`.
 
 Modules are added on demand, not up front. A backlog of candidate modules for
@@ -224,8 +226,10 @@ ai-scaffold/
     rules/                  → .claude/rules/
     skills/                 → .claude/skills/<name>/SKILL.md
     context/                → .context/
-  test/                     ← node --test unit tests for installer.ts
-  scaffold.manifest.json    ← optional-module catalog
+  test/                     ← node --test unit tests (installer + catalog)
+  scripts/
+    update-catalog.mjs      ← maintains the per-template catalog (dev-only)
+  scaffold.manifest.json    ← optional modules + per-template catalog
   package.json
   tsconfig.json
 ```
@@ -237,5 +241,7 @@ ai-scaffold/
 1. Add the `.md` file under `templates/skills/` or `templates/rules/` — skills
    need `name`/`description` frontmatter
 2. If it's optional, add its logical path to a module in `scaffold.manifest.json`
-3. Bump the version in `src/installer.ts` (`SCAFFOLD_VERSION`) and run `npm test`
-4. Commit and push — projects using `ai-scaffold update` will see the diff
+3. Run `node scripts/update-catalog.mjs` (registers/bumps the template in the
+   catalog — the test suite fails if you skip this)
+4. Bump the version in `src/installer.ts` (`SCAFFOLD_VERSION`) and run `npm test`
+5. Commit and push — projects using `ai-scaffold update` will see the diff

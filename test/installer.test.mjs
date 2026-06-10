@@ -5,7 +5,7 @@ import os from 'os'
 import path from 'path'
 import {
   planInstall, applyAction, writeVersionFile, readVersionFile,
-  readInstalledSelection, loadManifest, mapTemplatePath,
+  readInstalledSelection, loadManifest, loadCatalog, mapTemplatePath,
   SCAFFOLD_VERSION, SCAFFOLD_VERSION_FILE, LEGACY_VERSION_FILE,
 } from '../dist/installer.js'
 
@@ -152,6 +152,22 @@ test('version file round-trips version and module selection at the new location'
   assert.ok(fs.existsSync(path.join(root, SCAFFOLD_VERSION_FILE)))
   assert.equal(readVersionFile(root), SCAFFOLD_VERSION)
   assert.deepEqual(readInstalledSelection(root), ['observability', 'incident'])
+})
+
+test('version file records installed template bases, selection-aware', () => {
+  const root = tmpProject()
+  writeVersionFile(root, ['migration'])
+
+  const data = JSON.parse(fs.readFileSync(path.join(root, SCAFFOLD_VERSION_FILE), 'utf8'))
+  const catalog = new Map(loadCatalog().map(t => [t.path, t]))
+  assert.ok(catalog.size > 0, 'catalog is loaded')
+
+  assert.deepEqual(data.templates['skills/migration.md'], {
+    version: catalog.get('skills/migration.md').version,
+    hash:    catalog.get('skills/migration.md').hash,
+  })
+  assert.ok(data.templates['skills/workflow/verify.md'], 'core entries recorded')
+  assert.ok(!('rules/observability.md' in data.templates), 'unselected module excluded')
 })
 
 test('a legacy .ai/.scaffold-version is still readable', () => {

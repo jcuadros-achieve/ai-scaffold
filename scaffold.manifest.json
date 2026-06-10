@@ -1,5 +1,5 @@
 {
-  "_comment": "Optional, project-shape-dependent templates. Everything under templates/ NOT listed here is core and always installed. Each item is individually selectable at install time; core-only is the non-interactive default.",
+  "_comment": "Two sections. `optional`: project-shape-dependent modules, individually selectable at install time (everything NOT listed there is core and always installed; core-only is the non-interactive default). `templates`: the per-template catalog (ADR-007) — version/date/sha256 for EVERY template; maintained by `node scripts/update-catalog.mjs`, enforced by test/catalog.test.mjs, never hand-edited.",
   "optional": [
     {
       "id": "migration",
@@ -80,6 +80,356 @@
       "kind": "skill",
       "paths": [
         "skills/incident.md"
+      ]
+    }
+  ],
+  "templates": [
+    {
+      "path": "CLAUDE.md",
+      "kind": "root",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:b857bf37cdf6fd6b8adf82f33250f02d27af437c3174839f42cf24e967001f64",
+      "tags": []
+    },
+    {
+      "path": "context/adr/ADR-000-index.md",
+      "kind": "context",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:35c777b081c51fe06887c8fc97b0938adde218178f583405e1c43bcf0d627f1c",
+      "tags": []
+    },
+    {
+      "path": "context/ai-log/.gitkeep",
+      "kind": "context",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tags": []
+    },
+    {
+      "path": "context/INDEX.md",
+      "kind": "context",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:69c9b4ac543886ea18786b94eb33cce35683119833a35ad8a28e897236673502",
+      "tags": []
+    },
+    {
+      "path": "rules/accessibility.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:ca436fa857c296ed8b6e5d18eb1904e9ec0b4ab8ad0e5ae0fa8193512dd901dd",
+      "tags": [
+        "accessibility"
+      ]
+    },
+    {
+      "path": "rules/api-contract.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:196baa3648b8a409595a088b5c16cfad42ee75fcac834728f802b81f3de633f4",
+      "tags": [
+        "api-contract"
+      ]
+    },
+    {
+      "path": "rules/ci-gates.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:c75eef63fe650c10bd342b58127bc8d28e97f6bbcf5ea1022edd66c52704bb21",
+      "tags": []
+    },
+    {
+      "path": "rules/code-style.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:dd395a9f4cf98fce59154847af61bc5ce926f6dcc0311e43ebca26fee3267fcc",
+      "tags": []
+    },
+    {
+      "path": "rules/config-secrets.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:a99b33e36e4fe199ccbb8d18a0437831c3174dfcff5b4e6fe00b55ddb7c2a4bf",
+      "tags": [
+        "config-secrets"
+      ]
+    },
+    {
+      "path": "rules/context.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:1f313c879b5404c8c852ea02ecc00f1c8fb05a1c7e6fd727102c292a9cb5e876",
+      "tags": []
+    },
+    {
+      "path": "rules/data-privacy.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:355eae78618ca013476cf314b4f344e0f4ad0eabae15b6e4ba778e3e1f8b1284",
+      "tags": [
+        "data-privacy"
+      ]
+    },
+    {
+      "path": "rules/dependency.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:3445a9d19872625cd25a88a769630960d57aa69a0888477441862f58747582a6",
+      "tags": []
+    },
+    {
+      "path": "rules/docs.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:6c7548a41fabdbc37ab5b89ee3809d7359690c7f98deb86737ea0a63c65238a6",
+      "tags": []
+    },
+    {
+      "path": "rules/git-workflow.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:45fc65f17bf82b949519c6765a980038c6a6b263ba7eb96c39046380848798c4",
+      "tags": []
+    },
+    {
+      "path": "rules/i18n.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:6722af07f1779522995d7c1c0cd9638b05899b0028c516371a4173d6a5cf9af9",
+      "tags": [
+        "i18n"
+      ]
+    },
+    {
+      "path": "rules/no-touch.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:010b68b0822000fbb9096eb366b3b7cf7d7338884bc15247dcb1737aae60f64d",
+      "tags": []
+    },
+    {
+      "path": "rules/observability.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:d49d855810f63359c1db8e55ef6e2184393495b88c27cc60d557298e3655a9a8",
+      "tags": [
+        "observability"
+      ]
+    },
+    {
+      "path": "rules/performance.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:47379074b1d2a14c4cf22c8bec01d736bd217eda1e10ef02660270b2271f30a9",
+      "tags": []
+    },
+    {
+      "path": "rules/resilience.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:5598e8275f5338fe2289c12eb852e06603f8dd35c9aaadcd41be78f44dbe38f0",
+      "tags": [
+        "resilience"
+      ]
+    },
+    {
+      "path": "rules/security.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:9634cadb90ab3b4e841655f1d43e84db86992dd291dae0aedeb4a792359ef90a",
+      "tags": []
+    },
+    {
+      "path": "rules/test-strategy.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:e87011d51ca6a0ba7c9046c75861a6ad3ebacd7c48017558ba2814c81c3c238a",
+      "tags": []
+    },
+    {
+      "path": "skills/ai-init.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:64232ef6cc579f831f18809d98281a31001037566067cfea522abab0d0ac2369",
+      "tags": []
+    },
+    {
+      "path": "skills/context/adr-write.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:0fd29a11988dbd1e8d733894795814c5f4aef2d16fe0123998f1fee094493ce0",
+      "tags": [
+        "context-chain"
+      ]
+    },
+    {
+      "path": "skills/context/ai-log-write.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:3c6884f93d1f06799a6a9fc702fbf0769e316382d20cdea5dbc3c495b955b1e5",
+      "tags": [
+        "context-chain"
+      ]
+    },
+    {
+      "path": "skills/context/context-update.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:ea852afaca6f062ead5613320ada862e09cee2947fd6f99439237c23d11e0714",
+      "tags": [
+        "context-chain"
+      ]
+    },
+    {
+      "path": "skills/debug.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:36247e94e4a43fd3fbfd1de43be2ed93a69a0b9d3c11bf2f1a10e86d5645d59d",
+      "tags": []
+    },
+    {
+      "path": "skills/incident.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:dfe3e6580a0fbe5696b2370c7f72789f278b17acaa80fdbdfd09dcd10c195fc7",
+      "tags": [
+        "incident"
+      ]
+    },
+    {
+      "path": "skills/migration.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:4c3cfbb2b126d5c0fc5d36462d84a7a4dc346398e33a3575f1632da3dd4fd19a",
+      "tags": [
+        "migration"
+      ]
+    },
+    {
+      "path": "skills/new-endpoint.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:e7b6a11273e870dc144224a9b86775dbd4eb3f2be32c16c81739cb4d2491eca8",
+      "tags": []
+    },
+    {
+      "path": "skills/refactor.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:3fea2d1f265e0f94de308f468833fbd0df2407153a1c51cdc759c05d6e9fe445",
+      "tags": []
+    },
+    {
+      "path": "skills/review.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:0a8db85a5e9737ef08c0187322b8e3dc70a39f7e952c87e65522d1e9ee112e9b",
+      "tags": []
+    },
+    {
+      "path": "skills/security-review.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:c7c8d908602b6ffa1492ae0a94db4bf1fe0d07367fb4b27f053b1cce969c1247",
+      "tags": []
+    },
+    {
+      "path": "skills/test-gen.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:6f5f6ada5511d1b88c4c50683b6b79aaeba634ab88cc2e91dcf1edf4cf3451f5",
+      "tags": []
+    },
+    {
+      "path": "skills/workflow/pr-review.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:8e310736a92d9ea5bea3e2f352feb9333d7f0748fdb549efbd922b0a07ebbd42",
+      "tags": [
+        "workflow"
+      ]
+    },
+    {
+      "path": "skills/workflow/pr-write.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:352db5bf4945820531ce1c386f3a590696294999af80bee0b017916bd5b113d3",
+      "tags": [
+        "workflow"
+      ]
+    },
+    {
+      "path": "skills/workflow/task-implement.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:2e07078b6cd73dd4411d7b0b94a2050f9dba46a554d9e709ebb064175eb17528",
+      "tags": [
+        "workflow"
+      ]
+    },
+    {
+      "path": "skills/workflow/task-plan.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:a7ca552dc5aadc43fc1e42f631781de50c65bae66ff1c56af0a1bc6ef0b2d579",
+      "tags": [
+        "workflow"
+      ]
+    },
+    {
+      "path": "skills/workflow/ticket-clarify.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:95970daf9b47fca5cb939c7ef97a9fad91a28085222e9e136709d6265b301592",
+      "tags": [
+        "workflow"
+      ]
+    },
+    {
+      "path": "skills/workflow/verify.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:ac2506410668b41d4b3aa1f19cb498445a3ffc499b2afb1a8f22a139c61c0791",
+      "tags": [
+        "workflow"
       ]
     }
   ]

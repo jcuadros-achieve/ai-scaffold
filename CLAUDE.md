@@ -48,7 +48,10 @@ fills the generic rules with project-specific facts. Full breakdown:
 npm install            # install deps
 npm run build          # tsc → compiles src/ to dist/
 npm run dev            # node --watch dist/cli.js  (build first)
-npm test               # builds, then unit tests for installer.ts (node --test, test/*.test.mjs)
+npm test               # builds, then unit tests (node --test, test/*.test.mjs)
+
+# After ANY change under templates/ (test/catalog.test.mjs fails otherwise):
+node scripts/update-catalog.mjs
 
 # Run a command locally after building:
 node dist/cli.js install   # also: update | diff | status
@@ -108,9 +111,14 @@ These caused real bugs and are easy to reintroduce:
    exclusion check use the **logical** form (`skills/migration.md`), not the
    install form. Tests in `test/installer.test.mjs` pin this mapping.
 
-2. **`SCAFFOLD_VERSION` lives in `src/installer.ts`.** Bump it whenever you change
-   anything under `templates/`, or `status`/`update` won't signal the change to
-   installed projects.
+2. **Two version signals, both mandatory on template changes.**
+   `SCAFFOLD_VERSION` (in `src/installer.ts`) is the coarse signal — bump it or
+   `status`/`update` won't notice. The **per-template catalog** in
+   `scaffold.manifest.json` (`templates`: version/date/sha256 per file, ADR-007)
+   is the fine signal — run `node scripts/update-catalog.mjs` after any change
+   under `templates/`; `test/catalog.test.mjs` fails the suite on drift. Never
+   hand-edit catalog entries. `scripts/` is dev-only (not in the `files`
+   whitelist, ships nowhere).
 
 3. **Every skill template must carry frontmatter** (`name` + `description`) —
    it's what makes the installed `SKILL.md` discoverable by Claude Code and
@@ -139,7 +147,10 @@ These caused real bugs and are easy to reintroduce:
 
 7. **The installed selection is persisted** in `.claude/.scaffold-version`
    (`optional: [...]`; pre-2.0 installs used `.ai/.scaffold-version`, which the
-   readers still fall back to). `diff`/`status`/`update` all read it via
+   readers still fall back to). Since 2.3.0 it also records the **installed
+   base** per template (`templates: { path → {version, hash} }`, selection-aware)
+   — the raw material for 3-way update reasoning (ADR-007/ADR-006).
+   `diff`/`status`/`update` all read it via
    `readInstalledSelection` so they stay coherent. Deselecting a module on
    re-install does **not** delete its files (we never delete user files) — it
    just stops tracking them; note this if it surprises you.
@@ -220,7 +231,9 @@ targets).
    - Made a cross-cutting or structural decision → record an ADR in
      `.context/adr/` **before** implementing (see ADR-001 for what qualifies).
    - Touched anything under `templates/` → bump `SCAFFOLD_VERSION` in
-     `src/installer.ts` (otherwise `status`/`update` can't detect the change).
+     `src/installer.ts` **and** run `node scripts/update-catalog.mjs`
+     (otherwise `status`/`update` can't detect the change and the catalog
+     test fails).
    - Commit messages use conventional-commits (`type(scope): summary`) and state
      **what** changed and **why** — never "modified file X". Undocumented changes
      should be rejected in review.
