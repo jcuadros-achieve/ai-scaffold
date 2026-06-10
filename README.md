@@ -26,8 +26,10 @@ It sets up two chains of skills:
 
 Each work-chain skill ends with a **hand-off** that proposes the next step —
 the human approves with a yes/no instead of remembering what comes next. And
-the chain writes project memory at its edges automatically: `task-implement`
-logs the session, `pr-write` drafts any required ADR and refreshes the index.
+the chain writes project memory automatically: approving the plan fixes the
+decision, so `task-implement` drafts any required ADR **before writing code**
+(step 0), logs the session at its close, and `pr-write` verifies the ADR still
+matches the implementation and refreshes the index.
 
 On-demand engineering skills (`security-review`, `refactor`, `migration`,
 `new-endpoint`, `test-gen`, `review`, `debug`) cover deeper or recurring tasks.

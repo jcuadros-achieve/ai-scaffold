@@ -55,15 +55,22 @@ ticket-clarify → task-plan → task-implement → verify → pr-write → pr-r
   instead of asking; estimates complexity S/M/L. Does not read the codebase.
 - `task-plan` — reads the real code and produces a file-level plan. Writes no
   implementation code.
-- `task-implement` — executes the approved plan **test-first (TDD)**, with a
-  **deviation protocol**: it stops if the code doesn't match the plan's
-  assumptions.
+- `task-implement` — opens by **recording the just-approved decision** (step 0:
+  ADR triggers checked, ADR drafted before any code), then executes the plan
+  **test-first (TDD)**, with a **deviation protocol**: it stops if the code
+  doesn't match the plan's assumptions. Closes by writing the session log.
 - `verify` — runs the project's real gates (build, lint, tests, coverage,
   dependency audit) and proves the change works. Closes the "tests written ≠
   tests pass" gap before a PR exists.
-- `pr-write` / `pr-review` — a conventional-commits PR, then a review in seven
-  passes (scope, correctness, security, code rules, tests, performance, decision
-  records & docs).
+- `pr-write` / `pr-review` — a conventional-commits PR (closing by verifying
+  the ADR still matches the implementation and refreshing `.context/INDEX.md`),
+  then a review in seven passes (scope, correctness, security, code rules,
+  tests, performance, decision records & docs).
+
+Every skill ends with a **hand-off** proposing the next step — the human
+approves with a yes/no. Context capture is automatic at the chain's anchor
+points (decision at plan approval, session log at implementation close, index
+at PR time), never a separate step to remember.
 
 **On-demand engineering skills** (outside the linear chain): `security-review`
 (threat-model-style deep pass), `refactor` (behavior-preserving), `migration`

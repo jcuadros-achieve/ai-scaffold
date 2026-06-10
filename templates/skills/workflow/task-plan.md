@@ -80,6 +80,9 @@ End by presenting the plan and proposing the next step explicitly:
 The skill proposes; the human decides. Proceed to `task-implement` only on
 explicit approval — and only if "Remaining open questions" is `None`.
 
+Approving the plan **fixes the technical decision**: `task-implement` opens by
+recording any required ADR (its step 0) before writing code.
+
 ---
 
 ## Rules

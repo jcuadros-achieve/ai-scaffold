@@ -14,6 +14,21 @@ silently.
 
 ---
 
+## Step 0 — Record the decision (automatic, before any code)
+
+The approved plan just fixed a technical decision. Before writing any code,
+evaluate the triggers in the `adr-write` playbook ("When to generate") against
+the chosen approach. If any applies, draft the ADR now by following
+`.claude/skills/adr-write/SKILL.md` — alternatives are recorded while they are
+fresh, and `pr-review` later checks the code against the recorded decision
+([[context]] rule 6). If none applies, state `No ADR triggers apply` and
+continue.
+
+This step is **not gated** — recording an approved decision is part of
+starting, not a separate thing to remember.
+
+---
+
 ## Deviation protocol
 
 If a step turns out to be wrong — the code does not match what the plan assumed —
@@ -27,7 +42,9 @@ Options: A) [safest] B) [alternative]
 Waiting for direction.
 ```
 
-Do not continue until you receive direction.
+Do not continue until you receive direction. An **approved deviation is a
+decision change** — note it so the ADR from step 0 gets updated or superseded
+at `pr-write`'s closing check.
 
 ---
 

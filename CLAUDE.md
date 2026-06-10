@@ -28,9 +28,11 @@ up, in each target project, two chains of skills with human gates between stages
   project memory (decisions + AI sessions), with a regenerated `INDEX.md`.
 
 Work-chain skills end with a `Hand-off` proposing the next step (the human
-approves), and context capture runs automatically at the chain's edges:
-`task-implement` writes the session log, `pr-write` drafts required ADRs and
-refreshes the index (ADR-003). Keep that shape when editing workflow skills.
+approves), and context capture runs automatically: `task-implement` drafts any
+required ADR at step 0 (right after plan approval, before code) and writes the
+session log at its close; `pr-write` verifies the ADR still matches what was
+implemented and refreshes the index (ADR-003/ADR-004). Keep that shape when
+editing workflow skills.
 
 Shipped rules enforce consistency, protected zones, and "read the memory first":
 `code-style`, `security`, `no-touch`, `context`, `test-strategy`, `dependency`,
