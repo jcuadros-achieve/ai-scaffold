@@ -8,7 +8,7 @@ export const TEMPLATES_DIR = path.resolve(__dirname, '../templates')
 export const MANIFEST_FILE = path.resolve(__dirname, '../scaffold.manifest.json')
 export const SCAFFOLD_VERSION_FILE = '.claude/.scaffold-version'
 export const LEGACY_VERSION_FILE = '.ai/.scaffold-version'
-export const SCAFFOLD_VERSION = '2.0.0'
+export const SCAFFOLD_VERSION = '2.1.0'
 
 export interface FileAction {
   type: 'create' | 'update' | 'skip' | 'symlink'

@@ -43,10 +43,33 @@ A 2–3 sentence body explaining what and why.
 
 ---
 
+## Closing — capture context (automatic)
+
+After producing the description, persist the project memory. These steps are
+**not gated** — they are part of finishing, not a separate favor to remember:
+
+1. **ADR check** — evaluate the triggers in the `adr-write` playbook ("When to
+   generate") against this change. If any applies, draft the ADR now by
+   following `.claude/skills/adr-write/SKILL.md`; a required ADR missing at
+   review is a blocker ([[context]] rule 6).
+2. **Index refresh** — follow `.claude/skills/context-update/SKILL.md` so
+   `.context/INDEX.md` reflects the new log entries and any ADR.
+
+---
+
+## Hand-off
+
+> PR description ready, context updated[, ADR-NNN drafted]. Continue with
+> `pr-review`?
+
+The skill proposes; the human decides.
+
+---
+
 ## Rules
 
 - Title must follow conventional commits.
 - "What changed" describes behavior, never "I modified file X".
 - "How to test" must be actionable without reading the code.
 - Flag any out-of-scope changes with `⚠`.
-- Keep the whole description under 400 words.
+- Keep the whole description under 400 words (the Closing artifacts don't count).

@@ -24,6 +24,11 @@ It sets up two chains of skills:
   append-only project memory of decisions and AI sessions, with a regenerated
   `INDEX.md`.
 
+Each work-chain skill ends with a **hand-off** that proposes the next step —
+the human approves with a yes/no instead of remembering what comes next. And
+the chain writes project memory at its edges automatically: `task-implement`
+logs the session, `pr-write` drafts any required ADR and refreshes the index.
+
 On-demand engineering skills (`security-review`, `refactor`, `migration`,
 `new-endpoint`, `test-gen`, `review`, `debug`) cover deeper or recurring tasks.
 

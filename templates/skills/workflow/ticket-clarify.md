@@ -44,8 +44,21 @@ Format each as:
 
 ---
 
+## Hand-off
+
+End by presenting the brief and proposing the next step explicitly:
+
+> Brief ready ([complexity], [N] open questions). Approve to continue with
+> `task-plan`?
+
+The skill proposes; the human decides. Proceed to `task-plan` only on explicit
+approval.
+
+---
+
 ## Rules
 
 - Produce the brief from the input alone — do not read the codebase.
 - Acceptance criteria must be observable without reading code.
-- Never start `task-plan` automatically — wait for human approval.
+- Never start `task-plan` without explicit approval — always end with the
+  Hand-off proposal.

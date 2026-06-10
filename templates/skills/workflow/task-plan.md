@@ -70,8 +70,21 @@ If none: `None — ready to implement`.
 
 ---
 
+## Hand-off
+
+End by presenting the plan and proposing the next step explicitly:
+
+> Plan ready ([N] files, [N] steps, remaining questions: [none/N]). Approve to
+> continue with `task-implement`?
+
+The skill proposes; the human decides. Proceed to `task-implement` only on
+explicit approval — and only if "Remaining open questions" is `None`.
+
+---
+
 ## Rules
 
 - Every file in "Files to change" must already exist in the codebase.
 - "Pattern to follow" must reference a real file.
-- Never start `task-implement` automatically.
+- Never start `task-implement` without explicit approval — always end with the
+  Hand-off proposal.

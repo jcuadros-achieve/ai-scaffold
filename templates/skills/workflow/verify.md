@@ -54,6 +54,17 @@ stop.
 
 ---
 
+## Hand-off
+
+- **All gates green** → propose the next step explicitly:
+  > Verification passed. Continue with `pr-write`?
+- **Any gate red** → stop. Propose returning to `task-implement` with the list
+  of failures; never continue the chain on a red gate.
+
+The skill proposes; the human decides.
+
+---
+
 ## Rules
 
 - Never report "ready" with a failing or skipped gate.

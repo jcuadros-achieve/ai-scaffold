@@ -68,8 +68,24 @@ As specified in the plan's "What NOT to touch".
 ### Deviations from plan
 Any deviations and their resolution. If none: `None.`
 
-### Ready for
-`verify` (run the gates) → then `pr-write`
+---
+
+## Closing — write the session log (automatic)
+
+After producing the output above, record the session by following the
+`ai-log-write` playbook (`.claude/skills/ai-log-write/SKILL.md`) — an
+implementation session always qualifies. This step is **not gated**: capturing
+memory is part of finishing, not a separate favor to remember
+([[context]] rule 5).
+
+---
+
+## Hand-off
+
+> Implementation complete, session logged. Continue with `verify`?
+
+The skill proposes; the human decides. Never declare success on unrun tests —
+`verify` runs the real gates.
 
 ---
 

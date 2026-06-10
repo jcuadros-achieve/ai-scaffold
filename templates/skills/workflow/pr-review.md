@@ -63,6 +63,14 @@ A recommendation only — the human decides.
 
 ---
 
+## Hand-off
+
+End of the work chain — there is no next skill to propose. Merging is the
+human's decision. If blockers were found, propose returning to
+`task-implement` with the findings as input.
+
+---
+
 ## Rules
 
 - Every finding must have: pass, file, line number, specific issue, specific

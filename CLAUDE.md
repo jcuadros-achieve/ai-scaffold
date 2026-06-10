@@ -27,6 +27,11 @@ up, in each target project, two chains of skills with human gates between stages
 - **Context chain:** `adr-write → ai-log-write → context-update` — append-only
   project memory (decisions + AI sessions), with a regenerated `INDEX.md`.
 
+Work-chain skills end with a `Hand-off` proposing the next step (the human
+approves), and context capture runs automatically at the chain's edges:
+`task-implement` writes the session log, `pr-write` drafts required ADRs and
+refreshes the index (ADR-003). Keep that shape when editing workflow skills.
+
 Shipped rules enforce consistency, protected zones, and "read the memory first":
 `code-style`, `security`, `no-touch`, `context`, `test-strategy`, `dependency`,
 `ci-gates`, `performance`, `observability`, `resilience`, `api-contract`, `docs`,
