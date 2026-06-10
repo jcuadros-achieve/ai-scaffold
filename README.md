@@ -13,8 +13,8 @@ which `CLAUDE.md`, `.cursorrules`, and Copilot all read).
 
 It sets up two chains of skills:
 
-- **Work chain** — `ticket-clarify → task-plan → task-implement → verify →
-  pr-write → pr-review`, with human approval gates between understanding,
+- **Work chain** — `ticket-clarify → task-plan → task-implement → verify → pr-write → pr-review`, 
+  with human approval gates between understanding,
   planning, and coding, TDD during implementation, and a `verify` gate that runs
   the real build/tests/lint/audit before a PR.
 - **Context chain** — `adr-write → ai-log-write → context-update`, an
