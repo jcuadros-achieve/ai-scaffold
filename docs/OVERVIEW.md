@@ -19,15 +19,13 @@ CLAUDE.md       → single source of truth (project context)
 .claude/rules/  → the rules
 .claude/skills/ → native Claude skills (one folder per skill, SKILL.md)
 .context/       → project memory: decisions (ADRs) + AI log + index
-.cursorrules    → symlink → CLAUDE.md   (same content, no divergence)
 .github/copilot-instructions.md → generated pointer → CLAUDE.md + rules
-.cursor/rules/ai-scaffold.mdc   → generated skill map for Cursor
 .claude/.scaffold-version → version tracking, so updates are detectable
 ```
 
 The core idea: **one source of truth** (`CLAUDE.md` + `.claude/`) that every AI
-tool consumes — Claude Code and Copilot read it natively, Cursor through a
-symlink and a generated pointer — instead of N files that drift out of sync.
+tool consumes natively — Claude Code, Copilot, and Cursor all read `.claude/`
+directly — instead of N files that drift out of sync.
 
 **Core vs optional modules.** To stay agnostic across project types, the scaffold
 ships everything but installs selectively. The **core** (universal rules + the
@@ -78,11 +76,9 @@ at PR time), never a separate step to remember.
 `debug`.
 
 **Invocation.** Skills install as native Claude skills
-(`.claude/skills/<name>/SKILL.md`): Claude Code invokes them as `/<name>` and
-GitHub Copilot (CLI, cloud agent, code review, VS Code) discovers the same files
-natively. For Cursor, the installer generates a context rule
-(`.cursor/rules/ai-scaffold.mdc`) mapping skill names to playbooks, so the skill
-content stays in one place.
+(`.claude/skills/<name>/SKILL.md`): Claude Code invokes them as `/<name>`,
+and GitHub Copilot (CLI, cloud agent, code review, VS Code) and Cursor
+discover the same files natively — the skill content stays in one place.
 
 **Context chain (persistent memory):**
 

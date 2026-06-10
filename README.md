@@ -9,10 +9,10 @@ consistently.
 ## What it establishes
 
 ai-scaffold gives a project a **disciplined AI workflow with human gates and
-persistent memory**, driven from a single source of truth (`CLAUDE.md`, which
-Claude Code reads natively and `.cursorrules` / Copilot point at). Claude Code
-is the primary target: skills install as native Claude skills under
-`.claude/skills/`, which GitHub Copilot also discovers natively.
+persistent memory**, driven from a single source of truth (`CLAUDE.md` +
+`.claude/`). Claude Code is the primary target: skills install as native
+Claude skills under `.claude/skills/`, which GitHub Copilot and Cursor also
+read natively.
 
 It sets up two chains of skills:
 
@@ -98,8 +98,7 @@ future phases is mapped in [`docs/CANDIDATE-MODULES.md`](docs/CANDIDATE-MODULES.
 
 1. Installs core templates + the optional modules you selected, mapping them to
    their native locations (`.claude/skills/`, `.claude/rules/`, `.context/`)
-2. Generates the tool pointers (`.github/copilot-instructions.md`,
-   `.cursor/rules/ai-scaffold.mdc`) and the `.cursorrules` symlink → `CLAUDE.md`
+2. Generates the Copilot pointer (`.github/copilot-instructions.md`)
 3. Shows a colored diff for any files that already exist
 4. Asks you to decide per file: apply incoming or keep current
 5. Records the selected modules and offers an initial git commit
@@ -160,29 +159,26 @@ CLAUDE.md                   ← single source of truth — fill it in with ai-in
   ai-log/
     .gitkeep
 
-.cursorrules                ← symlink → CLAUDE.md
 .github/
   copilot-instructions.md   ← generated pointer → CLAUDE.md + .claude/rules/
-.cursor/
-  rules/ai-scaffold.mdc     ← generated Cursor rule (maps skill names → SKILL.md)
 ```
 
-> `.github/copilot-instructions.md` and `.cursor/rules/ai-scaffold.mdc` are
-> **generated at install time** from the installed skills — don't edit them;
-> the content lives in `CLAUDE.md` and the skills.
+> `.github/copilot-instructions.md` is **generated at install time** from the
+> installed skills — don't edit it; the content lives in `CLAUDE.md` and the
+> skills.
 
 ---
 
 ## Using the skills
 
-Skills are native Claude skills; Copilot discovers the same files
-(`.claude/skills/`) natively:
+Skills are native Claude skills; Copilot and Cursor discover the same files
+(`.claude/`) natively:
 
 | Tool | How to invoke | Example |
 |------|---------------|---------|
 | **Claude Code** | `/<name>` | `/ticket-clarify` |
 | **Copilot (CLI, cloud, VS Code)** | discovered from `.claude/skills/`; ask by name | "run verify" |
-| **Cursor** | Reference the skill by name; it follows `.cursor/rules/ai-scaffold.mdc` | "run task-plan" |
+| **Cursor** | reads `.claude/` natively; ask by name | "run task-plan" |
 
 ## After installing
 

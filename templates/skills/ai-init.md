@@ -200,8 +200,6 @@ When done, output exactly:
 
 - Write every generated file to its installed location (`CLAUDE.md`,
   `.claude/rules/`, `.claude/skills/`).
-- Ensure the `.cursorrules` symlink → `CLAUDE.md` exists (the installer
-  normally creates it).
 - Do **not** duplicate context into `.github/copilot-instructions.md` — it is
   an installer-generated pointer at `CLAUDE.md` and `.claude/rules/`; the
   content must live in one place.

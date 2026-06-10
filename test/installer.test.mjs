@@ -52,7 +52,7 @@ test('fresh core-only plan creates mapped + generated files, no optional paths',
   const root = tmpProject()
   const actions = planInstall(root, [])
 
-  assert.ok(actions.every(a => a.type === 'create' || a.type === 'symlink'))
+  assert.ok(actions.every(a => a.type === 'create'))
 
   const dests = destsOf(actions)
   assert.ok(dests.has(path.join(root, 'CLAUDE.md')))
@@ -60,7 +60,9 @@ test('fresh core-only plan creates mapped + generated files, no optional paths',
   assert.ok(dests.has(path.join(root, '.claude/skills/verify/SKILL.md')))
   assert.ok(dests.has(path.join(root, '.context/INDEX.md')))
   assert.ok(dests.has(path.join(root, '.github/copilot-instructions.md')))
-  assert.ok(dests.has(path.join(root, '.cursor/rules/ai-scaffold.mdc')))
+  // Cursor reads .claude/ natively — no Cursor artifacts (ADR-010)
+  assert.ok(!dests.has(path.join(root, '.cursor/rules/ai-scaffold.mdc')))
+  assert.ok(!dests.has(path.join(root, '.cursorrules')))
 
   for (const mod of loadManifest()) {
     for (const rel of mod.paths) {
@@ -68,9 +70,6 @@ test('fresh core-only plan creates mapped + generated files, no optional paths',
         `${rel} must be excluded core-only`)
     }
   }
-
-  const symlinks = actions.filter(a => a.type === 'symlink')
-  assert.deepEqual(symlinks.map(a => path.relative(root, a.dest)), ['.cursorrules'])
 })
 
 test('selecting a module includes its paths; unselected modules stay excluded', () => {
@@ -93,20 +92,20 @@ test('stack modules install as optional rules (ADR-009)', () => {
 
 test('generated files list only the selected skills', () => {
   const root = tmpProject()
-  const cursorOf = (selected) => planInstall(root, selected)
-    .find(a => a.dest.endsWith('ai-scaffold.mdc')).content
+  const copilotOf = (selected) => planInstall(root, selected)
+    .find(a => a.dest.endsWith('copilot-instructions.md')).content
 
-  assert.ok(!cursorOf([]).includes('`migration`'))
-  assert.ok(cursorOf(['migration']).includes('.claude/skills/migration/SKILL.md'))
-  assert.ok(cursorOf([]).includes('.claude/skills/verify/SKILL.md'))
+  assert.ok(!copilotOf([]).includes('`migration`'))
+  assert.ok(copilotOf(['migration']).includes('`migration`'))
+  assert.ok(copilotOf([]).includes('`verify`'))
 })
 
 test('generated pointers surface each skill tier (ADR-005)', () => {
   const root = tmpProject()
-  const cursor = planInstall(root, [])
-    .find(a => a.dest.endsWith('ai-scaffold.mdc')).content
-  assert.ok(cursor.includes('`verify` (fast)'))
-  assert.ok(cursor.includes('`task-plan` (deep)'))
+  const copilot = planInstall(root, [])
+    .find(a => a.dest.endsWith('copilot-instructions.md')).content
+  assert.ok(copilot.includes('`verify` (fast)'))
+  assert.ok(copilot.includes('`task-plan` (deep)'))
 })
 
 test('installed skills are valid Claude skills (SKILL.md with frontmatter)', () => {
@@ -202,13 +201,9 @@ test('readInstalledBases returns the recorded map, null when absent', () => {
   assert.ok(bases['skills/workflow/verify.md'])
 })
 
-test('.cursorrules is a symlink to CLAUDE.md; CLAUDE.md is a real file', () => {
+test('CLAUDE.md installs as a real file', () => {
   const root = tmpProject()
   planInstall(root, []).forEach(applyAction)
-
-  const link = path.join(root, '.cursorrules')
-  assert.ok(fs.lstatSync(link).isSymbolicLink())
-  assert.equal(fs.readlinkSync(link), 'CLAUDE.md')
   assert.ok(fs.lstatSync(path.join(root, 'CLAUDE.md')).isFile())
 })
 

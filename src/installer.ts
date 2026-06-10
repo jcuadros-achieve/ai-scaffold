@@ -9,7 +9,7 @@ export const TEMPLATES_DIR = path.resolve(__dirname, '../templates')
 export const MANIFEST_FILE = path.resolve(__dirname, '../scaffold.manifest.json')
 export const SCAFFOLD_VERSION_FILE = '.claude/.scaffold-version'
 export const LEGACY_VERSION_FILE = '.ai/.scaffold-version'
-export const SCAFFOLD_VERSION = '2.6.0'
+export const SCAFFOLD_VERSION = '2.7.0'
 
 /** Three-way classification against the installed base (ADR-006).
  *  clean      = local untouched, upstream changed   → safe fast-forward
@@ -19,7 +19,7 @@ export const SCAFFOLD_VERSION = '2.6.0'
 export type MergeState = 'clean' | 'customized' | 'conflict' | 'unknown'
 
 export interface FileAction {
-  type: 'create' | 'update' | 'skip' | 'symlink'
+  type: 'create' | 'update' | 'skip'
   src:  string
   dest: string
   diff?: string
@@ -125,14 +125,12 @@ function collectSkills(excluded: Set<string>): SkillMeta[] {
   return out.sort((a, b) => a.name.localeCompare(b.name))
 }
 
-/** Derived files generated at install time (ADR-002): thin pointers for tools
- *  that do not read .claude/ natively. Content lives in CLAUDE.md and the
+/** Derived files generated at install time (ADR-002, trimmed by ADR-010 —
+ *  Cursor reads .claude/ natively). Content lives in CLAUDE.md and the
  *  skills; these are never stored under templates/. */
 function generatedFiles(excluded: Set<string>): Array<{ rel: string; content: string }> {
   const skills = collectSkills(excluded)
   const skillList = skills.map(s => `- \`${s.name}\` (${s.tier}) — ${s.description}`).join('\n')
-  const cursorList = skills.map(s =>
-    `- \`${s.name}\` (${s.tier}) → \`.claude/skills/${s.name}/SKILL.md\``).join('\n')
 
   const copilot = `# Copilot instructions
 
@@ -148,23 +146,8 @@ routing work across models:
 ${skillList}
 `
 
-  const cursor = `---
-description: ai-scaffold workflow — rules and skills for this project
-alwaysApply: true
----
-
-This project uses ai-scaffold. The single source of truth is \`CLAUDE.md\`;
-always follow the rules in \`.claude/rules/\`.
-
-When asked to run a skill by name, open and follow the matching playbook (if it
-is installed):
-
-${cursorList}
-`
-
   return [
     { rel: path.join('.github', 'copilot-instructions.md'), content: copilot },
-    { rel: path.join('.cursor', 'rules', 'ai-scaffold.mdc'), content: cursor },
   ]
 }
 
@@ -225,11 +208,6 @@ export function planInstall(projectRoot: string, selected: string[] = []): FileA
     actions.push(planFile(g.rel, dest, g.content, g.rel, g.content))
   }
 
-  const cursorrules = path.join(projectRoot, '.cursorrules')
-  actions.push(fs.existsSync(cursorrules)
-    ? { type: 'skip',    src: 'CLAUDE.md', dest: cursorrules }
-    : { type: 'symlink', src: 'CLAUDE.md', dest: cursorrules })
-
   return actions
 }
 
@@ -241,10 +219,6 @@ export function applyAction(action: FileAction): void {
   try {
     if (fs.lstatSync(action.dest).isSymbolicLink()) fs.unlinkSync(action.dest)
   } catch { /* dest does not exist */ }
-  if (action.type === 'symlink') {
-    fs.symlinkSync(action.src, action.dest)
-    return
-  }
   if (action.content !== undefined) {
     fs.writeFileSync(action.dest, action.content)
     return

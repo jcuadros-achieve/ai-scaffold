@@ -77,7 +77,6 @@ export async function install(): Promise<void> {
   const updates    = actions.filter(a => a.type === 'update')
   const toUpdate   = updates.filter(a => a.merge !== 'conflict')
   const conflicts  = updates.filter(a => a.merge === 'conflict')
-  const toLink     = actions.filter(a => a.type === 'symlink')
   const customized = actions.filter(a => a.type === 'skip' && a.merge === 'customized')
   const skipped    = actions.filter(a => a.type === 'skip' && a.merge !== 'customized')
 
@@ -87,10 +86,9 @@ export async function install(): Promise<void> {
     console.log(chalk.red(`  ${conflicts.length} conflicts (customized locally AND changed upstream)`))
   if (customized.length)
     console.log(chalk.gray(`  ${customized.length} customized files untouched (no upstream changes)`))
-  console.log(chalk.blue(`  ${toLink.length} symlinks to create`))
   console.log(chalk.gray(`  ${skipped.length} files unchanged\n`))
 
-  if (!toCreate.length && !toUpdate.length && !conflicts.length && !toLink.length) {
+  if (!toCreate.length && !toUpdate.length && !conflicts.length) {
     console.log(chalk.gray('Nothing to do.'))
     writeVersionFile(root, selected)        // still record selection
     return
@@ -125,7 +123,7 @@ export async function install(): Promise<void> {
     if (!proceed) { console.log(chalk.gray('\nAborted.')); return }
   }
 
-  const approved: FileAction[] = [...toCreate, ...toLink]
+  const approved: FileAction[] = [...toCreate]
 
   for (const a of toUpdate) {
     if (autoApply) { approved.push(a); continue }
@@ -163,8 +161,7 @@ export async function install(): Promise<void> {
   for (const a of approved) {
     applyAction(a)
     const rel  = path.relative(root, a.dest)
-    const icon = a.type === 'create'  ? chalk.green('  created') :
-                 a.type === 'symlink' ? chalk.blue('  symlink') :
+    const icon = a.type === 'create' ? chalk.green('  created') :
                  chalk.yellow('  updated')
     console.log(`${icon}  ${rel}`)
   }
@@ -185,7 +182,7 @@ export async function install(): Promise<void> {
 function commitScaffold(root: string): void {
   try {
     execSync(
-      'git add .claude/ .context/ CLAUDE.md .cursorrules .github/ .cursor/ 2>/dev/null || true',
+      'git add .claude/ .context/ CLAUDE.md .github/ 2>/dev/null || true',
       { cwd: root, stdio: 'pipe' }
     )
     execSync(

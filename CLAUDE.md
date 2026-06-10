@@ -78,7 +78,7 @@ Two layers, deliberately separated:
 
 - **`src/installer.ts` — pure logic, no UI.** `planInstall(root, selected)` walks
   `templates/` recursively and, for each file, emits a `FileAction`
-  (`create` / `update` / `skip` / `symlink`) by diffing the incoming content
+  (`create` / `update` / `skip`) by diffing the incoming content
   against the target — skipping optional-module files whose id isn't in
   `selected`. `mapTemplatePath()` translates the logical template path to its
   install location; `generatedFiles()` adds the install-time-generated pointers
@@ -127,9 +127,10 @@ These caused real bugs and are easy to reintroduce:
    `tier: fast | deep`) — name/description make the installed `SKILL.md`
    discoverable by Claude Code and Copilot; `tier` declares effort semantics
    (ADR-005: never model IDs — a test rejects them) and is surfaced by the
-   generated pointers, which parse the frontmatter via `generatedFiles()`. The only symlink is `.cursorrules` → `CLAUDE.md`; `applyAction`
-   replaces a pre-existing symlink at a destination instead of writing through
-   it (protects pre-2.0 installs where `CLAUDE.md` was a link).
+   generated pointer, which parses the frontmatter via `generatedFiles()`.
+   No symlinks are created (ADR-010); `applyAction` still replaces a
+   pre-existing symlink at a destination instead of writing through it
+   (protects pre-2.0 installs where `CLAUDE.md` was a link).
 
 4. **Build output must not equal source.** `tsconfig.json` uses
    `rootDir: ./src`, `outDir: ./dist`. Do not set `outDir` to `./src` — tsc
@@ -204,23 +205,20 @@ not the core.
 AI interaction log + a regenerated `INDEX.md`); its rules live in
 `templates/rules/context.md`.
 
-## Tool integration (ADR-002)
+## Tool integration (ADR-002, ADR-010)
 
 Skills install as **native Claude skills** (`.claude/skills/<name>/SKILL.md`),
-invoked `/<name>` in Claude Code and discovered natively by GitHub Copilot
-(which reads `.claude/skills/` per GitHub's agent-skills docs). There are no
-stored per-skill adapters. For tools that don't read `.claude/`, the installer
-**generates thin pointers at install time** (`generatedFiles()` in
-`installer.ts`):
-
-- `.github/copilot-instructions.md` — points Copilot at `CLAUDE.md` +
-  `.claude/rules/`, and lists the installed skills.
-- `.cursor/rules/ai-scaffold.mdc` — a single Cursor context rule mapping skill
-  names to their `SKILL.md` paths.
+invoked `/<name>` in Claude Code and discovered natively by GitHub Copilot and
+Cursor (both read `.claude/` directly — Cursor support verified in the
+ffn-resiliency test, ADR-010). There are no stored per-skill adapters and no
+Cursor-specific artifacts. The one generated pointer (`generatedFiles()` in
+`installer.ts`) is `.github/copilot-instructions.md` — it points Copilot at
+`CLAUDE.md` + `.claude/rules/` and lists the installed skills with their tiers.
 
 Generated content is selection-aware (optional skills appear only when their
 module is selected) and diffs/updates like any other file. The content lives in
-exactly one place — never duplicate it into a generated pointer.
+exactly one place — never duplicate it into a generated pointer, and never add
+a per-tool pointer without verifying the tool can't read `.claude/` natively.
 
 ## Rules for changes in this repo
 
