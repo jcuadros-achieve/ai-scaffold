@@ -1,7 +1,7 @@
 # ADR-002: Claude Code as primary target, logical template layout, install-time generation
 
 **Date:** 2026-06-10
-**Status:** Accepted
+**Status:** Accepted — Cursor-specific outputs in decision 3 superseded by ADR-010
 **Deciders:** Jonathan Cuadros
 **Ticket / context:** Design review of 2026-06-10. Adding one skill currently
 requires touching four places (playbook, regenerated adapters, `DESC` map,
