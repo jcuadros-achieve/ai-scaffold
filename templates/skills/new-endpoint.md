@@ -1,6 +1,7 @@
 ---
 name: new-endpoint
 description: Scaffold a new endpoint following an existing pattern.
+tier: fast
 ---
 
 # Skill: new-endpoint

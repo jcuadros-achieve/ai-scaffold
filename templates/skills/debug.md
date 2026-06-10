@@ -1,6 +1,7 @@
 ---
 name: debug
 description: Analyze a bug root cause before proposing a fix.
+tier: deep
 ---
 
 # Skill: debug

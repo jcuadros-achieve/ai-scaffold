@@ -248,7 +248,8 @@ ai-scaffold/
 ## Adding a new skill or rule
 
 1. Add the `.md` file under `templates/skills/` or `templates/rules/` — skills
-   need `name`/`description` frontmatter
+   need `name`/`description`/`tier` frontmatter (`tier: fast` for mechanical
+   work, `deep` for judgment-heavy; never a model ID)
 2. If it's optional, add its logical path to a module in `scaffold.manifest.json`
 3. Run `node scripts/update-catalog.mjs` (registers/bumps the template in the
    catalog — the test suite fails if you skip this)

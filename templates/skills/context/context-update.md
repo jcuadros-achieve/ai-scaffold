@@ -1,6 +1,7 @@
 ---
 name: context-update
 description: Rebuild .context/INDEX.md from sources and surface pending rule updates.
+tier: fast
 ---
 
 # Skill: context-update

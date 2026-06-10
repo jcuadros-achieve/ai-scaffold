@@ -1,6 +1,7 @@
 ---
 name: ticket-clarify
 description: Turn any input into a structured technical brief; mark gaps instead of asking.
+tier: deep
 ---
 
 # Skill: ticket-clarify

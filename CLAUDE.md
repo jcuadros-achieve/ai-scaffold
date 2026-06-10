@@ -123,10 +123,11 @@ These caused real bugs and are easy to reintroduce:
    hand-edit catalog entries. `scripts/` is dev-only (not in the `files`
    whitelist, ships nowhere).
 
-3. **Every skill template must carry frontmatter** (`name` + `description`) —
-   it's what makes the installed `SKILL.md` discoverable by Claude Code and
-   Copilot, and `generatedFiles()` parses the `description` for the generated
-   pointers. The only symlink is `.cursorrules` → `CLAUDE.md`; `applyAction`
+3. **Every skill template must carry frontmatter** (`name` + `description` +
+   `tier: fast | deep`) — name/description make the installed `SKILL.md`
+   discoverable by Claude Code and Copilot; `tier` declares effort semantics
+   (ADR-005: never model IDs — a test rejects them) and is surfaced by the
+   generated pointers, which parse the frontmatter via `generatedFiles()`. The only symlink is `.cursorrules` → `CLAUDE.md`; `applyAction`
    replaces a pre-existing symlink at a destination instead of writing through
    it (protects pre-2.0 installs where `CLAUDE.md` was a link).
 

@@ -51,6 +51,23 @@ test('catalog entries are well-formed', () => {
   }
 })
 
+test('every skill template declares a valid tier (ADR-005)', () => {
+  for (const f of files.filter(f => f.startsWith('skills/'))) {
+    const content = fs.readFileSync(path.join(TEMPLATES, f), 'utf8')
+    const tier = content.match(/^---\n[\s\S]*?^tier:\s*(\S+)$[\s\S]*?\n---/m)?.[1]
+    assert.ok(tier === 'fast' || tier === 'deep',
+      `${f} must declare tier: fast | deep (got: ${tier})`)
+  }
+})
+
+test('no model IDs anywhere in the payload (ADR-005)', () => {
+  for (const f of files) {
+    const content = fs.readFileSync(path.join(TEMPLATES, f), 'utf8')
+    assert.ok(!/claude-(opus|sonnet|haiku|fable)|gpt-\d|gemini-/i.test(content),
+      `${f} contains a model ID — declare a tier instead`)
+  }
+})
+
 test('module membership lives in optional[].paths, not duplicated in the catalog', () => {
   for (const t of entries) {
     assert.ok(!('module' in t) && !('scope' in t),

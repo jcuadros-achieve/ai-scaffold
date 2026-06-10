@@ -1,6 +1,7 @@
 ---
 name: refactor
 description: Improve structure without changing behavior, tests-first.
+tier: deep
 ---
 
 # Skill: refactor

@@ -1,6 +1,7 @@
 ---
 name: ai-log-write
 description: Log a session where AI generated committed code.
+tier: fast
 ---
 
 # Skill: ai-log-write

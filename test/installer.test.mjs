@@ -91,6 +91,14 @@ test('generated files list only the selected skills', () => {
   assert.ok(cursorOf([]).includes('.claude/skills/verify/SKILL.md'))
 })
 
+test('generated pointers surface each skill tier (ADR-005)', () => {
+  const root = tmpProject()
+  const cursor = planInstall(root, [])
+    .find(a => a.dest.endsWith('ai-scaffold.mdc')).content
+  assert.ok(cursor.includes('`verify` (fast)'))
+  assert.ok(cursor.includes('`task-plan` (deep)'))
+})
+
 test('installed skills are valid Claude skills (SKILL.md with frontmatter)', () => {
   const root = tmpProject()
   planInstall(root, []).forEach(applyAction)

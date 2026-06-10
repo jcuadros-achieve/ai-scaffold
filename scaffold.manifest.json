@@ -269,17 +269,17 @@
     {
       "path": "skills/ai-init.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-10",
-      "hash": "sha256:64232ef6cc579f831f18809d98281a31001037566067cfea522abab0d0ac2369",
+      "hash": "sha256:23e37f788aaaa62b25292271b7a36b57e2ad026190364a7d32ed8c247218937c",
       "tags": []
     },
     {
       "path": "skills/context/adr-write.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-10",
-      "hash": "sha256:0fd29a11988dbd1e8d733894795814c5f4aef2d16fe0123998f1fee094493ce0",
+      "hash": "sha256:7c23217536cf68f7e4a483f17acdad08abba41ca9e3cadaa3dc961ef7e7867fb",
       "tags": [
         "context-chain"
       ]
@@ -287,9 +287,9 @@
     {
       "path": "skills/context/ai-log-write.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-10",
-      "hash": "sha256:3c6884f93d1f06799a6a9fc702fbf0769e316382d20cdea5dbc3c495b955b1e5",
+      "hash": "sha256:e745dc4edbafa7d3eb0bab1c6ec26ace0913ab4c3125298c91c2ec71655a23a6",
       "tags": [
         "context-chain"
       ]
@@ -297,9 +297,9 @@
     {
       "path": "skills/context/context-update.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-10",
-      "hash": "sha256:ea852afaca6f062ead5613320ada862e09cee2947fd6f99439237c23d11e0714",
+      "hash": "sha256:ed4b2ecc9883c98c0e9d0bfbfe662f719c99037358e70ee7fd52732829f21bb4",
       "tags": [
         "context-chain"
       ]
@@ -307,17 +307,17 @@
     {
       "path": "skills/debug.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-10",
-      "hash": "sha256:36247e94e4a43fd3fbfd1de43be2ed93a69a0b9d3c11bf2f1a10e86d5645d59d",
+      "hash": "sha256:c772459546e1f83f7d200df49abd1cb76061b794ee407666f0dab62fe7f3d5e7",
       "tags": []
     },
     {
       "path": "skills/incident.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-10",
-      "hash": "sha256:dfe3e6580a0fbe5696b2370c7f72789f278b17acaa80fdbdfd09dcd10c195fc7",
+      "hash": "sha256:13fb95a3f81e442ff2140f5db1fcfd23a856eb6ea781e53e559cc0466ec3ab03",
       "tags": [
         "incident"
       ]
@@ -325,9 +325,9 @@
     {
       "path": "skills/migration.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-10",
-      "hash": "sha256:4c3cfbb2b126d5c0fc5d36462d84a7a4dc346398e33a3575f1632da3dd4fd19a",
+      "hash": "sha256:1e4a261cc4355d5215da2cc38c5e6d6eca803ec42f4e297c16d2cfd0c750d848",
       "tags": [
         "migration"
       ]
@@ -335,49 +335,49 @@
     {
       "path": "skills/new-endpoint.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-10",
-      "hash": "sha256:e7b6a11273e870dc144224a9b86775dbd4eb3f2be32c16c81739cb4d2491eca8",
+      "hash": "sha256:c349e3be00f1be8471915c60dd90cec15fa50d3716b3ba8c36b546968f6551e5",
       "tags": []
     },
     {
       "path": "skills/refactor.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-10",
-      "hash": "sha256:3fea2d1f265e0f94de308f468833fbd0df2407153a1c51cdc759c05d6e9fe445",
+      "hash": "sha256:337c4f9ebbe6a23c5575d7256469c2e1d86668cdba5f36ba170f1d88b5fedc2b",
       "tags": []
     },
     {
       "path": "skills/review.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-10",
-      "hash": "sha256:0a8db85a5e9737ef08c0187322b8e3dc70a39f7e952c87e65522d1e9ee112e9b",
+      "hash": "sha256:898e0f9d525d9bab54fe67a07799fa3990ef2ac5c6a67b5f20e57f76181198e3",
       "tags": []
     },
     {
       "path": "skills/security-review.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-10",
-      "hash": "sha256:c7c8d908602b6ffa1492ae0a94db4bf1fe0d07367fb4b27f053b1cce969c1247",
+      "hash": "sha256:7810092bf7a9b4b6f880ef239406b3125541ba0788117b926ce21c22c8e303fb",
       "tags": []
     },
     {
       "path": "skills/test-gen.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-10",
-      "hash": "sha256:6f5f6ada5511d1b88c4c50683b6b79aaeba634ab88cc2e91dcf1edf4cf3451f5",
+      "hash": "sha256:539cfd85c6e13c3900f05e2d984f7e33426c16d6b6547016acf25f671b3a9669",
       "tags": []
     },
     {
       "path": "skills/workflow/pr-review.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-10",
-      "hash": "sha256:8e310736a92d9ea5bea3e2f352feb9333d7f0748fdb549efbd922b0a07ebbd42",
+      "hash": "sha256:4bb5981d3225581281782c9312e1fffd99a4a57eb681fdafa930d93de0a933a6",
       "tags": [
         "workflow"
       ]
@@ -385,9 +385,9 @@
     {
       "path": "skills/workflow/pr-write.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-10",
-      "hash": "sha256:352db5bf4945820531ce1c386f3a590696294999af80bee0b017916bd5b113d3",
+      "hash": "sha256:f36abd36f348d9a55b42daf9b4bb568c98d7c89a714f3ea86ef56c01f8964ce6",
       "tags": [
         "workflow"
       ]
@@ -395,9 +395,9 @@
     {
       "path": "skills/workflow/task-implement.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-10",
-      "hash": "sha256:2e07078b6cd73dd4411d7b0b94a2050f9dba46a554d9e709ebb064175eb17528",
+      "hash": "sha256:c2d1980474dfc5d16e509befbd9a069246cbccb74978a9d1c5b8574557b11ac9",
       "tags": [
         "workflow"
       ]
@@ -405,9 +405,9 @@
     {
       "path": "skills/workflow/task-plan.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-10",
-      "hash": "sha256:a7ca552dc5aadc43fc1e42f631781de50c65bae66ff1c56af0a1bc6ef0b2d579",
+      "hash": "sha256:579b7e4f2145c27523a3551506e452a2e42d0f9fd8ffa758ed95e54b34995de8",
       "tags": [
         "workflow"
       ]
@@ -415,9 +415,9 @@
     {
       "path": "skills/workflow/ticket-clarify.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-10",
-      "hash": "sha256:95970daf9b47fca5cb939c7ef97a9fad91a28085222e9e136709d6265b301592",
+      "hash": "sha256:b5e5d17f6d1e7589ac21dbcfff984714e52d3c0fe0c88c62b09a1dfc77432e94",
       "tags": [
         "workflow"
       ]
@@ -425,9 +425,9 @@
     {
       "path": "skills/workflow/verify.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-10",
-      "hash": "sha256:ac2506410668b41d4b3aa1f19cb498445a3ffc499b2afb1a8f22a139c61c0791",
+      "hash": "sha256:0791f9f6486e7e8f8fe7fe3c174c2e69aacc425ff87150ed2ee36b385f9dd8e8",
       "tags": [
         "workflow"
       ]

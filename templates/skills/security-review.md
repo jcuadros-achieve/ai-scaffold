@@ -1,6 +1,7 @@
 ---
 name: security-review
 description: Threat-model-style security pass (authz, injection, SSRF, secrets, crypto).
+tier: deep
 ---
 
 # Skill: security-review

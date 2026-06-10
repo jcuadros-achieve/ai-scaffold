@@ -1,6 +1,7 @@
 ---
 name: incident
 description: Handle a production incident: mitigate first, then hotfix and postmortem.
+tier: deep
 ---
 
 # Skill: incident

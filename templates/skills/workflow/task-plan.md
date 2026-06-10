@@ -1,6 +1,7 @@
 ---
 name: task-plan
 description: Produce a file-level technical plan from an approved brief.
+tier: deep
 ---
 
 # Skill: task-plan

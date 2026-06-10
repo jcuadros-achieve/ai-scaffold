@@ -1,6 +1,7 @@
 ---
 name: test-gen
 description: Write tests for a function/module following the project test conventions.
+tier: fast
 ---
 
 # Skill: test-gen

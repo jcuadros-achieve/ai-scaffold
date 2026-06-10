@@ -1,6 +1,7 @@
 ---
 name: pr-write
 description: Generate a conventional-commits PR description from the diff and brief.
+tier: fast
 ---
 
 # Skill: pr-write

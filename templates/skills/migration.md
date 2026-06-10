@@ -1,6 +1,7 @@
 ---
 name: migration
 description: Write a safe, reversible, backward-compatible DB/data migration.
+tier: deep
 ---
 
 # Skill: migration

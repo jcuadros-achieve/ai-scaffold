@@ -1,6 +1,7 @@
 ---
 name: task-implement
 description: Execute an approved plan test-first (TDD), without silent deviation.
+tier: deep
 ---
 
 # Skill: task-implement

@@ -1,6 +1,7 @@
 ---
 name: verify
 description: Run build, tests, lint, coverage and audit to prove the change works before a PR.
+tier: fast
 ---
 
 # Skill: verify

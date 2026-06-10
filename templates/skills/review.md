@@ -1,6 +1,7 @@
 ---
 name: review
 description: Quick review of a diff for rule violations, edge cases, security and tests.
+tier: fast
 ---
 
 # Skill: review

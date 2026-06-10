@@ -1,6 +1,7 @@
 ---
 name: adr-write
 description: Record a significant technical decision as an ADR and update the index.
+tier: deep
 ---
 
 # Skill: adr-write

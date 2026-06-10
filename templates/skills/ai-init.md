@@ -1,6 +1,7 @@
 ---
 name: ai-init
 description: Analyze the codebase and generate the project-specific AI context (run once).
+tier: deep
 ---
 
 # Skill: ai-init
@@ -164,7 +165,8 @@ decision, not an omission.
 Reinterpret each to the archetype's natural unit of work, keeping the skill
 name: for IaC, `new-endpoint` becomes "add a new resource/action"; for a
 library, "add a new public API". `test-gen` follows whatever verification story
-Phase 2 found.
+Phase 2 found. Preserve each skill's frontmatter (`name`, `tier`); adjust
+`description` only if the reinterpretation changes what the skill does.
 
 - `.claude/skills/new-endpoint/SKILL.md`
 - `.claude/skills/test-gen/SKILL.md`

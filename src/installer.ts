@@ -9,7 +9,7 @@ export const TEMPLATES_DIR = path.resolve(__dirname, '../templates')
 export const MANIFEST_FILE = path.resolve(__dirname, '../scaffold.manifest.json')
 export const SCAFFOLD_VERSION_FILE = '.claude/.scaffold-version'
 export const LEGACY_VERSION_FILE = '.ai/.scaffold-version'
-export const SCAFFOLD_VERSION = '2.4.0'
+export const SCAFFOLD_VERSION = '2.5.0'
 
 /** Three-way classification against the installed base (ADR-006).
  *  clean      = local untouched, upstream changed   → safe fast-forward
@@ -46,7 +46,7 @@ export interface CatalogEntry {
   tags?:   string[]
 }
 
-interface SkillMeta { name: string; description: string }
+interface SkillMeta { name: string; description: string; tier: string }
 
 /**
  * templates/ uses a logical layout (skills/, rules/, context/, root files).
@@ -115,9 +115,12 @@ function collectSkills(excluded: Set<string>): SkillMeta[] {
     const rel = path.relative(TEMPLATES_DIR, srcPath).split(path.sep).join('/')
     if (excluded.has(rel)) return
     const name = path.basename(srcPath, '.md')
-    const description = parseFrontmatter(fs.readFileSync(srcPath, 'utf8'), 'description')
+    const content = fs.readFileSync(srcPath, 'utf8')
+    const description = parseFrontmatter(content, 'description')
       ?? `Run the ${name} skill for this project.`
-    out.push({ name, description })
+    // tier: effort semantics, never a model id (ADR-005); missing → deep
+    const tier = parseFrontmatter(content, 'tier') ?? 'deep'
+    out.push({ name, description, tier })
   })
   return out.sort((a, b) => a.name.localeCompare(b.name))
 }
@@ -127,8 +130,9 @@ function collectSkills(excluded: Set<string>): SkillMeta[] {
  *  skills; these are never stored under templates/. */
 function generatedFiles(excluded: Set<string>): Array<{ rel: string; content: string }> {
   const skills = collectSkills(excluded)
-  const skillList = skills.map(s => `- \`${s.name}\` — ${s.description}`).join('\n')
-  const cursorList = skills.map(s => `- \`${s.name}\` → \`.claude/skills/${s.name}/SKILL.md\``).join('\n')
+  const skillList = skills.map(s => `- \`${s.name}\` (${s.tier}) — ${s.description}`).join('\n')
+  const cursorList = skills.map(s =>
+    `- \`${s.name}\` (${s.tier}) → \`.claude/skills/${s.name}/SKILL.md\``).join('\n')
 
   const copilot = `# Copilot instructions
 
@@ -137,7 +141,9 @@ function generatedFiles(excluded: Set<string>): Array<{ rel: string; content: st
 Read \`CLAUDE.md\` (the project context and single source of truth) and follow
 every rule in \`.claude/rules/\` before making changes.
 
-Agent skills are discovered natively from \`.claude/skills/\`:
+Agent skills are discovered natively from \`.claude/skills/\`. The tier marks
+effort semantics (\`fast\` = mechanical, \`deep\` = judgment-heavy), useful when
+routing work across models:
 
 ${skillList}
 `

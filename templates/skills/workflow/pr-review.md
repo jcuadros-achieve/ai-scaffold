@@ -1,6 +1,7 @@
 ---
 name: pr-review
 description: Review a diff in seven structured passes with actionable findings.
+tier: deep
 ---
 
 # Skill: pr-review
