@@ -81,6 +81,24 @@
       "paths": [
         "skills/incident.md"
       ]
+    },
+    {
+      "id": "stack-nextjs",
+      "label": "Stack: Next.js",
+      "description": "Next.js conventions and pitfalls (App Router era): server/client boundaries, caching, hydration, env exposure. Choose if the project uses Next.js.",
+      "kind": "stack",
+      "paths": [
+        "rules/stack-nextjs.md"
+      ]
+    },
+    {
+      "id": "stack-node-express",
+      "label": "Stack: Node + Express",
+      "description": "Express service conventions: error middleware, edge validation, middleware order, graceful shutdown, event-loop discipline. Choose if the project is an Express service.",
+      "kind": "stack",
+      "paths": [
+        "rules/stack-node-express.md"
+      ]
     }
   ],
   "templates": [
@@ -259,6 +277,26 @@
       "tags": []
     },
     {
+      "path": "rules/stack-nextjs.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:38cbe7465cca2f4835ad4280dcedca6caacb03bca3c621bc916c1df7daa20044",
+      "tags": [
+        "stack-nextjs"
+      ]
+    },
+    {
+      "path": "rules/stack-node-express.md",
+      "kind": "rule",
+      "version": "1.0.0",
+      "updated": "2026-06-10",
+      "hash": "sha256:3fc8f5f1f54e6b1b1ac3a7ba7840b951b6152af5dccc6b55d5eb7ccc3a5f2379",
+      "tags": [
+        "stack-node-express"
+      ]
+    },
+    {
       "path": "rules/test-strategy.md",
       "kind": "rule",
       "version": "1.0.0",
@@ -269,9 +307,9 @@
     {
       "path": "skills/ai-init.md",
       "kind": "skill",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "updated": "2026-06-10",
-      "hash": "sha256:23e37f788aaaa62b25292271b7a36b57e2ad026190364a7d32ed8c247218937c",
+      "hash": "sha256:8d4b32b040c3af8deaf5955efc12d8d7e073dd1901f056e31345c1de792d813e",
       "tags": []
     },
     {

@@ -214,6 +214,11 @@ Print a summary of every file created and linked, followed by next steps the
 human should take (review generated rules — especially "Observations & risks",
 run `context-update`, commit).
 
+If Phase 1 detected technologies whose stack rule is not installed (no
+matching `stack-*` file under `.claude/rules/`), recommend checking
+`ai-scaffold update` — optional **stack modules** exist for common
+technologies and would be concretized by re-running this skill.
+
 ---
 
 ## Rules

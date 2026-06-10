@@ -81,6 +81,16 @@ test('selecting a module includes its paths; unselected modules stay excluded', 
   assert.ok(!dests.has(path.join(root, '.claude/skills/migration/SKILL.md')))
 })
 
+test('stack modules install as optional rules (ADR-009)', () => {
+  const root = tmpProject()
+  const dests = destsOf(planInstall(root, ['stack-nextjs']))
+
+  assert.ok(dests.has(path.join(root, '.claude/rules/stack-nextjs.md')))
+  assert.ok(!dests.has(path.join(root, '.claude/rules/stack-node-express.md')))
+  assert.ok(!destsOf(planInstall(root, [])).has(path.join(root, '.claude/rules/stack-nextjs.md')),
+    'stack modules are never core')
+})
+
 test('generated files list only the selected skills', () => {
   const root = tmpProject()
   const cursorOf = (selected) => planInstall(root, selected)

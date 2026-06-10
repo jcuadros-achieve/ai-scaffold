@@ -72,7 +72,10 @@ npx github:jcuadros-achieve/ai-scaffold status
 
 The **core** (universal rules + the workflow/context chains) is always installed.
 Project-shape-dependent templates are **optional modules** you select — so a CLI
-or library doesn't get database or API rules it has no use for.
+or library doesn't get database or API rules it has no use for. **Stack
+modules** (`kind: stack` — e.g. Next.js, Node + Express) are optional modules
+carrying curated technology conventions and pitfalls; they state the version
+range they cover and `ai-init` concretizes them like any optional rule.
 
 - **Interactive** (a TTY) — `install` shows a checklist of optional modules to
   toggle.
@@ -127,6 +130,8 @@ CLAUDE.md                   ← single source of truth — fill it in with ai-in
     i18n.md                 ← optional module
     config-secrets.md       ← optional module
     data-privacy.md         ← optional module
+    stack-nextjs.md         ← optional stack module
+    stack-node-express.md   ← optional stack module
   skills/                   ← native Claude skills, one folder per skill
     ticket-clarify/SKILL.md
     task-plan/SKILL.md

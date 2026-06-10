@@ -19,6 +19,16 @@ changes in this repo").
 
 Each row: **id** · kind · scope · when it applies.
 
+## Stacks (`kind: stack`, ADR-009)
+
+Implemented: `stack-nextjs`, `stack-node-express`. Candidates, in portfolio
+order (survey 2026-06-10):
+
+| id | kind | Scope | Applies when |
+|----|------|-------|--------------|
+| `stack-terraform` | stack | Module/workspace layout, state discipline, plan-before-apply, drift | ~10-repo Terraform family |
+| `stack-go` | stack | Idiomatic error wrapping, context propagation, interface discipline | Go services |
+
 ## Architecture / backend
 
 | id | kind | Scope | Applies when |

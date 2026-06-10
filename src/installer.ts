@@ -9,7 +9,7 @@ export const TEMPLATES_DIR = path.resolve(__dirname, '../templates')
 export const MANIFEST_FILE = path.resolve(__dirname, '../scaffold.manifest.json')
 export const SCAFFOLD_VERSION_FILE = '.claude/.scaffold-version'
 export const LEGACY_VERSION_FILE = '.ai/.scaffold-version'
-export const SCAFFOLD_VERSION = '2.5.0'
+export const SCAFFOLD_VERSION = '2.6.0'
 
 /** Three-way classification against the installed base (ADR-006).
  *  clean      = local untouched, upstream changed   → safe fast-forward
