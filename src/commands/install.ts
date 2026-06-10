@@ -138,22 +138,22 @@ export async function install(): Promise<void> {
   if (!autoApply) {
     const { doCommit } = await prompts({
       type: 'confirm', name: 'doCommit',
-      message: '\nCreate initial commit for .ai/ and .context/?', initial: true,
+      message: '\nCreate initial commit for the AI scaffold?', initial: true,
     })
     if (doCommit) commitScaffold(root)
   }
 
-  console.log(chalk.bold('\nDone. Run ai-init in your AI agent to populate AI_CONTEXT.md.\n'))
+  console.log(chalk.bold('\nDone. Run ai-init in your AI agent to populate CLAUDE.md.\n'))
 }
 
 function commitScaffold(root: string): void {
   try {
     execSync(
-      'git add .ai/ .context/ CLAUDE.md .cursorrules .github/ 2>/dev/null || true',
+      'git add .claude/ .context/ CLAUDE.md .cursorrules .github/ .cursor/ 2>/dev/null || true',
       { cwd: root, stdio: 'pipe' }
     )
     execSync(
-      'git commit -m "chore: initialize AI scaffold (.ai/ and .context/)"',
+      'git commit -m "chore: initialize AI scaffold (.claude/ and .context/)"',
       { cwd: root, stdio: 'pipe' }
     )
     console.log(chalk.green('\n  committed: chore: initialize AI scaffold'))

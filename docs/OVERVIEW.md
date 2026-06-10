@@ -15,17 +15,19 @@ human gates and persistent memory**, driven from a single source of truth.
 Running `install` copies a standard AI-context structure into the target project:
 
 ```
-.ai/            → configuration: rules + reusable skills
+CLAUDE.md       → single source of truth (project context)
+.claude/rules/  → the rules
+.claude/skills/ → native Claude skills (one folder per skill, SKILL.md)
 .context/       → project memory: decisions (ADRs) + AI log + index
-CLAUDE.md       → symlink → .ai/AI_CONTEXT.md   (single source of truth)
-.cursorrules    → symlink → .ai/AI_CONTEXT.md   (same content, no divergence)
-.github/copilot-instructions.md → condensed context (<400 words)
-.ai/.scaffold-version → version tracking, so updates are detectable
+.cursorrules    → symlink → CLAUDE.md   (same content, no divergence)
+.github/copilot-instructions.md → generated pointer → CLAUDE.md + rules
+.cursor/rules/ai-scaffold.mdc   → generated skill map for Cursor
+.claude/.scaffold-version → version tracking, so updates are detectable
 ```
 
-The core idea: **one source of truth** (`AI_CONTEXT.md`) that every AI tool
-(Claude, Cursor, Copilot) consumes through symlinks, instead of N files that
-drift out of sync.
+The core idea: **one source of truth** (`CLAUDE.md` + `.claude/`) that every AI
+tool consumes — Claude Code and Copilot read it natively, Cursor through a
+symlink and a generated pointer — instead of N files that drift out of sync.
 
 **Core vs optional modules.** To stay agnostic across project types, the scaffold
 ships everything but installs selectively. The **core** (universal rules + the
@@ -68,11 +70,12 @@ ticket-clarify → task-plan → task-implement → verify → pr-write → pr-r
 (safe expand–contract DB changes), plus `new-endpoint`, `test-gen`, `review`,
 `debug`.
 
-**Invocation.** The skills are tool-agnostic playbooks. The scaffold also installs
-per-skill **adapters** so each is invocable natively: Copilot CLI `/agent <name>`
-(`.github/agents/`), Claude Code `/<name>` (`.claude/commands/`), and a Cursor
-context rule (`.cursor/rules/`). The adapters just point the tool at the canonical
-playbook, so the skill content stays in one place.
+**Invocation.** Skills install as native Claude skills
+(`.claude/skills/<name>/SKILL.md`): Claude Code invokes them as `/<name>` and
+GitHub Copilot (CLI, cloud agent, code review, VS Code) discovers the same files
+natively. For Cursor, the installer generates a context rule
+(`.cursor/rules/ai-scaffold.mdc`) mapping skill names to playbooks, so the skill
+content stays in one place.
 
 **Context chain (persistent memory):**
 

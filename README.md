@@ -1,15 +1,18 @@
 # ai-scaffold
 
-Installs and manages the AI workflow structure (`.ai/` and `.context/`)
-in any project. One command to get a team working with AI consistently.
+Installs and manages the AI workflow structure (`CLAUDE.md`, `.claude/` and
+`.context/`) in any project. One command to get a team working with AI
+consistently.
 
 ---
 
 ## What it establishes
 
 ai-scaffold gives a project a **disciplined AI workflow with human gates and
-persistent memory**, driven from a single source of truth (`.ai/AI_CONTEXT.md`,
-which `CLAUDE.md`, `.cursorrules`, and Copilot all read).
+persistent memory**, driven from a single source of truth (`CLAUDE.md`, which
+Claude Code reads natively and `.cursorrules` / Copilot point at). Claude Code
+is the primary target: skills install as native Claude skills under
+`.claude/skills/`, which GitHub Copilot also discovers natively.
 
 It sets up two chains of skills:
 
@@ -72,7 +75,7 @@ or library doesn't get database or API rules it has no use for.
 
 `update` keeps the modules you previously chose (and lets you add more);
 `diff`/`status` only consider what you installed. The selection is recorded in
-`.ai/.scaffold-version`.
+`.claude/.scaffold-version`.
 
 Modules are added on demand, not up front. A backlog of candidate modules for
 future phases is mapped in [`docs/CANDIDATE-MODULES.md`](docs/CANDIDATE-MODULES.md).
@@ -81,8 +84,10 @@ future phases is mapped in [`docs/CANDIDATE-MODULES.md`](docs/CANDIDATE-MODULES.
 
 ## What install does
 
-1. Installs core templates + the optional modules you selected
-2. Creates symlinks: `CLAUDE.md` and `.cursorrules` → `.ai/AI_CONTEXT.md`
+1. Installs core templates + the optional modules you selected, mapping them to
+   their native locations (`.claude/skills/`, `.claude/rules/`, `.context/`)
+2. Generates the tool pointers (`.github/copilot-instructions.md`,
+   `.cursor/rules/ai-scaffold.mdc`) and the `.cursorrules` symlink → `CLAUDE.md`
 3. Shows a colored diff for any files that already exist
 4. Asks you to decide per file: apply incoming or keep current
 5. Records the selected modules and offers an initial git commit
@@ -92,8 +97,9 @@ future phases is mapped in [`docs/CANDIDATE-MODULES.md`](docs/CANDIDATE-MODULES.
 ## What gets installed
 
 ```
-.ai/
-  AI_CONTEXT.md             ← fill this in with ai-init
+CLAUDE.md                   ← single source of truth — fill it in with ai-init
+
+.claude/
   rules/
     code-style.md
     security.md
@@ -112,26 +118,26 @@ future phases is mapped in [`docs/CANDIDATE-MODULES.md`](docs/CANDIDATE-MODULES.
     i18n.md                 ← optional module
     config-secrets.md       ← optional module
     data-privacy.md         ← optional module
-  skills/
-    workflow/
-      ticket-clarify.md
-      task-plan.md
-      task-implement.md     ← TDD
-      verify.md             ← runs build/tests/lint/audit before PR
-      pr-write.md
-      pr-review.md
-    context/
-      adr-write.md
-      ai-log-write.md
-      context-update.md
-    new-endpoint.md         ← generic, ai-init will customize
-    test-gen.md
-    review.md
-    debug.md
-    security-review.md      ← threat-model-style deep pass
-    refactor.md             ← behavior-preserving
-    migration.md            ← optional module (safe DB/data migrations)
-    incident.md             ← optional module (incident/hotfix/rollback)
+  skills/                   ← native Claude skills, one folder per skill
+    ticket-clarify/SKILL.md
+    task-plan/SKILL.md
+    task-implement/SKILL.md ← TDD
+    verify/SKILL.md         ← runs build/tests/lint/audit before PR
+    pr-write/SKILL.md
+    pr-review/SKILL.md
+    adr-write/SKILL.md
+    ai-log-write/SKILL.md
+    context-update/SKILL.md
+    ai-init/SKILL.md        ← run once to populate everything
+    new-endpoint/SKILL.md   ← generic, ai-init will customize
+    test-gen/SKILL.md
+    review/SKILL.md
+    debug/SKILL.md
+    security-review/SKILL.md  ← threat-model-style deep pass
+    refactor/SKILL.md         ← behavior-preserving
+    migration/SKILL.md        ← optional module (safe DB/data migrations)
+    incident/SKILL.md         ← optional module (incident/hotfix/rollback)
+  .scaffold-version         ← tracks installed version + selected modules
 
 .context/
   INDEX.md
@@ -140,46 +146,37 @@ future phases is mapped in [`docs/CANDIDATE-MODULES.md`](docs/CANDIDATE-MODULES.
   ai-log/
     .gitkeep
 
-CLAUDE.md                   ← symlink → .ai/AI_CONTEXT.md
-.cursorrules                ← symlink → .ai/AI_CONTEXT.md
+.cursorrules                ← symlink → CLAUDE.md
 .github/
-  copilot-instructions.md
-  agents/                   ← one per skill — Copilot CLI: /agent <name>
-.claude/
-  commands/                 ← one per skill — Claude Code: /<name>
+  copilot-instructions.md   ← generated pointer → CLAUDE.md + .claude/rules/
 .cursor/
-  rules/ai-scaffold.mdc     ← Cursor context rule (maps skill names → playbooks)
-
-.ai/.scaffold-version       ← tracks installed version
+  rules/ai-scaffold.mdc     ← generated Cursor rule (maps skill names → SKILL.md)
 ```
 
-> The `.ai/skills/*.md` files are tool-agnostic **playbooks**; they are not
-> invocable on their own. The adapters above are what each tool actually loads
-> (generated from the skills by `scripts/gen-adapters.mjs`).
+> `.github/copilot-instructions.md` and `.cursor/rules/ai-scaffold.mdc` are
+> **generated at install time** from the installed skills — don't edit them;
+> the content lives in `CLAUDE.md` and the skills.
 
 ---
 
 ## Using the skills
 
-Each skill is exposed in your tool's native form (adapters point at the canonical
-`.ai/skills/` playbook):
+Skills are native Claude skills; Copilot discovers the same files
+(`.claude/skills/`) natively:
 
 | Tool | How to invoke | Example |
 |------|---------------|---------|
-| **Copilot CLI** | `/agent <name>` (or `--agent <name>`) | `/agent verify` |
-| **Claude Code** | `/<name>` slash command | `/ticket-clarify` |
+| **Claude Code** | `/<name>` | `/ticket-clarify` |
+| **Copilot (CLI, cloud, VS Code)** | discovered from `.claude/skills/`; ask by name | "run verify" |
 | **Cursor** | Reference the skill by name; it follows `.cursor/rules/ai-scaffold.mdc` | "run task-plan" |
-
-Verify what Copilot loaded with `copilot --list-env` (lists agents/skills).
 
 ## After installing
 
-Run `ai-init` first to analyze the codebase and populate `AI_CONTEXT.md` with
+Run `ai-init` first to analyze the codebase and populate `CLAUDE.md` with
 real content — **until you do, the context files are generic placeholders** and
 the tools have little project-specific guidance.
 
 ```
-/agent ai-init      # Copilot CLI
 /ai-init            # Claude Code
 ```
 
@@ -208,24 +205,20 @@ Files you've customized are never silently overwritten.
 ai-scaffold/
   src/
     cli.ts                  ← entry point
-    installer.ts            ← file planning and applying
+    installer.ts            ← planning, logical→target mapping, generation
     differ.ts               ← colored diff rendering
     commands/
       install.ts
       update.ts
       diff.ts
       status.ts
-  templates/                ← everything that gets copied to target
-    .ai/
-      AI_CONTEXT.md
-      rules/
-      skills/
-    .context/
-      INDEX.md
-      adr/
-      ai-log/
-    .github/
-      copilot-instructions.md
+  templates/                ← logical layout; the installer maps it to targets
+    CLAUDE.md               → CLAUDE.md
+    rules/                  → .claude/rules/
+    skills/                 → .claude/skills/<name>/SKILL.md
+    context/                → .context/
+  test/                     ← node --test unit tests for installer.ts
+  scaffold.manifest.json    ← optional-module catalog
   package.json
   tsconfig.json
 ```
@@ -234,6 +227,8 @@ ai-scaffold/
 
 ## Adding a new skill or rule
 
-1. Add the `.md` file to the relevant `templates/` subdirectory
-2. Bump the version in `src/installer.ts` (`SCAFFOLD_VERSION`)
-3. Commit and push — projects using `ai-scaffold update` will see the diff
+1. Add the `.md` file under `templates/skills/` or `templates/rules/` — skills
+   need `name`/`description` frontmatter
+2. If it's optional, add its logical path to a module in `scaffold.manifest.json`
+3. Bump the version in `src/installer.ts` (`SCAFFOLD_VERSION`) and run `npm test`
+4. Commit and push — projects using `ai-scaffold update` will see the diff

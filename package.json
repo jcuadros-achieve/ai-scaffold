@@ -1,6 +1,6 @@
 {
   "name": "@achieve/ai-scaffold",
-  "version": "1.5.0",
+  "version": "2.0.0",
   "description": "Install and manage AI workflow structure (.ai/ and .context/) in any project",
   "type": "module",
   "bin": {

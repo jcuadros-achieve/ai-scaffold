@@ -5,16 +5,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 `ai-scaffold` is a CLI that installs a standardized AI workflow structure
-(`.ai/` and `.context/`) into **other** projects. One command gives any repo a
-consistent set of context files, rules, and reusable skill templates for
-AI-assisted development.
+(`CLAUDE.md`, `.claude/` and `.context/`) into **other** projects. One command
+gives any repo a consistent set of context files, rules, and reusable skill
+templates for AI-assisted development. Claude Code is the primary target
+(ADR-002): skills install as native Claude skills under `.claude/skills/`,
+which GitHub Copilot also discovers natively.
 
 This repo is the tool itself. The files under `templates/` are **not** this
-project's own config — they are the payload copied into target projects.
-
-> Note: in a *target* project, `CLAUDE.md` is installed as a symlink to
-> `.ai/AI_CONTEXT.md`. This file (the one you are reading) is a real file
-> documenting the tool's own codebase, not that symlink.
+project's own config — they are the payload installed into target projects
+(in a *target*, `CLAUDE.md` is the generic placeholder `ai-init` populates;
+this file documents the tool's own codebase).
 
 ## What it establishes (product flow)
 
@@ -68,12 +68,15 @@ Two layers, deliberately separated:
 
 - **`src/installer.ts` — pure logic, no UI.** `planInstall(root, selected)` walks
   `templates/` recursively and, for each file, emits a `FileAction`
-  (`create` / `update` / `skip` / `symlink`) by diffing the template against the
-  target — skipping optional-module files whose id isn't in `selected`.
-  `applyAction()` executes one action. `loadManifest()` reads the optional-module
-  list; `writeVersionFile()` / `readVersionFile()` / `readInstalledSelection()`
-  manage `.ai/.scaffold-version` (which records the chosen modules). No prompts,
-  no `console`.
+  (`create` / `update` / `skip` / `symlink`) by diffing the incoming content
+  against the target — skipping optional-module files whose id isn't in
+  `selected`. `mapTemplatePath()` translates the logical template path to its
+  install location; `generatedFiles()` adds the install-time-generated pointers
+  (actions carry `content` instead of a copyable `src`). `applyAction()` executes
+  one action. `loadManifest()` reads the optional-module list;
+  `writeVersionFile()` / `readVersionFile()` / `readInstalledSelection()` manage
+  `.claude/.scaffold-version` (which records the chosen modules; the pre-2.0
+  `.ai/.scaffold-version` is still readable). No prompts, no `console`.
 - **`src/commands/*.ts` — UI / orchestration.** Each command calls
   `planInstall()`, renders with `src/differ.ts`, drives `prompts`, then calls
   `applyAction()`. `install` parses flags (`--all`/`--core`/`--modules=`/`--yes`)
@@ -90,19 +93,24 @@ user interaction in `commands/`.
 
 These caused real bugs and are easy to reintroduce:
 
-1. **Template paths map verbatim to the target.** `planInstall` copies
-   `templates/<rel>` → `<projectRoot>/<rel>` with no transformation. That is why
-   the template directories are **dot-prefixed on disk**: `templates/.ai/`,
-   `templates/.context/`, `templates/.github/`. Renaming them to `ai/` etc.
-   would install non-dotted folders and break the symlink targets. Keep the dots.
+1. **`templates/` is a logical layout; `mapTemplatePath()` is the only bridge.**
+   `templates/skills/**/<name>.md` → `.claude/skills/<name>/SKILL.md` (subdirs
+   like `workflow/` are organizational and flattened — skill basenames must stay
+   unique), `templates/rules/*` → `.claude/rules/*`, `templates/context/**` →
+   `.context/**`, root files (`CLAUDE.md`) verbatim. Manifest `paths` and the
+   exclusion check use the **logical** form (`skills/migration.md`), not the
+   install form. Tests in `test/installer.test.mjs` pin this mapping.
 
 2. **`SCAFFOLD_VERSION` lives in `src/installer.ts`.** Bump it whenever you change
    anything under `templates/`, or `status`/`update` won't signal the change to
    installed projects.
 
-3. **Symlink targets are hardcoded** in `installer.ts` (`planInstall`):
-   `CLAUDE.md` and `.cursorrules` → `.ai/AI_CONTEXT.md`. They must point at a
-   template that actually exists.
+3. **Every skill template must carry frontmatter** (`name` + `description`) —
+   it's what makes the installed `SKILL.md` discoverable by Claude Code and
+   Copilot, and `generatedFiles()` parses the `description` for the generated
+   pointers. The only symlink is `.cursorrules` → `CLAUDE.md`; `applyAction`
+   replaces a pre-existing symlink at a destination instead of writing through
+   it (protects pre-2.0 installs where `CLAUDE.md` was a link).
 
 4. **Build output must not equal source.** `tsconfig.json` uses
    `rootDir: ./src`, `outDir: ./dist`. Do not set `outDir` to `./src` — tsc
@@ -118,12 +126,13 @@ These caused real bugs and are easy to reintroduce:
    else under `templates/` is core and always installed. A new template is core
    by default — to make it optional, add it to the manifest. The manifest lives
    at the repo root (sibling of `templates/`, so it is *not* copied into targets)
-   and the `paths` use the dot-prefixed rel form (`.ai/rules/x.md`) that
+   and the `paths` use the logical rel form (`rules/x.md`, `skills/x.md`) that
    `path.relative(TEMPLATES_DIR, …)` produces. Future module ideas are mapped in
    `docs/CANDIDATE-MODULES.md` — add on demand, not up front.
 
-7. **The installed selection is persisted** in `.ai/.scaffold-version`
-   (`optional: [...]`). `diff`/`status`/`update` all read it via
+7. **The installed selection is persisted** in `.claude/.scaffold-version`
+   (`optional: [...]`; pre-2.0 installs used `.ai/.scaffold-version`, which the
+   readers still fall back to). `diff`/`status`/`update` all read it via
    `readInstalledSelection` so they stay coherent. Deselecting a module on
    re-install does **not** delete its files (we never delete user files) — it
    just stops tracking them; note this if it surprises you.
@@ -131,11 +140,10 @@ These caused real bugs and are easy to reintroduce:
 ## Packaging & distribution
 
 - **`package.json` `files: ["dist", "templates", "scaffold.manifest.json"]`** is
-  the publish whitelist. `templates` MUST stay in it, including its
-  dot-directories — otherwise `install` copies nothing; the manifest MUST stay in
-  it or every module reads as core. The `files` whitelist intentionally overrides
-  `.gitignore` (which excludes `dist/`). Re-verify with `npm pack` after
-  structural changes.
+  the publish whitelist. `templates` MUST stay in it — otherwise `install`
+  copies nothing; the manifest MUST stay in it or every module reads as core.
+  The `files` whitelist intentionally overrides `.gitignore` (which excludes
+  `dist/`). Re-verify with `npm pack` after structural changes.
 - **`prepare: tsc`** builds on install. This is what makes
   `npx github:<owner>/ai-scaffold` work: npm clones the repo, runs `prepare` to
   compile, then runs the `bin` (`dist/cli.js`).
@@ -148,15 +156,15 @@ These caused real bugs and are easy to reintroduce:
 ## The `templates/` payload
 
 Generic placeholders, not finished content. The keystone is
-`templates/.ai/skills/ai-init.md`: a four-phase skill (Read → Analyze →
+`templates/skills/ai-init.md`: a four-phase skill (Read → Analyze →
 Generate → Write) meant to be run by an AI agent **inside a target project** to
 analyze that codebase and replace the generic templates with project-specific
 versions. It is archetype-aware (app/service, library, CLI, IaC, data pipeline,
 frontend): the deep-read checklist and the generated rules adapt to the kind of
 repo, the Phase 2 analysis is the central artifact every file derives from, and
 "non-obvious invariants & gotchas" + "observations & risks" synthesis is
-mandatory — the `AI_CONTEXT.md` template's sections are a floor, not a ceiling.
-When editing templates, preserve that intent — they are starting points
+mandatory — the target `CLAUDE.md` template's sections are a floor, not a
+ceiling. When editing templates, preserve that intent — they are starting points
 `ai-init` customizes, not final docs.
 
 **Keep core rules stack-neutral.** Core rules state language-agnostic principles;
@@ -166,27 +174,27 @@ stack's idioms as a core requirement — that breaks the agnostic promise. Truly
 stack-shaped concerns belong in optional modules (see `scaffold.manifest.json`),
 not the core.
 
-`templates/.context/` holds the append-only project-memory structure (ADRs +
+`templates/context/` holds the append-only project-memory structure (ADRs +
 AI interaction log + a regenerated `INDEX.md`); its rules live in
-`templates/.ai/rules/context.md`.
+`templates/rules/context.md`.
 
-## Tool adapters
+## Tool integration (ADR-002)
 
-The `.ai/skills/*.md` playbooks are tool-agnostic and are **not** auto-discovered
-by any tool on their own. To make them invocable, `scripts/gen-adapters.mjs`
-generates thin per-skill adapters into `templates/`:
+Skills install as **native Claude skills** (`.claude/skills/<name>/SKILL.md`),
+invoked `/<name>` in Claude Code and discovered natively by GitHub Copilot
+(which reads `.claude/skills/` per GitHub's agent-skills docs). There are no
+stored per-skill adapters. For tools that don't read `.claude/`, the installer
+**generates thin pointers at install time** (`generatedFiles()` in
+`installer.ts`):
 
-- `.github/agents/<name>.md` — Copilot CLI custom agents, invoked `/agent <name>`.
-- `.claude/commands/<name>.md` — Claude Code slash commands, invoked `/<name>`.
-- `.cursor/rules/ai-scaffold.mdc` — a single Cursor context rule (Cursor has no
-  per-skill invocation) mapping skill names to playbook paths.
+- `.github/copilot-instructions.md` — points Copilot at `CLAUDE.md` +
+  `.claude/rules/`, and lists the installed skills.
+- `.cursor/rules/ai-scaffold.mdc` — a single Cursor context rule mapping skill
+  names to their `SKILL.md` paths.
 
-Each adapter just points the tool at the canonical `.ai/skills/...` playbook —
-the skill content lives in one place. The adapters for optional-module skills
-(`migration`, `incident`) are listed in that module's manifest `paths`, so they
-install only when the module is selected. `scripts/` is dev-only (not in the
-`files` whitelist), so the generator ships nowhere; only its output (under
-`templates/`) is published.
+Generated content is selection-aware (optional skills appear only when their
+module is selected) and diffs/updates like any other file. The content lives in
+exactly one place — never duplicate it into a generated pointer.
 
 ## Rules for changes in this repo
 
@@ -214,15 +222,15 @@ targets).
    - Preserve the layer split: planning/applying stays in `installer.ts`, all
      user interaction stays in `commands/`. Do not leak `console`/`prompts` into
      `installer.ts`.
-   - The rules this tool ships in `templates/.ai/rules/code-style.md` and
+   - The rules this tool ships in `templates/rules/code-style.md` and
      `security.md` (no `any`, small focused functions, validate external input,
      no hardcoded secrets) apply to this repo's own `src/` too — dogfood them.
-   - Verify before committing: install into a throwaway dir, and run `npm pack`
-     to confirm the tarball still contains `templates/` (with its dot-dirs)
-     after any structural change.
+   - Verify before committing: `npm test`, install into a throwaway dir, and run
+     `npm pack` to confirm the tarball still contains `templates/` and the
+     manifest after any structural change.
 
 3. **New skills and rules must fit a correct flow and be justified.** Anything
-   added under `templates/.ai/skills/` or `templates/.ai/rules/`:
+   added under `templates/skills/` or `templates/rules/`:
    - Must slot into an existing chain rather than duplicate or bypass it — the
      workflow chain (`ticket-clarify → task-plan → task-implement → pr-write →
      pr-review`) or the context chain (`adr-write` / `ai-log-write` /
@@ -233,7 +241,7 @@ targets).
      `ai-init` customizes per project, not finished project-specific content.
    - For a cross-cutting addition, capture the reasoning in this repo's own
      `.context/adr/` (the same model this tool promotes in targets).
-   - After adding/renaming/removing a **skill**, rerun `node scripts/gen-adapters.mjs`
-     to regenerate its tool adapters, add a curated description to the script's
-     `DESC` map, and — if the skill is optional — add its adapter paths to the
-     module's `paths` in `scaffold.manifest.json`.
+   - Every **skill** template starts with `name`/`description` frontmatter
+     (invariant 3). If the skill is optional, add its logical path
+     (`skills/<name>.md`) to the module's `paths` in `scaffold.manifest.json` —
+     the generated pointers pick it up automatically.

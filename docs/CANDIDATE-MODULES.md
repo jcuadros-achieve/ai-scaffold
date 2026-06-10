@@ -12,8 +12,8 @@ core plus modules added **on demand** — when a real project or team asks for o
 A bloated catalog of half-relevant rules erodes the "every rule here matters"
 principle.
 
-To implement one: add the template under `templates/.ai/rules/` or
-`templates/.ai/skills/`, register it in `scaffold.manifest.json`, bump
+To implement one: add the template under `templates/rules/` or
+`templates/skills/`, register it in `scaffold.manifest.json`, bump
 `SCAFFOLD_VERSION`, and update the README tree (see `CLAUDE.md` → "Rules for
 changes in this repo").
 
