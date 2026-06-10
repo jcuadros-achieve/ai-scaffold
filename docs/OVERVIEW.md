@@ -84,10 +84,15 @@ adr-write → ai-log-write → context-update
 
 Captures architectural decisions and per-session learnings, **append-only**.
 
-**The keystone — `ai-init`:** analyzes the real codebase (Read → Generate →
-Write) and **replaces the generic placeholders with project-specific content**.
-Everything shipped under `templates/` is a starting point that `ai-init`
-customizes.
+**The keystone — `ai-init`:** analyzes the real codebase (Read → Analyze →
+Generate → Write) and **replaces the generic placeholders with project-specific
+content**. It first classifies the project archetype (app/service, library,
+CLI, IaC, data pipeline, frontend) so the deep read and the generated rules fit
+the kind of repo it actually is, then produces a full analysis — including
+mandatory "non-obvious invariants & gotchas" and "observations & risks"
+synthesis — from which every file is derived. Everything shipped under
+`templates/` is a starting point that `ai-init` customizes; the template's
+sections are a floor, not a ceiling.
 
 ---
 

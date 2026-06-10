@@ -4,54 +4,142 @@ Analyze an existing codebase and generate the complete `.ai/` folder structure,
 filled with content derived from the real project. This is the skill that turns
 the generic scaffold into a project-specific one.
 
-Run all three phases in order, without asking for confirmation between them.
+**Quality bar:** the output must read like a deep project analysis written by
+someone who understands how the project *works* and where it *bites* — not like
+a form that was filled in. Inventory (what exists) is the floor; synthesis
+(how it works, what is non-obvious, what is risky) is the actual deliverable.
+
+Run all four phases in order, without asking for confirmation between them.
 Overwrite existing files without asking.
 
 ---
 
 ## Phase 1 — Read (silent)
 
-Do not produce any output until this phase is complete. Read the codebase and
-collect:
+Do not produce any output until this phase is complete.
 
-- **Entry point** — main file(s) the app boots from.
-- **Folder structure** — top-level layout and what each folder holds.
-- **Stack** — language, framework, runtime, build tooling.
+### 1a. Classify the project archetype
+
+Before reading deeply, determine what kind of repo this is. The archetype
+decides what to read, what "how it works" means, and which generated artifacts
+apply. In a monorepo, classify each package and treat the dominant one as
+primary.
+
+| Archetype | Deep-read focus |
+|-----------|-----------------|
+| **App / service** (API server, web app, worker) | Entry points, request/job lifecycle, error handling, data layer, test suite |
+| **Library / SDK** | Public API surface, versioning and release process, compatibility guarantees, docs conventions |
+| **CLI tool** | Command surface, flag parsing, distribution/packaging, exit codes |
+| **IaC / configuration** (Terraform, deploy CLIs, Helm, tenant configs) | Deploy mechanics end-to-end, templating/substitution layers, environment model and branch→environment mapping, what executes on merge, blast radius, safety nets |
+| **Data pipeline / jobs** | Sources and sinks, scheduling/orchestration, idempotency, backfill story |
+| **Frontend app** | Routing, state management, data fetching, build/deploy target |
+
+### 1b. Universal checklist (every archetype)
+
+- **Stack** — language(s), framework, runtime, build tooling.
 - **Dependencies** — production and dev, from the manifest (package.json,
-  pyproject.toml, go.mod, etc.).
-- **External APIs / integrations** — databases, queues, third-party services.
-- **Error handling patterns** — how the codebase reports and recovers from
-  errors (Result types, exceptions, error middleware).
-- **Naming conventions** — casing, file naming, test naming.
-- **Test framework** — what is used, where tests live, how they are named.
+  pyproject.toml, go.mod, etc.); note pinned or aging versions.
+- **Folder structure** — top-level layout and what each folder holds.
+- **External APIs / integrations** — databases, queues, third-party services,
+  and *which side depends on which*.
+- **CI/CD** — provider, pipeline shape, what runs on PR vs merge vs release.
+- **Secrets handling** — where credentials live and how they reach runtime.
+- **Domain terms** — recurring nouns that form the project's vocabulary.
+- **Conventions** — naming, casing, file layout, test naming (where present).
 - **Risky files** — migrations, generated code, config, anything that should be
   a no-touch zone.
-- **Domain terms** — recurring nouns that form the project's vocabulary.
+
+### 1c. Archetype-specific deep read
+
+For the archetype identified, read its deep-read focus areas — and for each
+moving part, capture **how it actually works**: the concrete mechanics (steps
+and their order, decision logic, branch→environment mapping, failure paths),
+not just its name. A list of components is Phase 1 raw material, not a result.
+
+Record real quantities as you go (~N clients, N actions, N packages, N
+endpoints) — they anchor the reader and prove the analysis touched the code.
 
 When done, output exactly:
 
 ```
-✓ Read complete — [N] files scanned. Starting generation.
+✓ Read complete — [N] files scanned, archetype: [archetype]. Starting analysis.
 ```
 
 ---
 
-## Phase 2 — Generate (in memory, no files yet)
+## Phase 2 — Analyze (in memory, no files yet)
 
-Generate the content for every file below in memory, composed from what was read
-in Phase 1. Do not write to disk yet.
+Compose a full project analysis. This is the **central artifact** — every file
+written in later phases is derived from it, so spend the effort here. It must
+contain at minimum:
 
-The shipped core rules are **language-neutral principles**. Your main job here is
-to make them **concrete for this project's actual stack** — turn each principle
-into idiomatic, specific guidance for the language(s) and frameworks found in
-Phase 1. Examples:
+1. **Overview** — what the repo is, its archetype, what happens when changes
+   land (merge/deploy semantics).
+2. **Structure** — annotated layout, with quantities.
+3. **How it works** — the mechanics of the core flow(s) end-to-end. For an app:
+   request/job lifecycle. For IaC: the deploy pipeline step by step. For a
+   library: how a consumer uses it and how a release ships.
+4. **Business / decision logic** — what the code *decides*, not just what it is
+   (e.g. "denies registration when X is unavailable", not "handles registration").
+5. **Domain model** — the glossary, plus the *why* behind legacy/duplicate
+   concepts when the code reveals it.
+6. **External integrations** — who calls whom, which dependencies are hard
+   (failure blocks the flow) vs best-effort.
+7. **Security posture** — where relevant: authn/authz model, secrets, attack
+   protections, deletion/rollback safety nets.
+8. **Non-obvious invariants & gotchas** — things that would bite a newcomer:
+   ordering constraints, size limits, in-place mutations, coexisting templating
+   systems, implicit couplings.
+9. **Observations & risks** — evidence-backed findings with judgment: missing
+   validations, silent failure paths, drift-prone duplication, refs that diverge
+   between environments, aging pinned tooling.
+10. **How to run locally** — real commands, real env vars, including any
+    non-destructive dry-run path.
+
+Sections 8 and 9 are **mandatory** and are where most of the value lives. An
+analysis without them is incomplete — go back and derive them from what was read.
+
+**Evidence rule:** every claim must trace back to something read in Phase 1 —
+but synthesis and judgment *from* that evidence are required, not optional.
+"There is no PR-time validation" is a legitimate, evidence-backed finding even
+though no file states it. Inventing facts is forbidden; drawing conclusions is
+mandatory. Flag genuinely unverifiable points with `# TODO: verify this`.
+
+When done, output exactly:
+
+```
+✓ Analysis complete. Generating files.
+```
+
+---
+
+## Phase 3 — Generate (in memory, no files yet)
+
+Derive every file below from the Phase 2 analysis. Do not write to disk yet.
+
+### `AI_CONTEXT.md`
+
+The shipped template's sections are a **floor, not a ceiling**. Fill them all,
+then add whatever project-shaped sections the analysis produced (deploy
+pipeline, actions/trigger order, security posture, package graph…). The
+"How it works", "Non-obvious invariants & gotchas" and "Observations & risks"
+content from Phase 2 must land here — condensed, not dropped.
+
+### Rules
+
+The shipped core rules are **language-neutral principles**. Make them concrete
+for this project's actual stack — turn each principle into idiomatic, specific
+guidance for the language(s) and frameworks found in Phase 1. Examples:
 - TypeScript → "never use `any`; use `unknown` + type guards", `import type` order.
 - Python → typing/`mypy` strictness, `pydantic` for validation, `ruff` rules.
 - Go → `errcheck`, no `interface{}` leakage, error-wrapping conventions.
-Replace the neutral examples with the project's real conventions; don't keep a
-language's rule that doesn't apply.
 
-- `AI_CONTEXT.md`
+When a rule does not apply to the archetype (e.g. `test-strategy` in an IaC
+repo with no test runner), do **not** fill it with generic fluff: state the
+reality and what replaces it ("There is no test runner; verification is a dev
+deploy via `make deploy ENV=dev` — see ci-gates") so the gap is a documented
+decision, not an omission.
+
 - `rules/code-style.md`
 - `rules/security.md`
 - `rules/no-touch.md`
@@ -64,10 +152,21 @@ language's rule that doesn't apply.
 - `rules/api-contract.md` (real API style and versioning scheme)
 - `rules/docs.md` (where docs live, doc-comment style)
 - `rules/git-workflow.md` (branching model, PR norms, merge strategy)
+
+### Skills
+
+Reinterpret each to the archetype's natural unit of work, keeping the filename:
+for IaC, `new-endpoint.md` becomes "add a new resource/action"; for a library,
+"add a new public API". `test-gen` follows whatever verification story Phase 2
+found.
+
 - `skills/new-endpoint.md`
 - `skills/test-gen.md`
 - `skills/review.md`
 - `skills/debug.md`
+
+### Composition
+
 - `full-context.md` (all of the above composed into one file)
 
 Leave `rules/context.md` and the `skills/workflow/`, `skills/context/`,
@@ -87,7 +186,7 @@ When done, output exactly:
 
 ---
 
-## Phase 3 — Write
+## Phase 4 — Write
 
 - Create the `.ai/` structure and write every generated file.
 - Create the symlinks: `CLAUDE.md` → `.ai/AI_CONTEXT.md`,
@@ -100,13 +199,16 @@ When done, output exactly:
 ## Final output
 
 Print a summary of every file created and linked, followed by next steps the
-human should take (review generated rules, run `context-update`, commit).
+human should take (review generated rules — especially "Observations & risks",
+run `context-update`, commit).
 
 ---
 
 ## Rules
 
-- Never invent content. Everything must trace back to something read in Phase 1.
-- Flag anything unclear with `# TODO: verify this` rather than guessing.
-- Run all three phases without asking for confirmation between them.
+- Every claim must trace back to something read in Phase 1; synthesis from that
+  evidence is required, not optional (see the Evidence rule in Phase 2).
+- Flag anything unverifiable with `# TODO: verify this` rather than guessing.
+- The template's sections are a minimum — add sections the project demands.
+- Run all four phases without asking for confirmation between them.
 - Overwrite existing files without asking.

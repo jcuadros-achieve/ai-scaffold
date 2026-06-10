@@ -144,11 +144,16 @@ These caused real bugs and are easy to reintroduce:
 ## The `templates/` payload
 
 Generic placeholders, not finished content. The keystone is
-`templates/.ai/skills/ai-init.md`: a three-phase skill (Read → Generate → Write)
-meant to be run by an AI agent **inside a target project** to analyze that
-codebase and replace the generic templates with project-specific versions. When
-editing templates, preserve that intent — they are starting points `ai-init`
-customizes, not final docs.
+`templates/.ai/skills/ai-init.md`: a four-phase skill (Read → Analyze →
+Generate → Write) meant to be run by an AI agent **inside a target project** to
+analyze that codebase and replace the generic templates with project-specific
+versions. It is archetype-aware (app/service, library, CLI, IaC, data pipeline,
+frontend): the deep-read checklist and the generated rules adapt to the kind of
+repo, the Phase 2 analysis is the central artifact every file derives from, and
+"non-obvious invariants & gotchas" + "observations & risks" synthesis is
+mandatory — the `AI_CONTEXT.md` template's sections are a floor, not a ceiling.
+When editing templates, preserve that intent — they are starting points
+`ai-init` customizes, not final docs.
 
 **Keep core rules stack-neutral.** Core rules state language-agnostic principles;
 stack-specific guidance (e.g. TS `any`, zod, npm, SQL framing) appears only as
