@@ -6,6 +6,7 @@ import path from 'path'
 import {
   planInstall, applyAction, writeVersionFile, readVersionFile,
   readInstalledSelection, loadManifest, loadCatalog, mapTemplatePath,
+  hashContent, readInstalledBases,
   SCAFFOLD_VERSION, SCAFFOLD_VERSION_FILE, LEGACY_VERSION_FILE,
 } from '../dist/installer.js'
 
@@ -107,7 +108,7 @@ test('applying a plan then re-planning yields only skips', () => {
   assert.ok(again.every(a => a.type === 'skip'))
 })
 
-test('a locally modified file is re-planned as update with a diff', () => {
+test('a locally modified file with no base info is an update (legacy behavior)', () => {
   const root = tmpProject()
   planInstall(root, []).forEach(applyAction)
 
@@ -117,7 +118,70 @@ test('a locally modified file is re-planned as update with a diff', () => {
   const updates = planInstall(root, []).filter(a => a.type === 'update')
   assert.equal(updates.length, 1)
   assert.equal(updates[0].dest, target)
+  assert.equal(updates[0].merge, 'unknown')
   assert.ok(typeof updates[0].diff === 'string' && updates[0].diff.length > 0)
+})
+
+function setRecordedBase(root, rel, hash) {
+  const p = path.join(root, SCAFFOLD_VERSION_FILE)
+  const data = JSON.parse(fs.readFileSync(p, 'utf8'))
+  data.templates[rel] = { version: '0.9.0', hash }
+  fs.writeFileSync(p, JSON.stringify(data))
+}
+
+function installWithBases(root) {
+  planInstall(root, []).forEach(applyAction)
+  writeVersionFile(root, [])
+}
+
+test('customized file with unchanged upstream is skipped silently (ADR-006)', () => {
+  const root = tmpProject()
+  installWithBases(root)
+
+  fs.appendFileSync(path.join(root, 'CLAUDE.md'), '\nai-init customization\n')
+
+  const action = planInstall(root, []).find(a => a.dest === path.join(root, 'CLAUDE.md'))
+  assert.equal(action.type, 'skip')
+  assert.equal(action.merge, 'customized')
+})
+
+test('unmodified file with changed upstream is a clean update (ADR-006)', () => {
+  const root = tmpProject()
+  installWithBases(root)
+
+  // Simulate an older install: local file matches its recorded base, but the
+  // base differs from the current template (upstream moved on).
+  const target = path.join(root, 'CLAUDE.md')
+  fs.writeFileSync(target, 'old template content\n')
+  setRecordedBase(root, 'CLAUDE.md', hashContent('old template content\n'))
+
+  const action = planInstall(root, []).find(a => a.dest === target)
+  assert.equal(action.type, 'update')
+  assert.equal(action.merge, 'clean')
+})
+
+test('customized file with changed upstream is a conflict (ADR-006)', () => {
+  const root = tmpProject()
+  installWithBases(root)
+
+  const target = path.join(root, 'CLAUDE.md')
+  fs.writeFileSync(target, 'locally customized content\n')
+  setRecordedBase(root, 'CLAUDE.md', hashContent('some older base content\n'))
+
+  const action = planInstall(root, []).find(a => a.dest === target)
+  assert.equal(action.type, 'update')
+  assert.equal(action.merge, 'conflict')
+  assert.ok(action.diff.length > 0)
+})
+
+test('readInstalledBases returns the recorded map, null when absent', () => {
+  const root = tmpProject()
+  assert.equal(readInstalledBases(root), null)
+
+  installWithBases(root)
+  const bases = readInstalledBases(root)
+  assert.ok(bases['CLAUDE.md'].hash.startsWith('sha256:'))
+  assert.ok(bases['skills/workflow/verify.md'])
 })
 
 test('.cursorrules is a symlink to CLAUDE.md; CLAUDE.md is a real file', () => {

@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import fs   from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -8,13 +9,21 @@ export const TEMPLATES_DIR = path.resolve(__dirname, '../templates')
 export const MANIFEST_FILE = path.resolve(__dirname, '../scaffold.manifest.json')
 export const SCAFFOLD_VERSION_FILE = '.claude/.scaffold-version'
 export const LEGACY_VERSION_FILE = '.ai/.scaffold-version'
-export const SCAFFOLD_VERSION = '2.3.0'
+export const SCAFFOLD_VERSION = '2.4.0'
+
+/** Three-way classification against the installed base (ADR-006).
+ *  clean      = local untouched, upstream changed   → safe fast-forward
+ *  customized = local changed, upstream unchanged   → skipped, nothing new
+ *  conflict   = both changed                        → never auto-applied
+ *  unknown    = no base recorded (pre-2.3 install)  → legacy behavior */
+export type MergeState = 'clean' | 'customized' | 'conflict' | 'unknown'
 
 export interface FileAction {
   type: 'create' | 'update' | 'skip' | 'symlink'
   src:  string
   dest: string
   diff?: string
+  merge?: MergeState
   /** Present on install-time-generated files; written verbatim instead of copying src. */
   content?: string
 }
@@ -153,12 +162,38 @@ ${cursorList}
   ]
 }
 
+export function hashContent(content: string | Buffer): string {
+  return 'sha256:' + crypto.createHash('sha256').update(content).digest('hex')
+}
+
+/** Installed base per template (logical path → version/hash), recorded at
+ *  install time. null when no base info exists (pre-2.3 install). */
+export function readInstalledBases(
+  projectRoot: string,
+): Record<string, { version: string; hash: string }> | null {
+  const data = readVersionData(projectRoot)
+  if (data === null || typeof data.templates !== 'object' || data.templates === null)
+    return null
+  return data.templates as Record<string, { version: string; hash: string }>
+}
+
 function planFile(src: string, dest: string, incoming: string, label: string,
-                  content?: string): FileAction {
+                  content?: string, baseHash?: string): FileAction {
   if (!fs.existsSync(dest)) return { type: 'create', src, dest, content }
   const current = fs.readFileSync(dest, 'utf8')
   if (current === incoming) return { type: 'skip', src, dest, content }
-  return { type: 'update', src, dest, content,
+
+  if (baseHash) {
+    const localModified    = hashContent(current)  !== baseHash
+    const upstreamModified = hashContent(incoming) !== baseHash
+    if (localModified && !upstreamModified)
+      return { type: 'skip', src, dest, content, merge: 'customized' }
+    const merge: MergeState = localModified ? 'conflict' : 'clean'
+    return { type: 'update', src, dest, content, merge,
+      diff: createDiff(current, incoming, label) }
+  }
+
+  return { type: 'update', src, dest, content, merge: 'unknown',
     diff: createDiff(current, incoming, label) }
 }
 
@@ -169,12 +204,14 @@ function planFile(src: string, dest: string, incoming: string, label: string,
 export function planInstall(projectRoot: string, selected: string[] = []): FileAction[] {
   const actions: FileAction[] = []
   const excluded = excludedPaths(selected)
+  const bases = readInstalledBases(projectRoot)
 
   walkDir(TEMPLATES_DIR, (srcPath) => {
     const rel = path.relative(TEMPLATES_DIR, srcPath).split(path.sep).join('/')
     if (excluded.has(rel)) return            // optional module not selected
     const dest = path.join(projectRoot, mapTemplatePath(rel))
-    actions.push(planFile(srcPath, dest, fs.readFileSync(srcPath, 'utf8'), rel))
+    actions.push(planFile(srcPath, dest, fs.readFileSync(srcPath, 'utf8'), rel,
+      undefined, bases?.[rel]?.hash))
   })
 
   for (const g of generatedFiles(excluded)) {

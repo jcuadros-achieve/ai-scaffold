@@ -72,18 +72,25 @@ export async function install(): Promise<void> {
 
   console.log(`  Optional modules: ${selected.length ? selected.join(', ') : chalk.gray('core only')}\n`)
 
-  const actions  = planInstall(root, selected)
-  const toCreate = actions.filter(a => a.type === 'create')
-  const toUpdate = actions.filter(a => a.type === 'update')
-  const toLink   = actions.filter(a => a.type === 'symlink')
-  const skipped  = actions.filter(a => a.type === 'skip')
+  const actions    = planInstall(root, selected)
+  const toCreate   = actions.filter(a => a.type === 'create')
+  const updates    = actions.filter(a => a.type === 'update')
+  const toUpdate   = updates.filter(a => a.merge !== 'conflict')
+  const conflicts  = updates.filter(a => a.merge === 'conflict')
+  const toLink     = actions.filter(a => a.type === 'symlink')
+  const customized = actions.filter(a => a.type === 'skip' && a.merge === 'customized')
+  const skipped    = actions.filter(a => a.type === 'skip' && a.merge !== 'customized')
 
   console.log(chalk.green(`  ${toCreate.length} files to create`))
   console.log(chalk.yellow(`  ${toUpdate.length} files with changes`))
+  if (conflicts.length)
+    console.log(chalk.red(`  ${conflicts.length} conflicts (customized locally AND changed upstream)`))
+  if (customized.length)
+    console.log(chalk.gray(`  ${customized.length} customized files untouched (no upstream changes)`))
   console.log(chalk.blue(`  ${toLink.length} symlinks to create`))
   console.log(chalk.gray(`  ${skipped.length} files unchanged\n`))
 
-  if (!toCreate.length && !toUpdate.length && !toLink.length) {
+  if (!toCreate.length && !toUpdate.length && !conflicts.length && !toLink.length) {
     console.log(chalk.gray('Nothing to do.'))
     writeVersionFile(root, selected)        // still record selection
     return
@@ -95,6 +102,16 @@ export async function install(): Promise<void> {
     console.log(chalk.bold('Files with changes:\n'))
     for (const a of toUpdate) {
       console.log(chalk.yellow(`  ${path.relative(root, a.dest)}`))
+      console.log(renderDiff(a.diff!))
+      console.log()
+    }
+  }
+
+  if (conflicts.length > 0) {
+    console.log(chalk.bold(chalk.red('Conflicts — customized locally AND changed upstream:\n')))
+    for (const a of conflicts) {
+      console.log(chalk.red(`  ${path.relative(root, a.dest)}`) +
+        chalk.gray('  (diff is local vs incoming; merge manually if you want both)'))
       console.log(renderDiff(a.diff!))
       console.log()
     }
@@ -119,6 +136,25 @@ export async function install(): Promise<void> {
       choices: [
         { title: 'Apply incoming version', value: 'apply' },
         { title: 'Keep current version',   value: 'keep'  },
+      ],
+    })
+    if (choice === 'apply') approved.push(a)
+  }
+
+  // Conflicts are never auto-applied (ADR-006): a known customization must be
+  // overwritten only by an explicit, per-file human choice.
+  for (const a of conflicts) {
+    if (autoApply) {
+      console.log(chalk.gray(`  kept (conflict): ${path.relative(root, a.dest)}`))
+      continue
+    }
+    const rel = path.relative(root, a.dest)
+    const { choice } = await prompts({
+      type: 'select', name: 'choice',
+      message: `  ${rel} ${chalk.red('(conflict)')}:`,
+      choices: [
+        { title: 'Keep current version (recommended — merge manually)', value: 'keep'  },
+        { title: 'Overwrite with incoming (discards local changes)',    value: 'apply' },
       ],
     })
     if (choice === 'apply') approved.push(a)

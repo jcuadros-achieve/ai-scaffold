@@ -202,8 +202,17 @@ When new skills or rules are added to this repo:
 npx github:jcuadros-achieve/ai-scaffold update
 ```
 
-The updater shows a colored diff for every changed file and lets you
-decide per file whether to apply the incoming version or keep your current one.
+The updater compares each file **three ways** — your local copy, the installed
+base (recorded per file at install time), and the incoming template:
+
+- **Customized, upstream unchanged** (the normal post-`ai-init` state) —
+  skipped silently. No diff walls for files only *you* changed.
+- **Unmodified, upstream changed** — a safe fast-forward, applied on confirm
+  (or automatically with `--yes`).
+- **Customized AND changed upstream** — a conflict: shown with its diff,
+  default is *keep current*, and it is **never** applied automatically, not
+  even with `--yes`. Merge manually if you want both sides.
+
 Files you've customized are never silently overwritten.
 
 ---

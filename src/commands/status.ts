@@ -20,11 +20,17 @@ export async function status(): Promise<void> {
   if (installed !== SCAFFOLD_VERSION)
     console.log(chalk.yellow('  Update available — run: ai-scaffold update'))
 
-  const actions = planInstall(root, selected)
-  const changed = actions.filter(a => a.type === 'update')
-  const missing = actions.filter(a => a.type === 'create')
+  const actions    = planInstall(root, selected)
+  const updates    = actions.filter(a => a.type === 'update')
+  const changed    = updates.filter(a => a.merge !== 'conflict')
+  const conflicts  = updates.filter(a => a.merge === 'conflict')
+  const missing    = actions.filter(a => a.type === 'create')
+  const customized = actions.filter(a => a.type === 'skip' && a.merge === 'customized')
 
-  if (!changed.length && !missing.length) {
+  if (customized.length)
+    console.log(chalk.gray(`  ${customized.length} customized files (no upstream changes)`))
+
+  if (!updates.length && !missing.length) {
     console.log(chalk.green('\n  All files up to date.\n'))
     return
   }
@@ -33,8 +39,12 @@ export async function status(): Promise<void> {
     missing.forEach(a => console.log(chalk.yellow(`    ${path.relative(root, a.dest)}`)))
   }
   if (changed.length) {
-    console.log(chalk.yellow(`\n  ${changed.length} files differ:`))
+    console.log(chalk.yellow(`\n  ${changed.length} files differ (safe to update):`))
     changed.forEach(a => console.log(chalk.yellow(`    ${path.relative(root, a.dest)}`)))
+  }
+  if (conflicts.length) {
+    console.log(chalk.red(`\n  ${conflicts.length} conflicts (customized locally AND changed upstream):`))
+    conflicts.forEach(a => console.log(chalk.red(`    ${path.relative(root, a.dest)}`)))
   }
   console.log(chalk.gray('\n  Run: ai-scaffold diff    to see changes'))
   console.log(chalk.gray('  Run: ai-scaffold update  to apply them\n'))

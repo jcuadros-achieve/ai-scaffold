@@ -82,7 +82,10 @@ Two layers, deliberately separated:
   against the target — skipping optional-module files whose id isn't in
   `selected`. `mapTemplatePath()` translates the logical template path to its
   install location; `generatedFiles()` adds the install-time-generated pointers
-  (actions carry `content` instead of a copyable `src`). `applyAction()` executes
+  (actions carry `content` instead of a copyable `src`). Differing files are
+  classified three-way against the recorded installed base (`FileAction.merge`:
+  `clean` / `customized` / `conflict` / `unknown`, ADR-006) — commands render
+  the classification but never re-derive it. `applyAction()` executes
   one action. `loadManifest()` reads the optional-module list;
   `writeVersionFile()` / `readVersionFile()` / `readInstalledSelection()` manage
   `.claude/.scaffold-version` (which records the chosen modules; the pre-2.0
@@ -148,8 +151,12 @@ These caused real bugs and are easy to reintroduce:
 7. **The installed selection is persisted** in `.claude/.scaffold-version`
    (`optional: [...]`; pre-2.0 installs used `.ai/.scaffold-version`, which the
    readers still fall back to). Since 2.3.0 it also records the **installed
-   base** per template (`templates: { path → {version, hash} }`, selection-aware)
-   — the raw material for 3-way update reasoning (ADR-007/ADR-006).
+   base** per template (`templates: { path → {version, hash} }`, selection-aware),
+   which drives the 3-way update classification (ADR-006/ADR-007): customized +
+   upstream-unchanged skips silently; conflicts are never auto-applied, even
+   with `--yes`. The recorded base is always a catalog hash, never a local
+   file's hash — and applying/declining an update re-records the latest catalog,
+   so a declined conflict is not re-nagged until upstream changes again.
    `diff`/`status`/`update` all read it via
    `readInstalledSelection` so they stay coherent. Deselecting a module on
    re-install does **not** delete its files (we never delete user files) — it
