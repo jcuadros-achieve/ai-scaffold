@@ -41,6 +41,7 @@ fills the generic rules with project-specific facts. Full breakdown:
 npm install            # install deps
 npm run build          # tsc → compiles src/ to dist/
 npm run dev            # node --watch dist/cli.js  (build first)
+npm test               # builds, then unit tests for installer.ts (node --test, test/*.test.mjs)
 
 # Run a command locally after building:
 node dist/cli.js install   # also: update | diff | status
@@ -49,8 +50,11 @@ node dist/cli.js install   # also: update | diff | status
 npm pack && tar -tzf achieve-ai-scaffold-*.tgz   # then rm the .tgz
 ```
 
-There is **no test runner and no linter** configured. Verification is manual:
-install into a throwaway dir and inspect the result.
+Unit tests cover the pure logic in `installer.ts` (`test/installer.test.mjs`,
+zero extra deps — `node:test` against `dist/`); new installer behavior must land
+with a test in the same commit (ADR-001). There is **no linter** configured.
+UI behavior in `commands/` is still verified manually: install into a throwaway
+dir and inspect the result.
 
 ```bash
 # Manual end-to-end check:
@@ -187,13 +191,19 @@ install only when the module is selected. `scripts/` is dev-only (not in the
 ## Rules for changes in this repo
 
 These are binding for any work done here. They are repo-specific, not generic
-advice.
+advice. The full change flow (decision gate, verification gates, release) is
+defined in [`.context/adr/ADR-001-development-flow.md`](.context/adr/ADR-001-development-flow.md);
+this repo records its own decisions in `.context/adr/` (dogfooding the model it
+ships — that directory is *not* part of the payload and never installs into
+targets).
 
 1. **Document every change in the same commit that makes it.** A change is not
    done until its documentation is updated alongside it:
    - Touched architecture, the build, or one of the invariants above → update
      this `CLAUDE.md`.
    - Touched user-facing behavior or commands → update `README.md`.
+   - Made a cross-cutting or structural decision → record an ADR in
+     `.context/adr/` **before** implementing (see ADR-001 for what qualifies).
    - Touched anything under `templates/` → bump `SCAFFOLD_VERSION` in
      `src/installer.ts` (otherwise `status`/`update` can't detect the change).
    - Commit messages use conventional-commits (`type(scope): summary`) and state
@@ -221,8 +231,8 @@ advice.
      skills don't cover it. "It was convenient" is not a justification.
    - Must preserve the placeholder intent — a generic starting point that
      `ai-init` customizes per project, not finished project-specific content.
-   - For a cross-cutting addition, capture the reasoning where it belongs: an ADR
-     in the target's `.context/adr/` is the model this tool itself promotes.
+   - For a cross-cutting addition, capture the reasoning in this repo's own
+     `.context/adr/` (the same model this tool promotes in targets).
    - After adding/renaming/removing a **skill**, rerun `node scripts/gen-adapters.mjs`
      to regenerate its tool adapters, add a curated description to the script's
      `DESC` map, and — if the skill is optional — add its adapter paths to the
