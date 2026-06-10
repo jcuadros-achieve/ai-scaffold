@@ -1,7 +1,7 @@
 # ADR-003: Explicit chain transitions; context capture at work-chain edges
 
 **Date:** 2026-06-10
-**Status:** Accepted
+**Status:** Accepted — decision 2's ADR-drafting timing superseded by ADR-004
 **Deciders:** Jonathan Cuadros
 **Ticket / context:** Design review of 2026-06-10. Two reliability gaps in the
 shipped workflow: (1) advancing the work chain depends on the human remembering
