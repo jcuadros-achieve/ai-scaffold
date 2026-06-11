@@ -13,7 +13,10 @@ document decisions about **this tool**; they are not installed into targets.
 | [ADR-006](ADR-006-update-ai-init-layering.md) | Base-aware updates — reconciling `update` with `ai-init` customization | 2026-06-10 | Accepted | Three-way classification per file using the recorded base hash: customized + upstream-unchanged skips silently, unmodified fast-forwards, customized + upstream-changed is a never-auto-applied conflict. |
 | [ADR-007](ADR-007-template-catalog.md) | Template catalog with per-template versioning, mechanically enforced | 2026-06-10 | Accepted | `scaffold.manifest.json` catalogs every template (version, date, sha256, kind, tags); a dev script maintains it and a test fails on drift; installs record their base versions in `.scaffold-version` — the raw material for ADR-006. |
 | [ADR-009](ADR-009-stack-modules.md) | Technology stack modules as optional modules (`kind: stack`) | 2026-06-10 | Accepted | Curated tech expertise ships as optional `kind: stack` modules (never core); rules not skills; durable conventions only, version range in header, owner per module. Pilots: `stack-nextjs`, `stack-node-express` (portfolio survey: 7 and 6 projects). |
-| [ADR-010](ADR-010-drop-cursor-artifacts.md) | Drop Cursor-specific artifacts — Cursor consumes `.claude/` natively | 2026-06-10 | Accepted | Verified in the ffn-resiliency test: Cursor reads `.claude/` directly, so the generated Cursor rule and the `.cursorrules` symlink are removed (and with them the `symlink` action type). |
+| [ADR-010](ADR-010-drop-cursor-artifacts.md) | Drop Cursor-specific artifacts — Cursor consumes `.claude/` natively | 2026-06-10 | Accepted² | Verified in the ffn-resiliency test: Cursor reads `.claude/` directly, so the generated Cursor rule and the `.cursorrules` symlink are removed (and with them the `symlink` action type). |
+| [ADR-011](ADR-011-claude-only-no-generated-pointers.md) | Claude-only payload — no per-tool generated artifacts at all | 2026-06-10 | Accepted | The installer generates nothing: the payload is exactly `CLAUDE.md` + `.claude/` + `.context/`. Other tools' compatibility comes from reading `.claude/`; tool-specific pointers are user content. |
+
+² Decision 1 (keeping the Copilot pointer) superseded by ADR-011.
 
 ¹ Decision 2's ADR-drafting timing superseded by ADR-004.
 

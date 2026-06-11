@@ -1,7 +1,7 @@
 # ADR-010: Drop Cursor-specific artifacts — Cursor consumes `.claude/` natively
 
 **Date:** 2026-06-10
-**Status:** Accepted
+**Status:** Accepted — decision 1 (keeping the Copilot pointer) superseded by ADR-011
 **Deciders:** Jonathan Cuadros
 **Supersedes:** ADR-002, decision 3 partially (the Cursor-specific generated
 outputs; the Copilot pointer and the generation mechanism stand)
