@@ -12,6 +12,7 @@ document decisions about **this tool**; they are not installed into targets.
 | [ADR-005](ADR-005-model-tiers-as-metadata.md) | Model tiers as skill metadata, never model IDs | 2026-06-10 | Accepted | Every skill declares `tier: fast \| deep` in frontmatter; no model IDs in the payload; generated pointers surface the tier and tool-specific mapping lives in the installer's generation step. |
 | [ADR-006](ADR-006-update-ai-init-layering.md) | Base-aware updates — reconciling `update` with `ai-init` customization | 2026-06-10 | Accepted | Three-way classification per file using the recorded base hash: customized + upstream-unchanged skips silently, unmodified fast-forwards, customized + upstream-changed is a never-auto-applied conflict. |
 | [ADR-007](ADR-007-template-catalog.md) | Template catalog with per-template versioning, mechanically enforced | 2026-06-10 | Accepted | `scaffold.manifest.json` catalogs every template (version, date, sha256, kind, tags); a dev script maintains it and a test fails on drift; installs record their base versions in `.scaffold-version` — the raw material for ADR-006. |
+| [ADR-008](ADR-008-mcp-module-linked.md) | MCP server catalog, linked to optional modules | 2026-06-10 | Accepted | Verified MCP server catalog in the manifest (base: GitHub, Atlassian; module-linked: observability → Datadog); add-only merge into the user-owned `.mcp.json`; OAuth/env placeholders only; selection recorded for update. |
 | [ADR-009](ADR-009-stack-modules.md) | Technology stack modules as optional modules (`kind: stack`) | 2026-06-10 | Accepted | Curated tech expertise ships as optional `kind: stack` modules (never core); rules not skills; durable conventions only, version range in header, owner per module. Pilots: `stack-nextjs`, `stack-node-express` (portfolio survey: 7 and 6 projects). |
 | [ADR-010](ADR-010-drop-cursor-artifacts.md) | Drop Cursor-specific artifacts — Cursor consumes `.claude/` natively | 2026-06-10 | Accepted² | Verified in the ffn-resiliency test: Cursor reads `.claude/` directly, so the generated Cursor rule and the `.cursorrules` symlink are removed (and with them the `symlink` action type). |
 | [ADR-011](ADR-011-claude-only-no-generated-pointers.md) | Claude-only payload — no per-tool generated artifacts at all | 2026-06-10 | Accepted | The installer generates nothing: the payload is exactly `CLAUDE.md` + `.claude/` + `.context/`. Other tools' compatibility comes from reading `.claude/`; tool-specific pointers are user content. |
@@ -20,13 +21,7 @@ document decisions about **this tool**; they are not installed into targets.
 
 ¹ Decision 2's ADR-drafting timing superseded by ADR-004.
 
-## Pending decisions (agreed direction, ADR to be written before implementing)
+## Pending decisions
 
-From the design reviews of 2026-06-10:
-
-- **ADR-008 — MCP base configurations, linked to optional modules.** Ship
-  project-scoped MCP server configs (`.mcp.json`) for common integrations
-  (GitHub, Jira, …), with env-var placeholders only — never credentials.
-  Optional modules may declare suggested MCP servers (e.g. `observability` →
-  Datadog | Prometheus | Google Cloud Logging) offered as a choice at install
-  time; requires a JSON-merge install action, not file copy.
+None — the 2026-06-10 design-review backlog is fully decided (ADR-001 through
+ADR-011). New decisions start from a fresh review.
