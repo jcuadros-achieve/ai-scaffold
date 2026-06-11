@@ -307,9 +307,9 @@
     {
       "path": "skills/ai-init.md",
       "kind": "skill",
-      "version": "1.0.3",
-      "updated": "2026-06-10",
-      "hash": "sha256:c3c4bc8d271b8dfa1fb6a20e82a4c995fcb25064c0708d1a0794f6e48a4b5f73",
+      "version": "1.0.4",
+      "updated": "2026-06-11",
+      "hash": "sha256:6701e689d5c3de2959e2e6b479e723124b8a6e6e66db1c599fce67692b19b155",
       "tags": []
     },
     {

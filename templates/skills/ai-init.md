@@ -200,9 +200,10 @@ When done, output exactly:
 
 - Write every generated file to its installed location (`CLAUDE.md`,
   `.claude/rules/`, `.claude/skills/`).
-- Do **not** duplicate context into `.github/copilot-instructions.md` — it is
-  an installer-generated pointer at `CLAUDE.md` and `.claude/rules/`; the
-  content must live in one place.
+- Do **not** duplicate the context into tool-specific files (e.g.
+  `.github/copilot-instructions.md`, `AGENTS.md`) — the content lives in
+  `CLAUDE.md` and `.claude/` only; if the team keeps a tool pointer, it is
+  theirs to maintain.
 
 ---
 

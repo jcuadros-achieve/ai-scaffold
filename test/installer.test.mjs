@@ -59,8 +59,8 @@ test('fresh core-only plan creates mapped + generated files, no optional paths',
   assert.ok(dests.has(path.join(root, '.claude/rules/code-style.md')))
   assert.ok(dests.has(path.join(root, '.claude/skills/verify/SKILL.md')))
   assert.ok(dests.has(path.join(root, '.context/INDEX.md')))
-  assert.ok(dests.has(path.join(root, '.github/copilot-instructions.md')))
-  // Cursor reads .claude/ natively — no Cursor artifacts (ADR-010)
+  // Claude-only payload: no generated per-tool artifacts (ADR-010/ADR-011)
+  assert.ok(!dests.has(path.join(root, '.github/copilot-instructions.md')))
   assert.ok(!dests.has(path.join(root, '.cursor/rules/ai-scaffold.mdc')))
   assert.ok(!dests.has(path.join(root, '.cursorrules')))
 
@@ -88,24 +88,6 @@ test('stack modules install as optional rules (ADR-009)', () => {
   assert.ok(!dests.has(path.join(root, '.claude/rules/stack-node-express.md')))
   assert.ok(!destsOf(planInstall(root, [])).has(path.join(root, '.claude/rules/stack-nextjs.md')),
     'stack modules are never core')
-})
-
-test('generated files list only the selected skills', () => {
-  const root = tmpProject()
-  const copilotOf = (selected) => planInstall(root, selected)
-    .find(a => a.dest.endsWith('copilot-instructions.md')).content
-
-  assert.ok(!copilotOf([]).includes('`migration`'))
-  assert.ok(copilotOf(['migration']).includes('`migration`'))
-  assert.ok(copilotOf([]).includes('`verify`'))
-})
-
-test('generated pointers surface each skill tier (ADR-005)', () => {
-  const root = tmpProject()
-  const copilot = planInstall(root, [])
-    .find(a => a.dest.endsWith('copilot-instructions.md')).content
-  assert.ok(copilot.includes('`verify` (fast)'))
-  assert.ok(copilot.includes('`task-plan` (deep)'))
 })
 
 test('installed skills are valid Claude skills (SKILL.md with frontmatter)', () => {

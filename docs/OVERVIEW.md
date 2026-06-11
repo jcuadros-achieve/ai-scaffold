@@ -19,7 +19,6 @@ CLAUDE.md       → single source of truth (project context)
 .claude/rules/  → the rules
 .claude/skills/ → native Claude skills (one folder per skill, SKILL.md)
 .context/       → project memory: decisions (ADRs) + AI log + index
-.github/copilot-instructions.md → generated pointer → CLAUDE.md + rules
 .claude/.scaffold-version → version tracking, so updates are detectable
 ```
 

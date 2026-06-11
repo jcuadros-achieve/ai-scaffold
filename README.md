@@ -98,10 +98,15 @@ future phases is mapped in [`docs/CANDIDATE-MODULES.md`](docs/CANDIDATE-MODULES.
 
 1. Installs core templates + the optional modules you selected, mapping them to
    their native locations (`.claude/skills/`, `.claude/rules/`, `.context/`)
-2. Generates the Copilot pointer (`.github/copilot-instructions.md`)
-3. Shows a colored diff for any files that already exist
-4. Asks you to decide per file: apply incoming or keep current
-5. Records the selected modules and offers an initial git commit
+2. Shows a colored diff for any files that already exist
+3. Asks you to decide per file: apply incoming or keep current
+4. Records the selected modules and offers an initial git commit
+
+Nothing else is generated — the payload is exactly `CLAUDE.md` + `.claude/` +
+`.context/`. Tools other than Claude Code (Copilot, Cursor) read `.claude/`
+natively; if your team wants a tool-specific pointer file (`AGENTS.md`,
+`.github/copilot-instructions.md`), write it yourselves pointing at
+`CLAUDE.md` — it's your file, the scaffold won't touch it.
 
 ---
 
@@ -159,13 +164,7 @@ CLAUDE.md                   ← single source of truth — fill it in with ai-in
   ai-log/
     .gitkeep
 
-.github/
-  copilot-instructions.md   ← generated pointer → CLAUDE.md + .claude/rules/
 ```
-
-> `.github/copilot-instructions.md` is **generated at install time** from the
-> installed skills — don't edit it; the content lives in `CLAUDE.md` and the
-> skills.
 
 ---
 

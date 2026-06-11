@@ -182,7 +182,7 @@ export async function install(): Promise<void> {
 function commitScaffold(root: string): void {
   try {
     execSync(
-      'git add .claude/ .context/ CLAUDE.md .github/ 2>/dev/null || true',
+      'git add .claude/ .context/ CLAUDE.md 2>/dev/null || true',
       { cwd: root, stdio: 'pipe' }
     )
     execSync(
