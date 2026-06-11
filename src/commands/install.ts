@@ -4,22 +4,63 @@ import prompts from 'prompts'
 import { execSync } from 'child_process'
 import {
   planInstall, applyAction, writeVersionFile, loadManifest,
-  readInstalledSelection, FileAction, OptionalModule,
+  readInstalledSelection, readInstalledMcp, loadMcpCatalog, mcpChoicesFor,
+  mergeMcpServers, FileAction, OptionalModule,
 } from '../installer.js'
 import { renderDiff } from '../differ.js'
 
-interface Flags { yes: boolean; all: boolean; modules: string[] | null }
+interface Flags { yes: boolean; all: boolean; modules: string[] | null; mcp: string[] | null }
 
 function parseFlags(argv: string[]): Flags {
-  const flags: Flags = { yes: false, all: false, modules: null }
+  const flags: Flags = { yes: false, all: false, modules: null, mcp: null }
   for (const arg of argv) {
     if (arg === '--yes' || arg === '-y') flags.yes = true
     else if (arg === '--all') flags.all = true
     else if (arg === '--core') flags.modules = []
     else if (arg.startsWith('--modules='))
       flags.modules = arg.slice('--modules='.length).split(',').map(s => s.trim()).filter(Boolean)
+    else if (arg === '--mcp=none') flags.mcp = []
+    else if (arg.startsWith('--mcp='))
+      flags.mcp = arg.slice('--mcp='.length).split(',').map(s => s.trim()).filter(Boolean)
   }
   return flags
+}
+
+/** Decide which MCP servers to add: explicit flag wins; otherwise prompt
+ *  (pre-selecting what was chosen before); otherwise keep the previous set.
+ *  MCP servers are opt-in — a fresh non-interactive install adds none. */
+async function resolveMcp(
+  selectedModules: string[],
+  flags: Flags,
+  previous: string[],
+): Promise<string[]> {
+  const choices = mcpChoicesFor(selectedModules)
+  if (flags.mcp !== null) {
+    const valid = new Set(choices)
+    const unknown = flags.mcp.filter(id => !valid.has(id))
+    if (unknown.length) console.log(chalk.yellow(`  Ignoring unknown MCP servers: ${unknown.join(', ')}`))
+    return flags.mcp.filter(id => valid.has(id))
+  }
+
+  const interactive = !flags.yes && Boolean(process.stdin.isTTY)
+  if (!interactive || choices.length === 0) return previous.filter(id => choices.includes(id))
+
+  const { servers } = loadMcpCatalog()
+  const preset = new Set(previous)
+  const res = await prompts({
+    type: 'multiselect',
+    name: 'mcp',
+    message: 'MCP servers to add to .mcp.json (optional — existing entries are never touched)',
+    instructions: false,
+    hint: '- space to toggle, enter to confirm',
+    choices: choices.map(id => ({
+      title:       servers[id].label,
+      description: servers[id].description,
+      value:       id,
+      selected:    preset.has(id),
+    })),
+  })
+  return (res.mcp as string[] | undefined) ?? previous
 }
 
 /** Decide which optional modules to install: explicit flags win; otherwise
@@ -70,7 +111,10 @@ export async function install(): Promise<void> {
   const selected = await resolveSelection(optional, flags, previous)
   if (selected === null) { console.log(chalk.gray('\nAborted.')); return }
 
-  console.log(`  Optional modules: ${selected.length ? selected.join(', ') : chalk.gray('core only')}\n`)
+  const mcpChosen = await resolveMcp(selected, flags, readInstalledMcp(root))
+
+  console.log(`  Optional modules: ${selected.length ? selected.join(', ') : chalk.gray('core only')}`)
+  console.log(`  MCP servers: ${mcpChosen.length ? mcpChosen.join(', ') : chalk.gray('none')}\n`)
 
   const actions    = planInstall(root, selected)
   const toCreate   = actions.filter(a => a.type === 'create')
@@ -90,7 +134,8 @@ export async function install(): Promise<void> {
 
   if (!toCreate.length && !toUpdate.length && !conflicts.length) {
     console.log(chalk.gray('Nothing to do.'))
-    writeVersionFile(root, selected)        // still record selection
+    applyMcp(root, mcpChosen)
+    writeVersionFile(root, selected, mcpChosen)   // still record selection
     return
   }
 
@@ -166,7 +211,8 @@ export async function install(): Promise<void> {
     console.log(`${icon}  ${rel}`)
   }
 
-  writeVersionFile(root, selected)
+  applyMcp(root, mcpChosen)
+  writeVersionFile(root, selected, mcpChosen)
 
   if (!autoApply) {
     const { doCommit } = await prompts({
@@ -177,6 +223,21 @@ export async function install(): Promise<void> {
   }
 
   console.log(chalk.bold('\nDone. Run ai-init in your AI agent to populate CLAUDE.md.\n'))
+}
+
+/** Add the chosen MCP servers to .mcp.json and report. Add-only: existing
+ *  entries always win (ADR-008). */
+function applyMcp(root: string, ids: string[]): void {
+  if (!ids.length) return
+  const res = mergeMcpServers(root, ids)
+  if (res.invalid) {
+    console.log(chalk.yellow('  .mcp.json could not be parsed — left untouched; add the servers manually.'))
+    return
+  }
+  for (const id of res.added)   console.log(chalk.green(`  mcp added  ${id}  (.mcp.json)`))
+  for (const id of res.skipped) console.log(chalk.gray(`  mcp kept   ${id}  (already configured)`))
+  if (res.added.length)
+    console.log(chalk.gray('  MCP servers use OAuth or ${ENV_VAR} placeholders — no credentials were written.'))
 }
 
 function commitScaffold(root: string): void {

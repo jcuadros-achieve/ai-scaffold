@@ -92,6 +92,22 @@ catalog in `scaffold.manifest.json`) — is recorded in
 Modules are added on demand, not up front. A backlog of candidate modules for
 future phases is mapped in [`docs/CANDIDATE-MODULES.md`](docs/CANDIDATE-MODULES.md).
 
+### MCP servers (optional)
+
+The installer can add **verified MCP servers** to your project's `.mcp.json`
+(Claude Code's project-scope MCP config): a base set offered to every project
+(GitHub, Atlassian/Jira) plus module-linked suggestions (selecting
+`observability` offers Datadog). Interactive installs show a multiselect;
+non-interactively use `--mcp=github,atlassian` (or `--mcp=none`).
+
+- **Add-only:** existing `.mcp.json` entries are never updated or removed —
+  your entry always wins, and the file is yours (it is not tracked by
+  `diff`/`update`).
+- **No credentials:** entries use OAuth-based remote servers or `${ENV_VAR}`
+  placeholders only.
+- Your selection is remembered in `.claude/.scaffold-version` and preselected
+  on `update`.
+
 ---
 
 ## What install does

@@ -9,7 +9,7 @@ export const TEMPLATES_DIR = path.resolve(__dirname, '../templates')
 export const MANIFEST_FILE = path.resolve(__dirname, '../scaffold.manifest.json')
 export const SCAFFOLD_VERSION_FILE = '.claude/.scaffold-version'
 export const LEGACY_VERSION_FILE = '.ai/.scaffold-version'
-export const SCAFFOLD_VERSION = '2.8.0'
+export const SCAFFOLD_VERSION = '2.9.0'
 
 /** Three-way classification against the installed base (ADR-006).
  *  clean      = local untouched, upstream changed   → safe fast-forward
@@ -32,6 +32,16 @@ export interface OptionalModule {
   description: string
   kind:        string
   paths:       string[]
+  /** Suggested MCP server ids from the manifest mcp catalog (ADR-008). */
+  mcp?:        string[]
+}
+
+/** A verified MCP server definition from the manifest catalog (ADR-008). */
+export interface McpServer {
+  label:       string
+  description: string
+  docs:        string
+  config:      Record<string, unknown>
 }
 
 /** Per-template metadata from the manifest catalog (ADR-007). */
@@ -82,6 +92,69 @@ export function loadCatalog(): CatalogEntry[] {
   } catch {
     return []
   }
+}
+
+/** The verified MCP server catalog and the ids offered to every project. */
+export function loadMcpCatalog(): { base: string[]; servers: Record<string, McpServer> } {
+  if (!fs.existsSync(MANIFEST_FILE)) return { base: [], servers: {} }
+  try {
+    const parsed = JSON.parse(fs.readFileSync(MANIFEST_FILE, 'utf8'))
+    return {
+      base:    Array.isArray(parsed.mcpBase) ? parsed.mcpBase : [],
+      servers: typeof parsed.mcp === 'object' && parsed.mcp !== null ? parsed.mcp : {},
+    }
+  } catch {
+    return { base: [], servers: {} }
+  }
+}
+
+/** MCP server ids offered for this install: the base set plus the suggestions
+ *  of every selected module, deduped, restricted to catalogued servers. */
+export function mcpChoicesFor(selected: string[]): string[] {
+  const { base, servers } = loadMcpCatalog()
+  const chosen = new Set(selected)
+  const ids = [...base]
+  for (const mod of loadManifest()) {
+    if (chosen.has(mod.id)) ids.push(...(mod.mcp ?? []))
+  }
+  return [...new Set(ids)].filter(id => id in servers)
+}
+
+export interface McpMergeResult {
+  added:   string[]
+  skipped: string[]
+  /** true when an existing .mcp.json could not be parsed; nothing was written. */
+  invalid: boolean
+}
+
+/** Add the chosen servers to the project's .mcp.json (ADR-008). The file is
+ *  user-owned: existing entries always win, nothing is updated or removed,
+ *  and an unparseable file is left untouched. */
+export function mergeMcpServers(projectRoot: string, ids: string[]): McpMergeResult {
+  const result: McpMergeResult = { added: [], skipped: [], invalid: false }
+  if (ids.length === 0) return result
+
+  const { servers } = loadMcpCatalog()
+  const p = path.join(projectRoot, '.mcp.json')
+
+  let data: Record<string, unknown> = {}
+  if (fs.existsSync(p)) {
+    try { data = JSON.parse(fs.readFileSync(p, 'utf8')) }
+    catch { return { added: [], skipped: ids, invalid: true } }
+  }
+  const mcpServers = (typeof data.mcpServers === 'object' && data.mcpServers !== null
+    ? data.mcpServers : {}) as Record<string, unknown>
+  data.mcpServers = mcpServers
+
+  for (const id of ids) {
+    if (!(id in servers)) continue
+    if (id in mcpServers) { result.skipped.push(id); continue }
+    mcpServers[id] = servers[id].config
+    result.added.push(id)
+  }
+
+  if (result.added.length) fs.writeFileSync(p, JSON.stringify(data, null, 2) + '\n')
+  return result
 }
 
 /** Template-relative (logical) paths that should be skipped because their
@@ -161,7 +234,8 @@ export function applyAction(action: FileAction): void {
   fs.copyFileSync(action.src, action.dest)
 }
 
-export function writeVersionFile(projectRoot: string, selected: string[] = []): void {
+export function writeVersionFile(projectRoot: string, selected: string[] = [],
+                                 mcp: string[] = []): void {
   const p = path.join(projectRoot, SCAFFOLD_VERSION_FILE)
   fs.mkdirSync(path.dirname(p), { recursive: true })
 
@@ -178,6 +252,7 @@ export function writeVersionFile(projectRoot: string, selected: string[] = []): 
     version:     SCAFFOLD_VERSION,
     installedAt: new Date().toISOString(),
     optional:    selected,
+    mcp,
     templates,
   }, null, 2))
 }
@@ -204,6 +279,12 @@ export function readInstalledSelection(projectRoot: string): string[] | null {
   const data = readVersionData(projectRoot)
   if (data === null) return null
   return Array.isArray(data.optional) ? data.optional as string[] : []
+}
+
+/** MCP server ids chosen at install time ([] when none or pre-2.9 install). */
+export function readInstalledMcp(projectRoot: string): string[] {
+  const data = readVersionData(projectRoot)
+  return Array.isArray(data?.mcp) ? data.mcp as string[] : []
 }
 
 function walkDir(dir: string, cb: (f: string) => void): void {

@@ -89,11 +89,17 @@ Two layers, deliberately separated:
   one action. `loadManifest()` reads the optional-module list;
   `writeVersionFile()` / `readVersionFile()` / `readInstalledSelection()` manage
   `.claude/.scaffold-version` (which records the chosen modules; the pre-2.0
-  `.ai/.scaffold-version` is still readable). No prompts, no `console`.
+  `.ai/.scaffold-version` is still readable). `loadMcpCatalog()` /
+  `mcpChoicesFor()` / `mergeMcpServers()` implement the MCP catalog (ADR-008):
+  add-only merge into the user-owned `.mcp.json` — existing entries always win,
+  the file is never tracked by diff/update, and the catalog carries no
+  credentials (a test rejects credential-shaped strings). No prompts, no
+  `console`.
 - **`src/commands/*.ts` — UI / orchestration.** Each command calls
   `planInstall()`, renders with `src/differ.ts`, drives `prompts`, then calls
-  `applyAction()`. `install` parses flags (`--all`/`--core`/`--modules=`/`--yes`)
-  and, in a TTY, prompts a module checklist. `update` is the same flow,
+  `applyAction()`. `install` parses flags
+  (`--all`/`--core`/`--modules=`/`--mcp=`/`--yes`)
+  and, in a TTY, prompts a module checklist plus an MCP-server multiselect. `update` is the same flow,
   pre-selecting the previously-installed modules; `diff`/`status` plan against the
   installed selection so they don't report unselected optional files as missing.
 - **`src/cli.ts`** routes `argv[2]` to one of the four commands; flags are read
@@ -156,7 +162,8 @@ These caused real bugs and are easy to reintroduce:
    base** per template (`templates: { path → {version, hash} }`, selection-aware),
    which drives the 3-way update classification (ADR-006/ADR-007): customized +
    upstream-unchanged skips silently; conflicts are never auto-applied, even
-   with `--yes`. The recorded base is always a catalog hash, never a local
+   with `--yes`. Since 2.9.0 it also records the chosen MCP servers
+   (`mcp: [...]`, ADR-008) so `update` preselects them. The recorded base is always a catalog hash, never a local
    file's hash — and applying/declining an update re-records the latest catalog,
    so a declined conflict is not re-nagged until upstream changes again.
    `diff`/`status`/`update` all read it via

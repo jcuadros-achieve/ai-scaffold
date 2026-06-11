@@ -7,6 +7,7 @@ import {
   planInstall, applyAction, writeVersionFile, readVersionFile,
   readInstalledSelection, loadManifest, loadCatalog, mapTemplatePath,
   hashContent, readInstalledBases,
+  loadMcpCatalog, mcpChoicesFor, mergeMcpServers, readInstalledMcp,
   SCAFFOLD_VERSION, SCAFFOLD_VERSION_FILE, LEGACY_VERSION_FILE,
 } from '../dist/installer.js'
 
@@ -253,6 +254,66 @@ test('version helpers tolerate a corrupted version file', () => {
 
   assert.equal(readVersionFile(root), null)
   assert.equal(readInstalledSelection(root), null)
+})
+
+test('MCP catalog: base ids resolve and entries are well-formed (ADR-008)', () => {
+  const { base, servers } = loadMcpCatalog()
+  assert.ok(base.includes('github') && base.includes('atlassian'))
+  for (const [id, s] of Object.entries(servers)) {
+    assert.ok(s.label && s.description, `${id} label/description`)
+    assert.match(s.docs, /^https:\/\//, `${id} docs URL`)
+    assert.ok(typeof s.config === 'object' && s.config !== null, `${id} config`)
+  }
+})
+
+test('MCP catalog contains no credential-shaped strings (ADR-008)', () => {
+  const raw = JSON.stringify(loadMcpCatalog().servers)
+  assert.ok(!/(ghp_[A-Za-z0-9]{10,}|github_pat_|xox[bp]-|AKIA[0-9A-Z]{16}|sk-[A-Za-z0-9]{20,}|Bearer [A-Za-z0-9]{15,})/.test(raw),
+    'catalog must use OAuth or ${ENV_VAR} placeholders, never credentials')
+})
+
+test('mcpChoicesFor: base always offered, module-linked only when selected', () => {
+  const core = mcpChoicesFor([])
+  assert.ok(core.includes('github') && core.includes('atlassian'))
+  assert.ok(!core.includes('datadog'))
+  assert.ok(mcpChoicesFor(['observability']).includes('datadog'))
+})
+
+test('mergeMcpServers is add-only and idempotent; user entries always win', () => {
+  const root = tmpProject()
+
+  const first = mergeMcpServers(root, ['github'])
+  assert.deepEqual(first, { added: ['github'], skipped: [], invalid: false })
+  const data = JSON.parse(fs.readFileSync(path.join(root, '.mcp.json'), 'utf8'))
+  assert.ok(data.mcpServers.github.url)
+
+  const again = mergeMcpServers(root, ['github'])
+  assert.deepEqual(again, { added: [], skipped: ['github'], invalid: false })
+
+  // A pre-existing user entry is never touched
+  const userOwned = { mcpServers: { atlassian: { type: 'http', url: 'https://example.test/custom' } } }
+  fs.writeFileSync(path.join(root, '.mcp.json'), JSON.stringify(userOwned))
+  const res = mergeMcpServers(root, ['atlassian'])
+  assert.deepEqual(res.skipped, ['atlassian'])
+  const after = JSON.parse(fs.readFileSync(path.join(root, '.mcp.json'), 'utf8'))
+  assert.equal(after.mcpServers.atlassian.url, 'https://example.test/custom')
+})
+
+test('mergeMcpServers leaves an unparseable .mcp.json untouched', () => {
+  const root = tmpProject()
+  fs.writeFileSync(path.join(root, '.mcp.json'), 'not json{{')
+
+  const res = mergeMcpServers(root, ['github'])
+  assert.equal(res.invalid, true)
+  assert.equal(fs.readFileSync(path.join(root, '.mcp.json'), 'utf8'), 'not json{{')
+})
+
+test('version file records the chosen MCP servers', () => {
+  const root = tmpProject()
+  assert.deepEqual(readInstalledMcp(root), [])
+
+  writeVersionFile(root, [], ['github', 'atlassian'])
+  assert.deepEqual(readInstalledMcp(root), ['github', 'atlassian'])
 })
 
 test('a version file without the optional field reads as core-only selection', () => {

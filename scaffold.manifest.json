@@ -1,5 +1,5 @@
 {
-  "_comment": "Two sections. `optional`: project-shape-dependent modules, individually selectable at install time (everything NOT listed there is core and always installed; core-only is the non-interactive default). `templates`: the per-template catalog (ADR-007) — version/date/sha256 for EVERY template; maintained by `node scripts/update-catalog.mjs`, enforced by test/catalog.test.mjs, never hand-edited.",
+  "_comment": "Two sections. `optional`: project-shape-dependent modules, individually selectable at install time (everything NOT listed there is core and always installed; core-only is the non-interactive default). `templates`: the per-template catalog (ADR-007) — version/date/sha256 for EVERY template; maintained by `node scripts/update-catalog.mjs`, enforced by test/catalog.test.mjs, never hand-edited. `mcpBase`/`mcp` + per-module `mcp`: verified MCP server catalog (ADR-008) — add-only merged into the user-owned .mcp.json at install; OAuth or ${ENV} placeholders only, never credentials.",
   "optional": [
     {
       "id": "migration",
@@ -26,6 +26,9 @@
       "kind": "rule",
       "paths": [
         "rules/observability.md"
+      ],
+      "mcp": [
+        "datadog"
       ]
     },
     {
@@ -470,5 +473,38 @@
         "workflow"
       ]
     }
-  ]
+  ],
+  "mcpBase": [
+    "github",
+    "atlassian"
+  ],
+  "mcp": {
+    "github": {
+      "label": "GitHub",
+      "description": "GitHub remote MCP server (repos, PRs, issues, actions). OAuth on first use.",
+      "docs": "https://github.com/github/github-mcp-server",
+      "config": {
+        "type": "http",
+        "url": "https://api.githubcopilot.com/mcp/"
+      }
+    },
+    "atlassian": {
+      "label": "Atlassian (Jira / Confluence)",
+      "description": "Atlassian remote MCP server. OAuth 2.1 on first use. (Old /v1/sse endpoint dies 2026-06-30.)",
+      "docs": "https://support.atlassian.com/atlassian-rovo-mcp-server/",
+      "config": {
+        "type": "http",
+        "url": "https://mcp.atlassian.com/v1/mcp/authv2"
+      }
+    },
+    "datadog": {
+      "label": "Datadog",
+      "description": "Datadog MCP server (preview). OAuth; non-US1 sites replace the host (e.g. mcp.datadoghq.eu).",
+      "docs": "https://docs.datadoghq.com/bits_ai/mcp_server/setup/",
+      "config": {
+        "type": "http",
+        "url": "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp"
+      }
+    }
+  }
 }
