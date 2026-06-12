@@ -55,7 +55,9 @@ End by presenting the brief and proposing the next step explicitly:
 > `task-plan`?
 
 The skill proposes; the human decides. Proceed to `task-plan` only on explicit
-approval.
+approval. Present this Hand-off as a structured question when your harness
+supports option dialogs (ADR-015): `Approve — continue with task-plan` /
+`Adjust first` / `Stop here`.
 
 ---
 

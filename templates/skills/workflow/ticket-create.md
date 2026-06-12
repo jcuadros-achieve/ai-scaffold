@@ -37,6 +37,12 @@ one round, maximum two, ~5 questions per round), covering:
 If the requester can't answer something, mark it `⚠ NOT PROVIDED` — do not
 invent. Stop eliciting when a competent dev could pick the ticket up cold.
 
+**Structured questions (ADR-015):** when your harness has an option-dialog
+tool (plan-mode-style), use it for every round — group up to ~4 questions per
+call, each offering your **best-guess options derived from the prompt** plus
+the free-text "Other". A skipped dialog answer records `⚠ NOT PROVIDED`.
+Plain text only when no such tool exists.
+
 ---
 
 ## Phase 2 — Compose
@@ -78,8 +84,10 @@ System/module, affected users/flows, related tickets/incidents, links.
 
 If a tracker MCP server is configured in `.mcp.json` (e.g. `atlassian`),
 offer to create the ticket directly. **Never file without showing the final
-text and receiving explicit approval** — filing is outward-facing. Otherwise
-the markdown above is paste-ready for any tracker.
+text and receiving explicit approval** — filing is outward-facing; present the
+approval as a structured question when available (ADR-015): `File it` /
+`Edit first` / `Don't file`. Otherwise the markdown above is paste-ready for
+any tracker.
 
 ---
 
@@ -88,7 +96,9 @@ the markdown above is paste-ready for any tracker.
 > Ticket ready[, filed as PROJ-NNN]. Continue with `ticket-clarify` to produce
 > the technical brief?
 
-The skill proposes; the human decides.
+The skill proposes; the human decides. Present this Hand-off as a structured
+question when your harness supports option dialogs (ADR-015):
+`Approve — continue with ticket-clarify` / `Adjust first` / `Stop here`.
 
 ---
 

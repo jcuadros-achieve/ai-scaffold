@@ -79,7 +79,10 @@ End by presenting the plan and proposing the next step explicitly:
 > continue with `task-implement`?
 
 The skill proposes; the human decides. Proceed to `task-implement` only on
-explicit approval — and only if "Remaining open questions" is `None`.
+explicit approval — and only if "Remaining open questions" is `None`. Present
+this Hand-off as a structured question when your harness supports option
+dialogs (ADR-015): `Approve — continue with task-implement` / `Adjust first` /
+`Stop here`.
 
 Approving the plan **fixes the technical decision**: `task-implement` opens by
 recording any required ADR (its step 0) before writing code.

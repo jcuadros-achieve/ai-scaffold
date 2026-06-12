@@ -28,7 +28,9 @@ It sets up two chains of skills:
   `INDEX.md`.
 
 Each work-chain skill ends with a **hand-off** that proposes the next step —
-the human approves with a yes/no instead of remembering what comes next. And
+the human approves with a yes/no instead of remembering what comes next
+(presented as a plan-mode-style option dialog where the harness supports it,
+as are `ticket-create`'s questions and deviation choices). And
 the chain writes project memory automatically: approving the plan fixes the
 decision, so `task-implement` drafts any required ADR **before writing code**
 (step 0), logs the session at its close, and `pr-write` verifies the ADR still

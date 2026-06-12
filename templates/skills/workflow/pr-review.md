@@ -76,7 +76,9 @@ A recommendation only — the human decides.
 
 End of the work chain — there is no next skill to propose. Merging is the
 human's decision. If blockers were found, propose returning to
-`task-implement` with the findings as input.
+`task-implement` with the findings as input — as a structured question when
+available (ADR-015): `Return to task-implement with the findings` /
+`Done — the merge decision is mine`.
 
 ---
 

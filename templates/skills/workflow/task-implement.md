@@ -43,9 +43,11 @@ Options: A) [safest] B) [alternative]
 Waiting for direction.
 ```
 
-Do not continue until you receive direction. An **approved deviation is a
-decision change** — note it so the ADR from step 0 gets updated or superseded
-at `pr-write`'s closing check.
+Do not continue until you receive direction. Present the choice as a
+structured question when your harness supports option dialogs (ADR-015) —
+options A and B plus free-text for a third direction. An **approved deviation
+is a decision change** — note it so the ADR from step 0 gets updated or
+superseded at `pr-write`'s closing check.
 
 ---
 
@@ -102,8 +104,10 @@ memory is part of finishing, not a separate favor to remember
 
 > Implementation complete, session logged. Continue with `verify`?
 
-The skill proposes; the human decides. Never declare success on unrun tests —
-`verify` runs the real gates.
+The skill proposes; the human decides. Present this Hand-off as a structured
+question when your harness supports option dialogs (ADR-015):
+`Approve — continue with verify` / `Adjust first` / `Stop here`. Never declare
+success on unrun tests — `verify` runs the real gates.
 
 ---
 

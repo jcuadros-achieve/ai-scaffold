@@ -62,7 +62,10 @@ stop.
 - **Any gate red** → stop. Propose returning to `task-implement` with the list
   of failures; never continue the chain on a red gate.
 
-The skill proposes; the human decides.
+The skill proposes; the human decides. Present either path as a structured
+question when your harness supports option dialogs (ADR-015): green →
+`Approve — continue with pr-write` / `Adjust first` / `Stop here`; red →
+`Return to task-implement with the failures` / `Stop here`.
 
 ---
 

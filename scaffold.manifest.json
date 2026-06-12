@@ -416,9 +416,9 @@
     {
       "path": "skills/workflow/pr-review.md",
       "kind": "skill",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "updated": "2026-06-12",
-      "hash": "sha256:18b0257dd037828e15999ac74451c7e31ed7ad2ac00b80db822783ac1ff6eeef",
+      "hash": "sha256:a4cfc18f17941652649811847e19c08af33c660d22d3073185a39c925a69811a",
       "tags": [
         "workflow"
       ]
@@ -426,9 +426,9 @@
     {
       "path": "skills/workflow/pr-write.md",
       "kind": "skill",
-      "version": "1.0.1",
-      "updated": "2026-06-10",
-      "hash": "sha256:f36abd36f348d9a55b42daf9b4bb568c98d7c89a714f3ea86ef56c01f8964ce6",
+      "version": "1.0.2",
+      "updated": "2026-06-12",
+      "hash": "sha256:fe80a7c6ff3c503c994e2a29bcedc126de3dbb0ebc9efaf7ad93efc36b2d8c16",
       "tags": [
         "workflow"
       ]
@@ -436,9 +436,9 @@
     {
       "path": "skills/workflow/task-implement.md",
       "kind": "skill",
-      "version": "1.0.1",
-      "updated": "2026-06-10",
-      "hash": "sha256:c2d1980474dfc5d16e509befbd9a069246cbccb74978a9d1c5b8574557b11ac9",
+      "version": "1.0.2",
+      "updated": "2026-06-12",
+      "hash": "sha256:297571cbc1205aca108a84dc37eb0f45399caabc66fce7ede8011a4a639bb85d",
       "tags": [
         "workflow"
       ]
@@ -446,9 +446,9 @@
     {
       "path": "skills/workflow/task-plan.md",
       "kind": "skill",
-      "version": "1.0.1",
-      "updated": "2026-06-10",
-      "hash": "sha256:579b7e4f2145c27523a3551506e452a2e42d0f9fd8ffa758ed95e54b34995de8",
+      "version": "1.0.2",
+      "updated": "2026-06-12",
+      "hash": "sha256:e7d5381b124c10c5216c3883e32198bdcb6a88f763d3450ea5c81aeb4fd8de93",
       "tags": [
         "workflow"
       ]
@@ -456,9 +456,9 @@
     {
       "path": "skills/workflow/ticket-clarify.md",
       "kind": "skill",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "updated": "2026-06-12",
-      "hash": "sha256:7d556701a13ea1c428295e9228918319cce481ce37f44a5d398d4971b7702499",
+      "hash": "sha256:907249da39e847f253291d92e31b5c82a67358200042567bac188ba6847d5456",
       "tags": [
         "workflow"
       ]
@@ -466,9 +466,9 @@
     {
       "path": "skills/workflow/ticket-create.md",
       "kind": "skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "updated": "2026-06-12",
-      "hash": "sha256:9f2d509d87bed303aed110bafd6ebff0ead6ff5a8090421ec46e14a06f76969a",
+      "hash": "sha256:93d4a13e296579672dcdb9610c56f543f7c5beb08b2b9d5dea671779f0cd76bf",
       "tags": [
         "workflow"
       ]
@@ -476,9 +476,9 @@
     {
       "path": "skills/workflow/verify.md",
       "kind": "skill",
-      "version": "1.0.1",
-      "updated": "2026-06-10",
-      "hash": "sha256:0791f9f6486e7e8f8fe7fe3c174c2e69aacc425ff87150ed2ee36b385f9dd8e8",
+      "version": "1.0.2",
+      "updated": "2026-06-12",
+      "hash": "sha256:a0033ed3b72020f09a9c3496fc7e4d92938c89a0fb9f2ec24f2593e2b2279fba",
       "tags": [
         "workflow"
       ]

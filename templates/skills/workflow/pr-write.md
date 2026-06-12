@@ -65,7 +65,9 @@ After producing the description, persist the project memory. These steps are
 > PR description ready, context updated[, ADR-NNN drafted]. Continue with
 > `pr-review`?
 
-The skill proposes; the human decides.
+The skill proposes; the human decides. Present this Hand-off as a structured
+question when your harness supports option dialogs (ADR-015):
+`Approve — continue with pr-review` / `Adjust first` / `Stop here`.
 
 ---
 
