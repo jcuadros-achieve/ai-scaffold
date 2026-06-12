@@ -36,6 +36,14 @@ data it reads/writes, what privileges it runs with, what it calls out to.
 7. **Rate limiting / abuse** — expensive or auth endpoints are protected against
    brute force and abuse.
 
+**Parallel fan-out (ADR-014 — if your harness supports subagents):** run the
+seven dimensions as parallel **read-only** subagents — each receives the
+change, the trust-boundary map from Phase 1, and its single dimension, and
+returns findings in the table format below. The main agent merges and dedupes
+(same file:line + issue → one finding, highest severity wins) and writes the
+verdict itself. Without subagent support, run the dimensions sequentially —
+identical output either way.
+
 ---
 
 ## Output format

@@ -221,6 +221,12 @@ workspaces and generates the root map + nested per-workspace `CLAUDE.md`
 nearest `.context/`, and stack rules carry an `Applies to` scope. Do not add
 per-workspace installation logic without superseding ADR-013.
 
+**Parallelization is also content, not artifacts (ADR-014):** `ai-init`
+(per top-level workspace), `pr-review` and `security-review` carry subagent
+fan-out directives with a mandatory degradation clause (sequential = the
+contract). Subagents are read-only; no `.claude/agents/` or workflow scripts
+ship in the payload, and the work chain is never parallelized.
+
 ## Tool integration (ADR-002, ADR-010, ADR-011)
 
 Skills install as **native Claude skills** (`.claude/skills/<name>/SKILL.md`),

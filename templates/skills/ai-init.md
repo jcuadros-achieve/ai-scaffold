@@ -119,6 +119,18 @@ dependency graph **between** workspaces (who imports whom), shared tooling and
 configs, what a change in a shared lib implies downstream (blast radius), and
 how releases/deploys relate across workspaces.
 
+**Parallel fan-out (ADR-014 — if your harness supports subagents):** run the
+per-workspace deep read + analysis as parallel **read-only** subagents — one
+per **top-level workspace** (`apps/x`, `packages/y`), never one per
+sub-library: a package's libraries are inventoried *inside* that package's
+analysis (name, purpose, version, who consumes it), and only an unusually
+heavy library earns its own pass. Each subagent receives its workspace path,
+the universal checklist (1b) and its archetype's deep-read focus, and returns
+sections 1–10 for that workspace — it writes nothing. Keep ~4–6 subagents in
+flight. The main agent keeps for itself the cross-cutting layer and all of
+Phases 3–4 (generation and writes). Without subagent support, do the same
+work sequentially — identical output either way.
+
 **Evidence rule:** every claim must trace back to something read in Phase 1 —
 but synthesis and judgment *from* that evidence are required, not optional.
 "There is no PR-time validation" is a legitimate, evidence-backed finding even
@@ -148,9 +160,11 @@ content from Phase 2 must land here — condensed, not dropped.
 **Monorepo (ADR-013):** the root `CLAUDE.md` becomes the **repo map** — what
 each workspace is and does, boundaries, the inter-workspace dependency graph,
 shared conventions, and how to run each one. Then generate a **nested
-`CLAUDE.md` per workspace** (purpose, stack, how it works, invariants & risks,
-how to run) — Claude Code loads it on demand when working in that subtree.
-Keep workspace detail out of the root map; one level deep, no duplication.
+`CLAUDE.md` per top-level workspace** (purpose, stack, how it works,
+invariants & risks, how to run) — Claude Code loads it on demand when working
+in that subtree. A package with many internal libraries gets **one** file with
+a library index inside, not one file per lib (ADR-014). Keep workspace detail
+out of the root map; one level deep, no duplication.
 
 ### Rules
 

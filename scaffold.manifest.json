@@ -310,9 +310,9 @@
     {
       "path": "skills/ai-init.md",
       "kind": "skill",
-      "version": "1.0.6",
+      "version": "1.0.7",
       "updated": "2026-06-12",
-      "hash": "sha256:26ceb28da73869f93297cdca7fbb3348ebd6addd198c3d6ab8f7d41718b25617",
+      "hash": "sha256:38e06d58583698d092725d4962c199cbe5c805c3ec282a3f99bc8e123cf86e26",
       "tags": []
     },
     {
@@ -400,9 +400,9 @@
     {
       "path": "skills/security-review.md",
       "kind": "skill",
-      "version": "1.0.1",
-      "updated": "2026-06-10",
-      "hash": "sha256:7810092bf7a9b4b6f880ef239406b3125541ba0788117b926ce21c22c8e303fb",
+      "version": "1.0.2",
+      "updated": "2026-06-12",
+      "hash": "sha256:81e8fa57d47e25be72804427705c285750d4235a8aeed9a7171ff5781e425b14",
       "tags": []
     },
     {
@@ -416,9 +416,9 @@
     {
       "path": "skills/workflow/pr-review.md",
       "kind": "skill",
-      "version": "1.0.1",
-      "updated": "2026-06-10",
-      "hash": "sha256:4bb5981d3225581281782c9312e1fffd99a4a57eb681fdafa930d93de0a933a6",
+      "version": "1.0.2",
+      "updated": "2026-06-12",
+      "hash": "sha256:18b0257dd037828e15999ac74451c7e31ed7ad2ac00b80db822783ac1ff6eeef",
       "tags": [
         "workflow"
       ]

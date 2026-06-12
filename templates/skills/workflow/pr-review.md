@@ -30,6 +30,14 @@ judgment layer, not a replacement for [[ci-gates]].
    have an ADR (via `adr-write`)? Are README / contract docs updated in this
    diff (see [[docs]], [[api-contract]])? A missing required ADR is a blocker.
 
+**Parallel fan-out (ADR-014 — if your harness supports subagents):** run the
+seven passes as parallel **read-only** subagents — each receives the diff,
+the brief, and its single pass definition, and returns findings in the table
+format below. The main agent then merges and dedupes (same file + line +
+issue → one finding, highest severity wins), checks acceptance criteria, and
+writes the verdict itself. Without subagent support, run the passes
+sequentially — identical output either way.
+
 ---
 
 ## Output format
