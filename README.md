@@ -16,10 +16,13 @@ read natively.
 
 It sets up two chains of skills:
 
-- **Work chain** — `ticket-clarify → task-plan → task-implement → verify → pr-write → pr-review`, 
-  with human approval gates between understanding,
-  planning, and coding, TDD during implementation, and a `verify` gate that runs
-  the real build/tests/lint/audit before a PR.
+- **Work chain** — `ticket-create → ticket-clarify → task-plan →
+  task-implement → verify → pr-write → pr-review`, with human approval gates
+  between understanding, planning, and coding, TDD during implementation, and
+  a `verify` gate that runs the real build/tests/lint/audit before a PR.
+  `ticket-create` is the entry point when starting from a rough idea (it asks
+  What/Why/How/Context and can file the ticket via a tracker MCP); with an
+  existing ticket, enter at `ticket-clarify`.
 - **Context chain** — `adr-write → ai-log-write → context-update`, an
   append-only project memory of decisions and AI sessions, with a regenerated
   `INDEX.md`.
@@ -153,6 +156,7 @@ CLAUDE.md                   ← single source of truth — fill it in with ai-in
     stack-nextjs.md         ← optional stack module
     stack-node-express.md   ← optional stack module
   skills/                   ← native Claude skills, one folder per skill
+    ticket-create/SKILL.md
     ticket-clarify/SKILL.md
     task-plan/SKILL.md
     task-implement/SKILL.md ← TDD

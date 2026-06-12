@@ -10,7 +10,9 @@ Convert any input — a ticket, a Slack message, a verbal description — into a
 structured technical brief.
 
 Do **not** ask clarifying questions. Mark gaps explicitly instead. Marking is
-faster than a question round-trip and keeps the flow moving.
+faster than a question round-trip and keeps the flow moving. (If the input is
+a rough idea rather than a ticket, it should come through `ticket-create`
+first — that skill's job is to ask.)
 
 ---
 

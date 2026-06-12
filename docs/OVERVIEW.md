@@ -43,11 +43,15 @@ Two chains, with **human gates** between stages.
 **Work chain (from ticket to PR):**
 
 ```
-ticket-clarify → task-plan → task-implement → verify → pr-write → pr-review
-   (brief)        (plan)      (TDD code+tests) (gates)   (PR)      (7 passes)
-        ↑ human gate   ↑ human gate
+ticket-create → ticket-clarify → task-plan → task-implement → verify → pr-write → pr-review
+  (ticket)        (brief)         (plan)      (TDD code+tests) (gates)   (PR)      (7 passes)
+            ↑ human gate   ↑ human gate
 ```
 
+- `ticket-create` — entry point for rough ideas: **asks** What/Why/How/Context
+  (the deliberate inverse of `ticket-clarify`), composes a paste-ready ticket,
+  and can file it via a configured tracker MCP after approval. With an
+  existing ticket, enter at `ticket-clarify`.
 - `ticket-clarify` — turns any input into a structured brief; **marks gaps** (❓)
   instead of asking; estimates complexity S/M/L. Does not read the codebase.
 - `task-plan` — reads the real code and produces a file-level plan. Writes no

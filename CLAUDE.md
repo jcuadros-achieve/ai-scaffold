@@ -21,9 +21,11 @@ this file documents the tool's own codebase).
 Understanding the payload's purpose makes the code make sense. ai-scaffold sets
 up, in each target project, two chains of skills with human gates between stages:
 
-- **Work chain:** `ticket-clarify → task-plan → task-implement → verify →
-  pr-write → pr-review` (understanding approved before planning, plan before
-  coding, TDD during implementation, `verify` runs real gates before the PR).
+- **Work chain:** `ticket-create → ticket-clarify → task-plan →
+  task-implement → verify → pr-write → pr-review` (ticket authored by asking
+  when starting from an idea — ADR-012, understanding approved before
+  planning, plan before coding, TDD during implementation, `verify` runs real
+  gates before the PR).
 - **Context chain:** `adr-write → ai-log-write → context-update` — append-only
   project memory (decisions + AI sessions), with a regenerated `INDEX.md`.
 

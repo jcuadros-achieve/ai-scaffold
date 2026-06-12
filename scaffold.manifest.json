@@ -310,9 +310,9 @@
     {
       "path": "skills/ai-init.md",
       "kind": "skill",
-      "version": "1.0.4",
-      "updated": "2026-06-11",
-      "hash": "sha256:6701e689d5c3de2959e2e6b479e723124b8a6e6e66db1c599fce67692b19b155",
+      "version": "1.0.5",
+      "updated": "2026-06-12",
+      "hash": "sha256:7e420ba1b6becc4cd29baaf172168e3d61c0104a0f0df15f1d81a7b0015a8364",
       "tags": []
     },
     {
@@ -456,9 +456,19 @@
     {
       "path": "skills/workflow/ticket-clarify.md",
       "kind": "skill",
-      "version": "1.0.1",
-      "updated": "2026-06-10",
-      "hash": "sha256:b5e5d17f6d1e7589ac21dbcfff984714e52d3c0fe0c88c62b09a1dfc77432e94",
+      "version": "1.0.2",
+      "updated": "2026-06-12",
+      "hash": "sha256:7d556701a13ea1c428295e9228918319cce481ce37f44a5d398d4971b7702499",
+      "tags": [
+        "workflow"
+      ]
+    },
+    {
+      "path": "skills/workflow/ticket-create.md",
+      "kind": "skill",
+      "version": "1.0.0",
+      "updated": "2026-06-12",
+      "hash": "sha256:9f2d509d87bed303aed110bafd6ebff0ead6ff5a8090421ec46e14a06f76969a",
       "tags": [
         "workflow"
       ]

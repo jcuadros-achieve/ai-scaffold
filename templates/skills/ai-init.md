@@ -177,8 +177,9 @@ Phase 2 found. Preserve each skill's frontmatter (`name`, `tier`); adjust
 
 - `.claude/full-context.md` (all of the above composed into one file)
 
-Leave `.claude/rules/context.md`, the workflow skills (`ticket-clarify`,
-`task-plan`, `task-implement`, `verify`, `pr-write`, `pr-review`), the context
+Leave `.claude/rules/context.md`, the workflow skills (`ticket-create`,
+`ticket-clarify`, `task-plan`, `task-implement`, `verify`, `pr-write`,
+`pr-review`), the context
 skills (`adr-write`, `ai-log-write`, `context-update`), and the
 `security-review`, `refactor`, `migration`, and `incident` skills as shipped —
 they are flow definitions, not project-specific content. Only fill in a
