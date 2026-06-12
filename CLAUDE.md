@@ -214,6 +214,13 @@ not the core.
 AI interaction log + a regenerated `INDEX.md`); its rules live in
 `templates/rules/context.md`.
 
+**Monorepo behavior lives in content, not in the installer (ADR-013):** the
+installer always installs one scaffold at the repo root; `ai-init` detects
+workspaces and generates the root map + nested per-workspace `CLAUDE.md`
+(project content, never tracked by `update`), the context skills resolve the
+nearest `.context/`, and stack rules carry an `Applies to` scope. Do not add
+per-workspace installation logic without superseding ADR-013.
+
 ## Tool integration (ADR-002, ADR-010, ADR-011)
 
 Skills install as **native Claude skills** (`.claude/skills/<name>/SKILL.md`),

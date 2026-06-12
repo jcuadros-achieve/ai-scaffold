@@ -99,7 +99,10 @@ content**. It first classifies the project archetype (app/service, library,
 CLI, IaC, data pipeline, frontend) so the deep read and the generated rules fit
 the kind of repo it actually is, then produces a full analysis — including
 mandatory "non-obvious invariants & gotchas" and "observations & risks"
-synthesis — from which every file is derived. Everything shipped under
+synthesis — from which every file is derived. In a **monorepo** it classifies
+every workspace, turns the root `CLAUDE.md` into the repo map, writes a nested
+`CLAUDE.md` per workspace, and scopes stack rules to their workspaces
+(ADR-013); memory then resolves to the nearest `.context/`. Everything shipped under
 `templates/` is a starting point that `ai-init` customizes; the template's
 sections are a floor, not a ceiling.
 

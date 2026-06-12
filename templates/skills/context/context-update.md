@@ -9,6 +9,11 @@ tier: fast
 Keep `.context/INDEX.md` in sync. Rebuild it from source files, never from
 memory. Surface pending rule-update actions drawn from AI log entries.
 
+**Monorepo (ADR-013):** rebuild the index of every `.context/` that changed
+(workspace-local indexes from their own sources), and keep the **root**
+`INDEX.md` as the aggregator: it adds a `## Workspace indexes` section listing
+each `<workspace>/.context/INDEX.md` with a one-line summary.
+
 ---
 
 ## INDEX.md structure it generates

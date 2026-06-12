@@ -4,6 +4,8 @@
 > Run `ai-init` in your AI agent to populate it with real project content.
 > The sections below are a **minimum** — ai-init adds project-shaped sections
 > (deploy pipeline, security posture, package graph, …) as the project demands.
+> In a **monorepo**, ai-init turns this file into the repo map and adds a
+> nested `CLAUDE.md` per workspace (loaded on demand).
 
 ## Project purpose
 TODO: run ai-init

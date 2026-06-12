@@ -29,8 +29,15 @@ Do not produce any output until this phase is complete.
 
 Before reading deeply, determine what kind of repo this is. The archetype
 decides what to read, what "how it works" means, and which generated artifacts
-apply. In a monorepo, classify each package and treat the dominant one as
-primary.
+apply.
+
+**Monorepo detection (do this first).** Check for workspace markers:
+`pnpm-workspace.yaml`, a `workspaces` field in package.json, `turbo.json`,
+`nx.json`, `lerna.json` — and as a structural fallback, top-level dirs like
+`apps/`, `packages/`, `libs/` whose children carry their own manifests. If the
+repo is a monorepo, **classify the archetype of every workspace** (not just a
+"dominant" one) and run the deep read per workspace; the repo-level archetype
+is "monorepo" and the analysis gains a cross-cutting layer (see Phase 2).
 
 | Archetype | Deep-read focus |
 |-----------|-----------------|
@@ -106,6 +113,12 @@ contain at minimum:
 Sections 8 and 9 are **mandatory** and are where most of the value lives. An
 analysis without them is incomplete — go back and derive them from what was read.
 
+**Monorepo:** produce sections 1–10 *per workspace* (proportional to each
+workspace's weight), plus a cross-cutting layer: workspace boundaries, the
+dependency graph **between** workspaces (who imports whom), shared tooling and
+configs, what a change in a shared lib implies downstream (blast radius), and
+how releases/deploys relate across workspaces.
+
 **Evidence rule:** every claim must trace back to something read in Phase 1 —
 but synthesis and judgment *from* that evidence are required, not optional.
 "There is no PR-time validation" is a legitimate, evidence-backed finding even
@@ -132,6 +145,13 @@ pipeline, actions/trigger order, security posture, package graph…). The
 "How it works", "Non-obvious invariants & gotchas" and "Observations & risks"
 content from Phase 2 must land here — condensed, not dropped.
 
+**Monorepo (ADR-013):** the root `CLAUDE.md` becomes the **repo map** — what
+each workspace is and does, boundaries, the inter-workspace dependency graph,
+shared conventions, and how to run each one. Then generate a **nested
+`CLAUDE.md` per workspace** (purpose, stack, how it works, invariants & risks,
+how to run) — Claude Code loads it on demand when working in that subtree.
+Keep workspace detail out of the root map; one level deep, no duplication.
+
 ### Rules
 
 The shipped core rules are **language-neutral principles**. Make them concrete
@@ -146,6 +166,12 @@ repo with no test runner), do **not** fill it with generic fluff: state the
 reality and what replaces it ("There is no test runner; verification is a dev
 deploy via `make deploy ENV=dev` — see ci-gates") so the gap is a documented
 decision, not an omission.
+
+**Monorepo:** fill each installed **stack rule's** `Applies to` scope line
+with the matching workspaces (e.g. `Applies to: apps/web, apps/admin`) — the
+rule self-disables outside its scope. Concretize `verify` and `ci-gates` with
+**per-workspace** commands (filtered turbo/nx/workspace runs), not a single
+repo-wide command.
 
 - `.claude/rules/code-style.md`
 - `.claude/rules/security.md`
@@ -200,7 +226,9 @@ When done, output exactly:
 ## Phase 4 — Write
 
 - Write every generated file to its installed location (`CLAUDE.md`,
-  `.claude/rules/`, `.claude/skills/`).
+  `.claude/rules/`, `.claude/skills/`) — in a monorepo, also the nested
+  per-workspace `CLAUDE.md` files (they are project content, never tracked by
+  `update`).
 - Do **not** duplicate the context into tool-specific files (e.g.
   `.github/copilot-instructions.md`, `AGENTS.md`) — the content lives in
   `CLAUDE.md` and `.claude/` only; if the team keeps a tool pointer, it is

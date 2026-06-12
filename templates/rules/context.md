@@ -2,7 +2,8 @@
 
 Rules governing how the AI reads and writes `.context/`.
 
-1. Always read `.context/INDEX.md` before starting any task.
+1. Always read `.context/INDEX.md` before starting any task — and in a
+   monorepo, also the `.context/INDEX.md` of the workspace(s) you will touch.
 2. If ADRs exist for the task area, read them before proposing approaches.
 3. Read the "Context for future sessions" notes from recent AI log entries for
    the same area before starting.
@@ -22,3 +23,7 @@ Rules governing how the AI reads and writes `.context/`.
 11. A "Patterns missed" action in an AI log is not resolved until the referenced
     rule or `CLAUDE.md` is actually updated; `context-update` surfaces these
     until they are.
+12. **Memory lives nearest to what it describes (ADR-013).** In a monorepo,
+    workspace-local decisions and logs go to `<workspace>/.context/` (own ADR
+    numbering); cross-workspace ones go to the root `.context/`. The root
+    `INDEX.md` aggregates the workspace indexes.

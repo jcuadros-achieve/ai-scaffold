@@ -24,9 +24,15 @@ At least one of these must be true:
 
 ## Phase 1 — Read
 
+**Resolve the target `.context/` first (ADR-013):** the nearest `.context/`
+at-or-above the files the decision affects — a workspace-local decision goes
+to `<workspace>/.context/` (create it with its own `adr/ADR-000-index.md` on
+first use; numbering is independent per workspace); a decision crossing
+workspaces goes to the root `.context/`.
+
 Read:
-- `.context/adr/ADR-000-index.md` — to find the next ADR number.
-- `CLAUDE.md`.
+- The target's `adr/ADR-000-index.md` — to find the next ADR number there.
+- `CLAUDE.md` (and the workspace's nested `CLAUDE.md` if one exists).
 - The relevant source files.
 
 ---

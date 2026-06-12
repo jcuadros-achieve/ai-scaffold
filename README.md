@@ -95,6 +95,20 @@ catalog in `scaffold.manifest.json`) — is recorded in
 Modules are added on demand, not up front. A backlog of candidate modules for
 future phases is mapped in [`docs/CANDIDATE-MODULES.md`](docs/CANDIDATE-MODULES.md).
 
+### Monorepos
+
+One scaffold per repo, installed at the root — process (chains, rules) is
+shared. Context is local: `ai-init` detects workspaces (pnpm/yarn workspaces,
+turbo, nx, or `apps/`/`packages/` structure), classifies **each** workspace's
+archetype, turns the root `CLAUDE.md` into the repo map, and writes a nested
+`CLAUDE.md` per workspace (Claude Code loads it on demand when working in that
+subtree — sessions opened at the root or inside a package both work).
+Decisions and AI logs go to the **nearest** `.context/` — workspace-local ones
+get their own `<workspace>/.context/` with independent ADR numbering;
+cross-cutting ones stay at the root, whose `INDEX.md` aggregates. Stack rules
+carry an `Applies to:` scope that `ai-init` fills with the matching
+workspaces. Select the **union** of the modules your workspaces need.
+
 ### MCP servers (optional)
 
 The installer can add **verified MCP servers** to your project's `.mcp.json`

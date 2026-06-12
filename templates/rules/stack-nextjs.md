@@ -3,6 +3,9 @@
 > Optional stack module — covers Next.js 13.4+ with the App Router (through
 > 15.x). Durable conventions and pitfalls only; API details belong to the live
 > docs. Run `ai-init` to fill the project-specific sections.
+>
+> **Applies to:** TODO: run ai-init — whole repo, or the matching workspaces
+> in a monorepo (e.g. `apps/web`). Outside that scope, ignore this rule.
 
 ## Server/client boundary
 

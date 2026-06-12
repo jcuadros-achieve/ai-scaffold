@@ -108,9 +108,9 @@
     {
       "path": "CLAUDE.md",
       "kind": "root",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:b857bf37cdf6fd6b8adf82f33250f02d27af437c3174839f42cf24e967001f64",
+      "version": "1.0.1",
+      "updated": "2026-06-12",
+      "hash": "sha256:06f86aa9eca0e469744dae4def01299ce4b9f1ad50811cc95df067585af41e17",
       "tags": []
     },
     {
@@ -186,9 +186,9 @@
     {
       "path": "rules/context.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:1f313c879b5404c8c852ea02ecc00f1c8fb05a1c7e6fd727102c292a9cb5e876",
+      "version": "1.0.1",
+      "updated": "2026-06-12",
+      "hash": "sha256:9b4ea8b69a33b0f7571b8debfa09cec4c1934e5291d1b522066ce0ecbd48ea54",
       "tags": []
     },
     {
@@ -282,9 +282,9 @@
     {
       "path": "rules/stack-nextjs.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:38cbe7465cca2f4835ad4280dcedca6caacb03bca3c621bc916c1df7daa20044",
+      "version": "1.0.1",
+      "updated": "2026-06-12",
+      "hash": "sha256:967044a10b7bd6458255d3cb35546885c7c28b54d635e3caa238cce919d11a7f",
       "tags": [
         "stack-nextjs"
       ]
@@ -292,9 +292,9 @@
     {
       "path": "rules/stack-node-express.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:3fc8f5f1f54e6b1b1ac3a7ba7840b951b6152af5dccc6b55d5eb7ccc3a5f2379",
+      "version": "1.0.1",
+      "updated": "2026-06-12",
+      "hash": "sha256:57c86aac3721b909f4de732a2a84e0cb80678d63ae3a6430133c0fc8b4451727",
       "tags": [
         "stack-node-express"
       ]
@@ -310,17 +310,17 @@
     {
       "path": "skills/ai-init.md",
       "kind": "skill",
-      "version": "1.0.5",
+      "version": "1.0.6",
       "updated": "2026-06-12",
-      "hash": "sha256:7e420ba1b6becc4cd29baaf172168e3d61c0104a0f0df15f1d81a7b0015a8364",
+      "hash": "sha256:26ceb28da73869f93297cdca7fbb3348ebd6addd198c3d6ab8f7d41718b25617",
       "tags": []
     },
     {
       "path": "skills/context/adr-write.md",
       "kind": "skill",
-      "version": "1.0.1",
-      "updated": "2026-06-10",
-      "hash": "sha256:7c23217536cf68f7e4a483f17acdad08abba41ca9e3cadaa3dc961ef7e7867fb",
+      "version": "1.0.2",
+      "updated": "2026-06-12",
+      "hash": "sha256:8f2219cd1bba7ed5981a8e3e48294ec2615187e4ee6b6d9f0cafba4e83ad9f45",
       "tags": [
         "context-chain"
       ]
@@ -328,9 +328,9 @@
     {
       "path": "skills/context/ai-log-write.md",
       "kind": "skill",
-      "version": "1.0.1",
-      "updated": "2026-06-10",
-      "hash": "sha256:e745dc4edbafa7d3eb0bab1c6ec26ace0913ab4c3125298c91c2ec71655a23a6",
+      "version": "1.0.2",
+      "updated": "2026-06-12",
+      "hash": "sha256:5a101b2a8b0ce1a934c0c37eb0ec7b8c5be162612e1298d4129b1a4263baba49",
       "tags": [
         "context-chain"
       ]
@@ -338,9 +338,9 @@
     {
       "path": "skills/context/context-update.md",
       "kind": "skill",
-      "version": "1.0.1",
-      "updated": "2026-06-10",
-      "hash": "sha256:ed4b2ecc9883c98c0e9d0bfbfe662f719c99037358e70ee7fd52732829f21bb4",
+      "version": "1.0.2",
+      "updated": "2026-06-12",
+      "hash": "sha256:c16d123ab364999497a931874a9f1208955aba250ea4b0b7a53b8912954a12ca",
       "tags": [
         "context-chain"
       ]

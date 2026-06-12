@@ -3,6 +3,9 @@
 > Optional stack module — covers Express 4/5 services on Node 18+. Durable
 > conventions and pitfalls only; API details belong to the live docs. Run
 > `ai-init` to fill the project-specific sections.
+>
+> **Applies to:** TODO: run ai-init — whole repo, or the matching workspaces
+> in a monorepo (e.g. `packages/api`). Outside that scope, ignore this rule.
 
 ## Error handling
 

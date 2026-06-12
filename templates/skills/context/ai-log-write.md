@@ -24,6 +24,10 @@ Log any session where the AI generated committed code.
 `.context/ai-log/YYYY-MM-DD-[slug].md` — use the date of the session, not the
 ticket date.
 
+**Monorepo (ADR-013):** write to the nearest `.context/` at-or-above the files
+the session touched (create `<workspace>/.context/ai-log/` on first use); a
+session spanning workspaces logs once, at the root.
+
 ---
 
 ## Log format
