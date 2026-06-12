@@ -6,6 +6,16 @@ tier: deep
 
 # Skill: ticket-clarify
 
+> **`/ticket-clarify help`** — if the invocation argument is `help` (or
+> `--help`), print this card verbatim and stop; do not run the skill.
+>
+> - **What:** Converts an existing ticket/message into a structured technical brief — never asks, marks gaps with ❓.
+> - **When:** A ticket or written description already exists.
+> - **Gates / asks:** Hand-off: approve the brief before any planning.
+> - **Output:** Brief: what/why, scope in/out, acceptance criteria, S/M/L estimate, open questions.
+> - **Chain:** After `ticket-create` (or direct entry) → next: `task-plan`.
+> - **Example:** `/ticket-clarify` + paste the ticket
+
 Convert any input — a ticket, a Slack message, a verbal description — into a
 structured technical brief.
 

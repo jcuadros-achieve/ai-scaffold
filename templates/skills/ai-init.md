@@ -6,6 +6,16 @@ tier: deep
 
 # Skill: ai-init
 
+> **`/ai-init help`** — if the invocation argument is `help` (or
+> `--help`), print this card verbatim and stop; do not run the skill.
+>
+> - **What:** Analyzes the real codebase and rewrites the generic context (CLAUDE.md, rules, customizable skills) with project-specific content.
+> - **When:** Once per project after install; re-run after major changes.
+> - **Gates / asks:** None — runs all four phases without confirmation and overwrites the generic files.
+> - **Output:** Populated CLAUDE.md (+ per-workspace CLAUDE.md in a monorepo), concretized rules (incl. stack-rule scopes), reinterpreted skills.
+> - **Chain:** Standalone keystone — run before using the chains seriously.
+> - **Example:** `/ai-init`
+
 Analyze an existing codebase and populate the installed AI context files
 (`CLAUDE.md`, `.claude/rules/`, the customizable skills) with content derived
 from the real project. This is the skill that turns

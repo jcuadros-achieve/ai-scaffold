@@ -6,6 +6,16 @@ tier: fast
 
 # Skill: verify
 
+> **`/verify help`** — if the invocation argument is `help` (or
+> `--help`), print this card verbatim and stop; do not run the skill.
+>
+> - **What:** Runs the project's real gates: build, lint, tests, coverage, dependency audit, plus manual checks.
+> - **When:** Implementation is complete, before writing the PR.
+> - **Gates / asks:** Green → proposes `pr-write`; any red gate stops the chain (never weakened to pass).
+> - **Output:** Gate results table with real command output + verdict.
+> - **Chain:** After `task-implement` → next: `pr-write`.
+> - **Example:** `/verify`
+
 Run after `task-implement` and before `pr-write`. Proves the change actually
 works by running the project's real gates — not by asserting it should work.
 

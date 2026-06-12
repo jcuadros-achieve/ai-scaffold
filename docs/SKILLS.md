@@ -11,6 +11,9 @@ Skills are native Claude skills installed at `.claude/skills/<name>/SKILL.md`:
 
 - **Claude Code** — type `/<name>` (e.g. `/ticket-clarify`). The `/` menu
   lists every installed skill with its description.
+- **`/<name> help`** — every skill prints its own usage card (what, when,
+  gates, output, chain position, example) and stops. The fastest way to learn
+  a skill without leaving your project.
 - **Copilot / Cursor** — both read `.claude/` natively; ask by name
   ("run verify").
 

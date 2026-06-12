@@ -6,6 +6,16 @@ tier: fast
 
 # Skill: ai-log-write
 
+> **`/ai-log-write help`** — if the invocation argument is `help` (or
+> `--help`), print this card verbatim and stop; do not run the skill.
+>
+> - **What:** Logs a session where AI generated committed (or deliberately rejected) code.
+> - **When:** After AI-assisted work outside the chain (the chain logs automatically).
+> - **Gates / asks:** None.
+> - **Output:** Dated log entry in the nearest `.context/ai-log/` (accepted/rejected/deviations/patterns + notes for future sessions).
+> - **Chain:** Context chain; invoked automatically at `task-implement`'s close.
+> - **Example:** `/ai-log-write`
+
 Log any session where the AI generated committed code.
 
 ---

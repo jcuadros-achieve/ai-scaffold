@@ -6,6 +6,16 @@ tier: deep
 
 # Skill: incident
 
+> **`/incident help`** — if the invocation argument is `help` (or
+> `--help`), print this card verbatim and stop; do not run the skill.
+>
+> - **What:** Handles a production incident: mitigate first, then hotfix, then postmortem.
+> - **When:** Production is degraded or down. (Optional module.)
+> - **Gates / asks:** Mitigation precedes diagnosis-perfectionism; postmortem is mandatory.
+> - **Output:** Mitigation steps, hotfix, postmortem draft.
+> - **Chain:** On-demand, outside the linear chain.
+> - **Example:** `/incident api returning 502s since 14:00`
+
 Handle a production incident or urgent hotfix. The normal `ticket-clarify →
 task-plan → …` flow is for planned work; an incident inverts the priority:
 **mitigate first, understand second.** Optional module — relevant to deployed

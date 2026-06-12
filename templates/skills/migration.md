@@ -6,6 +6,16 @@ tier: deep
 
 # Skill: migration
 
+> **`/migration help`** — if the invocation argument is `help` (or
+> `--help`), print this card verbatim and stop; do not run the skill.
+>
+> - **What:** Writes a safe, reversible, backward-compatible DB/data migration (expand–contract).
+> - **When:** Schema or data changes on a live system. (Optional module.)
+> - **Gates / asks:** Reversibility and backward compatibility are requirements, not suggestions.
+> - **Output:** Migration plan + scripts with rollback path.
+> - **Chain:** On-demand, outside the linear chain.
+> - **Example:** `/migration add nullable column without downtime`
+
 Write a database (or data) migration safely. Migrations are in a no-touch zone
 (see [[no-touch]]) — they require human review and must never be edited after
 they've run anywhere.

@@ -6,6 +6,16 @@ tier: deep
 
 # Skill: ticket-create
 
+> **`/ticket-create help`** — if the invocation argument is `help` (or
+> `--help`), print this card verbatim and stop; do not run the skill.
+>
+> - **What:** Authors a complete ticket from a rough idea — by asking.
+> - **When:** You have an idea or request but no ticket yet.
+> - **Gates / asks:** Asks What/Why/How/Context/Scope/criteria as option dialogs (max 2 rounds); filing via tracker MCP needs your explicit approval.
+> - **Output:** Paste-ready ticket (Overview, What, Why, How, Context, Scope, acceptance criteria, details), optionally filed.
+> - **Chain:** Work chain entry point → next: `ticket-clarify`.
+> - **Example:** `/ticket-create we need rate limiting on the login endpoint`
+
 Turn a rough idea ("we need X", a Slack thread, a hallway request) into a
 complete, ready-to-file ticket.
 

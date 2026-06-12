@@ -6,6 +6,16 @@ tier: fast
 
 # Skill: context-update
 
+> **`/context-update help`** — if the invocation argument is `help` (or
+> `--help`), print this card verbatim and stop; do not run the skill.
+>
+> - **What:** Rebuilds `.context/INDEX.md` from sources and surfaces unresolved rule-update actions.
+> - **When:** The index looks stale, or after manual changes to `.context/`.
+> - **Gates / asks:** Never edits CLAUDE.md automatically — surfaces what should change.
+> - **Output:** Regenerated INDEX (ADRs, AI log, pending rule updates, quick reference; workspace indexes in a monorepo).
+> - **Chain:** Context chain; invoked automatically at `pr-write`'s close.
+> - **Example:** `/context-update`
+
 Keep `.context/INDEX.md` in sync. Rebuild it from source files, never from
 memory. Surface pending rule-update actions drawn from AI log entries.
 

@@ -6,6 +6,16 @@ tier: deep
 
 # Skill: task-implement
 
+> **`/task-implement help`** — if the invocation argument is `help` (or
+> `--help`), print this card verbatim and stop; do not run the skill.
+>
+> - **What:** Executes the approved plan test-first (TDD); stops on any deviation from the plan.
+> - **When:** The plan is approved and its remaining questions read None.
+> - **Gates / asks:** Step 0 records the decision (ADR) before any code; deviations are A/B choices you decide; closes by writing the session log automatically.
+> - **Output:** Code + tests + completion report (files, tests, deviations, manual checks).
+> - **Chain:** After `task-plan` → next: `verify`.
+> - **Example:** `/task-implement`
+
 Execute an approved `task-plan`. Write code and tests. Do **not** deviate
 silently.
 

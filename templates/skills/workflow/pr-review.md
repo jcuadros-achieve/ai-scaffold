@@ -6,6 +6,16 @@ tier: deep
 
 # Skill: pr-review
 
+> **`/pr-review help`** — if the invocation argument is `help` (or
+> `--help`), print this card verbatim and stop; do not run the skill.
+>
+> - **What:** Reviews the diff in seven structured passes (scope, correctness, security, code rules, tests, performance, decisions & docs).
+> - **When:** The PR is ready and gates passed.
+> - **Gates / asks:** Verdict is a recommendation — merging is the human's decision; blockers propose returning to `task-implement`.
+> - **Output:** Blockers/warnings/notes with file:line and a concrete suggestion each + acceptance-criteria status.
+> - **Chain:** End of the work chain.
+> - **Example:** `/pr-review`
+
 Run seven structured review passes over a diff. Produce actionable findings, not
 opinions. Assumes the gates already passed via `verify`; this is the human-facing
 judgment layer, not a replacement for [[ci-gates]].

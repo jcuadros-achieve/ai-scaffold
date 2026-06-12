@@ -6,6 +6,16 @@ tier: deep
 
 # Skill: adr-write
 
+> **`/adr-write help`** — if the invocation argument is `help` (or
+> `--help`), print this card verbatim and stop; do not run the skill.
+>
+> - **What:** Records a significant technical decision as an ADR and updates the index.
+> - **When:** A decision is cross-cutting, hard to reverse, rejects an obvious alternative, or has real tradeoffs.
+> - **Gates / asks:** None — but never fabricate alternatives; status is Accepted on creation.
+> - **Output:** ADR-NNN file (in the nearest `.context/` in a monorepo) + updated index.
+> - **Chain:** Context chain; also invoked automatically by `task-implement` step 0.
+> - **Example:** `/adr-write we chose polling over webhooks because …`
+
 Generate an Architecture Decision Record when a significant technical decision is
 made. Update the ADR index automatically.
 

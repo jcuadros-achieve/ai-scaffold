@@ -6,6 +6,16 @@ tier: fast
 
 # Skill: pr-write
 
+> **`/pr-write help`** — if the invocation argument is `help` (or
+> `--help`), print this card verbatim and stop; do not run the skill.
+>
+> - **What:** Generates a conventional-commits PR description and squash commit message from the diff and brief.
+> - **When:** Verification passed.
+> - **Gates / asks:** Closes by checking the ADR still matches what was built and refreshing `.context/INDEX.md`; Hand-off to `pr-review`.
+> - **Output:** PR text (what/why/how-to-test/checklist) under 400 words + commit message.
+> - **Chain:** After `verify` → next: `pr-review`.
+> - **Example:** `/pr-write`
+
 Generate a PR description from the diff and the brief. The output is ready to
 paste into a PR or open one directly.
 

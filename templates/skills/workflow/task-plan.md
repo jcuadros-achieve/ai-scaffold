@@ -6,6 +6,16 @@ tier: deep
 
 # Skill: task-plan
 
+> **`/task-plan help`** — if the invocation argument is `help` (or
+> `--help`), print this card verbatim and stop; do not run the skill.
+>
+> - **What:** Produces a file-level technical plan by reading the real code; writes no implementation.
+> - **When:** The brief is approved and no ❓ blocks planning.
+> - **Gates / asks:** Hand-off: approving the plan fixes the technical decision.
+> - **Output:** Files to change/create, pattern to follow, ordered steps, edge cases, risks, what NOT to touch.
+> - **Chain:** After `ticket-clarify` → next: `task-implement`.
+> - **Example:** `/task-plan` (with the approved brief in context)
+
 Take an approved `ticket-clarify` brief and produce a file-level technical plan.
 Do **not** write implementation code.
 

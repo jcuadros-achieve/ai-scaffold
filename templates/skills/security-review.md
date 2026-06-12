@@ -6,6 +6,16 @@ tier: deep
 
 # Skill: security-review
 
+> **`/security-review help`** — if the invocation argument is `help` (or
+> `--help`), print this card verbatim and stop; do not run the skill.
+>
+> - **What:** Threat-model-style pass over seven dimensions (authz, input, exposure, SSRF, secrets/crypto, dependencies, abuse).
+> - **When:** Auth changes, new endpoints, data handling, dependency changes, anything touching a trust boundary.
+> - **Gates / asks:** Critical/High findings block merge and trigger a log entry.
+> - **Output:** Findings (dimension, severity, file:line, fix) + verdict.
+> - **Chain:** On-demand; also triggered from `pr-review`'s security pass.
+> - **Example:** `/security-review`
+
 A focused, threat-model-style security pass. Goes deeper than the line-by-line
 `rules/security.md` check inside `pr-review` — use it for auth changes, new
 endpoints, data handling, dependency changes, or anything touching a trust

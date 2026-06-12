@@ -215,6 +215,9 @@ Skills are native Claude skills; Copilot and Cursor discover the same files
 | **Copilot (CLI, cloud, VS Code)** | discovered from `.claude/skills/`; ask by name | "run verify" |
 | **Cursor** | reads `.claude/` natively; ask by name | "run task-plan" |
 
+Every skill is self-documenting: **`/<name> help`** prints its usage card
+(what, when, gates, output, chain position, example) without running it.
+
 → **Full usage guide** — where to enter the chain, what each skill asks and
 produces, what you approve at each gate, FAQ: [`docs/SKILLS.md`](docs/SKILLS.md).
 

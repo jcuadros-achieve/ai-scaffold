@@ -6,6 +6,16 @@ tier: deep
 
 # Skill: refactor
 
+> **`/refactor help`** — if the invocation argument is `help` (or
+> `--help`), print this card verbatim and stop; do not run the skill.
+>
+> - **What:** Improves structure without changing behavior, tests-first.
+> - **When:** Code works but its shape resists change.
+> - **Gates / asks:** Behavior preservation — tests stay green throughout.
+> - **Output:** Refactored code with passing tests.
+> - **Chain:** On-demand, outside the linear chain.
+> - **Example:** `/refactor extract validation out of the route handlers`
+
 Improve the structure of existing code **without changing its behavior**. A
 refactor that changes behavior is a feature or a bugfix — do that separately.
 

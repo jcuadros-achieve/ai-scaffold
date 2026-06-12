@@ -288,7 +288,9 @@ targets).
      `ai-init` customizes per project, not finished project-specific content.
    - For a cross-cutting addition, capture the reasoning in this repo's own
      `.context/adr/` (the same model this tool promotes in targets).
-   - Every **skill** template starts with `name`/`description` frontmatter
-     (invariant 3). If the skill is optional, add its logical path
-     (`skills/<name>.md`) to the module's `paths` in `scaffold.manifest.json` —
-     the generated pointers pick it up automatically.
+   - Every **skill** template starts with `name`/`description`/`tier`
+     frontmatter (invariant 3) **and a help card** right after the title
+     (`/<name> help` prints it and stops — ADR-016; behavior changes must
+     update the card in the same edit). If the skill is optional, add its
+     logical path (`skills/<name>.md`) to the module's `paths` in
+     `scaffold.manifest.json`.
