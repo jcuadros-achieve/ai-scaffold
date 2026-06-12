@@ -60,6 +60,15 @@ test('every skill template declares a valid tier (ADR-005)', () => {
   }
 })
 
+test('every skill template carries its help card (ADR-016)', () => {
+  for (const f of files.filter(f => f.startsWith('skills/'))) {
+    const name = path.basename(f, '.md')
+    const content = fs.readFileSync(path.join(TEMPLATES, f), 'utf8')
+    assert.ok(content.includes(`> **\`/${name} help\`**`),
+      `${f} must open with its help card (\`/${name} help\` — ADR-016)`)
+  }
+})
+
 test('no model IDs anywhere in the payload (ADR-005)', () => {
   for (const f of files) {
     const content = fs.readFileSync(path.join(TEMPLATES, f), 'utf8')

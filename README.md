@@ -291,7 +291,9 @@ ai-scaffold/
 
 1. Add the `.md` file under `templates/skills/` or `templates/rules/` — skills
    need `name`/`description`/`tier` frontmatter (`tier: fast` for mechanical
-   work, `deep` for judgment-heavy; never a model ID)
+   work, `deep` for judgment-heavy; never a model ID) **and a help card**
+   right after the title (`/<name> help` prints it and stops). The test suite
+   rejects skills missing either.
 2. If it's optional, add its logical path to a module in `scaffold.manifest.json`
 3. Run `node scripts/update-catalog.mjs` (registers/bumps the template in the
    catalog — the test suite fails if you skip this)
