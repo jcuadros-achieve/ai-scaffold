@@ -6,7 +6,7 @@ import path from 'path'
 import {
   planInstall, applyAction, writeVersionFile, readVersionFile,
   readInstalledSelection, loadManifest, loadCatalog, mapTemplatePath,
-  hashContent, readInstalledBases,
+  hashContent, readInstalledBases, loadTrackMap, changelogSince,
   loadMcpCatalog, mcpChoicesFor, mergeMcpServers, readInstalledMcp,
   SCAFFOLD_VERSION, SCAFFOLD_VERSION_FILE, LEGACY_VERSION_FILE,
 } from '../dist/installer.js'
@@ -108,11 +108,12 @@ test('applying a plan then re-planning yields only skips', () => {
   assert.ok(again.every(a => a.type === 'skip'))
 })
 
-test('a locally modified file with no base info is an update (legacy behavior)', () => {
+test('a locally modified reconcile file with no base info is an update (legacy behavior)', () => {
   const root = tmpProject()
   planInstall(root, []).forEach(applyAction)
 
-  const target = path.join(root, 'CLAUDE.md')
+  // A reconcile file (skill), since seed files are never reconciled (ADR-017).
+  const target = path.join(root, '.claude/skills/debug/SKILL.md')
   fs.appendFileSync(target, '\nlocal customization\n')
 
   const updates = planInstall(root, []).filter(a => a.type === 'update')
@@ -134,44 +135,87 @@ function installWithBases(root) {
   writeVersionFile(root, [])
 }
 
-test('customized file with unchanged upstream is skipped silently (ADR-006)', () => {
+// ADR-006 three-way classification applies to *reconcile* files (skills,
+// context). Seed files (CLAUDE.md, rules) bypass it entirely — see ADR-017
+// tests below. These use a skill, which maps to .claude/skills/verify/SKILL.md.
+const VERIFY_REL  = 'skills/workflow/verify.md'
+const verifyDest  = root => path.join(root, '.claude/skills/verify/SKILL.md')
+
+test('customized reconcile file with unchanged upstream is skipped silently (ADR-006)', () => {
   const root = tmpProject()
   installWithBases(root)
 
-  fs.appendFileSync(path.join(root, 'CLAUDE.md'), '\nai-init customization\n')
+  fs.appendFileSync(verifyDest(root), '\nlocal customization\n')
 
-  const action = planInstall(root, []).find(a => a.dest === path.join(root, 'CLAUDE.md'))
+  const action = planInstall(root, []).find(a => a.dest === verifyDest(root))
   assert.equal(action.type, 'skip')
   assert.equal(action.merge, 'customized')
 })
 
-test('unmodified file with changed upstream is a clean update (ADR-006)', () => {
+test('unmodified reconcile file with changed upstream is a clean update (ADR-006)', () => {
   const root = tmpProject()
   installWithBases(root)
 
   // Simulate an older install: local file matches its recorded base, but the
   // base differs from the current template (upstream moved on).
-  const target = path.join(root, 'CLAUDE.md')
+  const target = verifyDest(root)
   fs.writeFileSync(target, 'old template content\n')
-  setRecordedBase(root, 'CLAUDE.md', hashContent('old template content\n'))
+  setRecordedBase(root, VERIFY_REL, hashContent('old template content\n'))
 
   const action = planInstall(root, []).find(a => a.dest === target)
   assert.equal(action.type, 'update')
   assert.equal(action.merge, 'clean')
 })
 
-test('customized file with changed upstream is a conflict (ADR-006)', () => {
+test('customized reconcile file with changed upstream is a conflict (ADR-006)', () => {
   const root = tmpProject()
   installWithBases(root)
 
-  const target = path.join(root, 'CLAUDE.md')
+  const target = verifyDest(root)
   fs.writeFileSync(target, 'locally customized content\n')
-  setRecordedBase(root, 'CLAUDE.md', hashContent('some older base content\n'))
+  setRecordedBase(root, VERIFY_REL, hashContent('some older base content\n'))
 
   const action = planInstall(root, []).find(a => a.dest === target)
   assert.equal(action.type, 'update')
   assert.equal(action.merge, 'conflict')
   assert.ok(action.diff.length > 0)
+})
+
+test('a present seed file is never reconciled, even when upstream changed (ADR-017)', () => {
+  const root = tmpProject()
+  installWithBases(root)
+
+  // ai-init rewrote CLAUDE.md AND the upstream template moved on: still skipped.
+  const target = path.join(root, 'CLAUDE.md')
+  fs.writeFileSync(target, 'project-specific CLAUDE.md\n')
+  setRecordedBase(root, 'CLAUDE.md', hashContent('some older base content\n'))
+
+  const action = planInstall(root, []).find(a => a.dest === target)
+  assert.equal(action.type, 'skip')
+  assert.equal(action.merge, 'seed')
+  assert.equal(action.diff, undefined)
+})
+
+test('an absent seed file is still created (ADR-017)', () => {
+  const root = tmpProject()
+  const action = planInstall(root, []).find(a => a.dest === path.join(root, 'CLAUDE.md'))
+  assert.equal(action.type, 'create')
+})
+
+test('loadTrackMap: CLAUDE.md and rules are seed, skills and context reconcile (ADR-017)', () => {
+  const tracks = loadTrackMap()
+  assert.equal(tracks.get('CLAUDE.md'), 'seed')
+  assert.equal(tracks.get('rules/security.md'), 'seed')
+  assert.equal(tracks.get(VERIFY_REL), 'reconcile')
+  assert.equal(tracks.get('context/INDEX.md'), 'reconcile')
+})
+
+test('changelogSince returns only releases newer than installed, sorted (ADR-017)', () => {
+  for (const r of changelogSince(null)) {
+    assert.match(r.version, /^\d+\.\d+\.\d+$/)
+    assert.ok(Array.isArray(r.changes))
+  }
+  assert.deepEqual(changelogSince('999.0.0'), [])
 })
 
 test('readInstalledBases returns the recorded map, null when absent', () => {

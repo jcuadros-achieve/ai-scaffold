@@ -86,10 +86,15 @@ Two layers, deliberately separated:
   against the target — skipping optional-module files whose id isn't in
   `selected`. `mapTemplatePath()` translates the logical template path to its
   install location; nothing is generated — the payload is exactly the mapped
-  templates (ADR-011). Differing files are
-  classified three-way against the recorded installed base (`FileAction.merge`:
+  templates (ADR-011). Each template's catalog `track` mode (ADR-017) decides
+  how a present file is treated: `seed` files (CLAUDE.md, rules — owned by the
+  project after `ai-init`) are install-once and skipped (`merge: 'seed'`),
+  never reconciled; `reconcile` files are classified three-way against the
+  recorded installed base (`FileAction.merge`:
   `clean` / `customized` / `conflict` / `unknown`, ADR-006) — commands render
-  the classification but never re-derive it. `applyAction()` executes
+  the classification but never re-derive it. `loadTrackMap()` exposes the modes;
+  `loadChangelog()` / `changelogSince()` read the catalog-derived per-version
+  changelog. `applyAction()` executes
   one action. `loadManifest()` reads the optional-module list;
   `writeVersionFile()` / `readVersionFile()` / `readInstalledSelection()` manage
   `.claude/.scaffold-version` (which records the chosen modules; the pre-2.0
@@ -103,9 +108,14 @@ Two layers, deliberately separated:
   `planInstall()`, renders with `src/differ.ts`, drives `prompts`, then calls
   `applyAction()`. `install` parses flags
   (`--all`/`--core`/`--modules=`/`--mcp=`/`--yes`)
-  and, in a TTY, prompts a module checklist plus an MCP-server multiselect. `update` is the same flow,
-  pre-selecting the previously-installed modules; `diff`/`status` plan against the
-  installed selection so they don't report unselected optional files as missing.
+  and, in a TTY, prompts a module checklist plus an MCP-server multiselect.
+  **`update` is its own command, not a re-run of install (ADR-017):** it reads
+  the previously-installed selection silently (no module/MCP wizard, no commit
+  prompt), prints the catalog-derived changelog since the installed version,
+  installs new files, reconciles `reconcile` files (ADR-006), and never touches
+  `seed` files that already exist. Adding/dropping a module is an `install`
+  operation. `diff`/`status` plan against the installed selection so they don't
+  report unselected optional files as missing.
 - **`src/cli.ts`** routes `argv[2]` to one of the four commands; flags are read
   from `process.argv` inside the command.
 
@@ -129,8 +139,11 @@ These caused real bugs and are easy to reintroduce:
    `status`/`update` won't notice. The **per-template catalog** in
    `scaffold.manifest.json` (`templates`: version/date/sha256 per file, ADR-007)
    is the fine signal — run `node scripts/update-catalog.mjs` after any change
-   under `templates/`; `test/catalog.test.mjs` fails the suite on drift. Never
-   hand-edit catalog entries. `scripts/` is dev-only (not in the `files`
+   under `templates/`; `test/catalog.test.mjs` fails the suite on drift. That
+   script also stamps each entry's `track` (seed/reconcile, ADR-017 — `trackOf`
+   is its single source) and appends the per-version `changelog` keyed by
+   `SCAFFOLD_VERSION`. Never hand-edit catalog or changelog entries.
+   `scripts/` is dev-only (not in the `files`
    whitelist, ships nowhere).
 
 3. **Every skill template must carry frontmatter** (`name` + `description` +
@@ -164,9 +177,11 @@ These caused real bugs and are easy to reintroduce:
    (`optional: [...]`; pre-2.0 installs used `.ai/.scaffold-version`, which the
    readers still fall back to). Since 2.3.0 it also records the **installed
    base** per template (`templates: { path → {version, hash} }`, selection-aware),
-   which drives the 3-way update classification (ADR-006/ADR-007): customized +
-   upstream-unchanged skips silently; conflicts are never auto-applied, even
-   with `--yes`. Since 2.9.0 it also records the chosen MCP servers
+   which drives the 3-way update classification of `reconcile` files
+   (ADR-006/ADR-007): customized + upstream-unchanged skips silently; conflicts
+   are never auto-applied, even with `--yes`. `seed` files (ADR-017) skip the
+   classification entirely — install-once, never reconciled (so their recorded
+   base is unused). Since 2.9.0 it also records the chosen MCP servers
    (`mcp: [...]`, ADR-008) so `update` preselects them. The recorded base is always a catalog hash, never a local
    file's hash — and applying/declining an update re-records the latest catalog,
    so a declined conflict is not re-nagged until upstream changes again.

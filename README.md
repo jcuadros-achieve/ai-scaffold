@@ -88,8 +88,8 @@ range they cover and `ai-init` concretizes them like any optional rule.
 - **Flags:** `--all` (all optional), `--modules=migration,observability`
   (specific), `--core` (core only), `--yes` (no prompts).
 
-`update` keeps the modules you previously chose (and lets you add more);
-`diff`/`status` only consider what you installed. The selection — and the
+`update` keeps the modules you previously chose (to add or drop a module,
+re-run `install`); `diff`/`status` only consider what you installed. The selection — and the
 installed base version of every template (per-file version + hash, from the
 catalog in `scaffold.manifest.json`) — is recorded in
 `.claude/.scaffold-version`.
@@ -244,16 +244,26 @@ When new skills or rules are added to this repo:
 npx github:jcuadros-achieve/ai-scaffold update
 ```
 
-The updater compares each file **three ways** — your local copy, the installed
-base (recorded per file at install time), and the incoming template:
+`update` is its own command — it never re-runs the install wizard. It prints
+what changed since your installed version (a changelog derived from the
+catalog), installs genuinely new files, and reconciles the rest.
 
-- **Customized, upstream unchanged** (the normal post-`ai-init` state) —
-  skipped silently. No diff walls for files only *you* changed.
-- **Unmodified, upstream changed** — a safe fast-forward, applied on confirm
-  (or automatically with `--yes`).
-- **Customized AND changed upstream** — a conflict: shown with its diff,
-  default is *keep current*, and it is **never** applied automatically, not
-  even with `--yes`. Merge manually if you want both sides.
+Templates fall into two kinds:
+
+- **Seed files** — `CLAUDE.md` and the rules. These ship as generic
+  placeholders that `ai-init` rewrites with your project's specifics, so the
+  project owns them. `update` installs them once and then **never touches
+  them** — no diff, no prompt, not even with `--yes`. If an upstream seed
+  template improves, the changelog tells you, and you pull it by hand.
+- **Reconcile files** — skills and context scaffolding. These compare **three
+  ways** — your local copy, the installed base (recorded per file at install
+  time), and the incoming template:
+  - **Customized, upstream unchanged** — skipped silently.
+  - **Unmodified, upstream changed** — a safe fast-forward, applied on confirm
+    (or automatically with `--yes`).
+  - **Customized AND changed upstream** — a conflict: shown with its diff,
+    default *keep current*, **never** applied automatically, not even with
+    `--yes`. Merge manually if you want both sides.
 
 Files you've customized are never silently overwritten.
 

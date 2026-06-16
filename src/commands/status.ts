@@ -26,9 +26,12 @@ export async function status(): Promise<void> {
   const conflicts  = updates.filter(a => a.merge === 'conflict')
   const missing    = actions.filter(a => a.type === 'create')
   const customized = actions.filter(a => a.type === 'skip' && a.merge === 'customized')
+  const seedKept   = actions.filter(a => a.type === 'skip' && a.merge === 'seed')
 
   if (customized.length)
     console.log(chalk.gray(`  ${customized.length} customized files (no upstream changes)`))
+  if (seedKept.length)
+    console.log(chalk.gray(`  ${seedKept.length} seed files (install-once, not tracked by update)`))
 
   if (!updates.length && !missing.length) {
     console.log(chalk.green('\n  All files up to date.\n'))

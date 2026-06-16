@@ -48,6 +48,14 @@ test('catalog entries are well-formed', () => {
     assert.match(t.updated, /^\d{4}-\d{2}-\d{2}$/, `${t.path} updated`)
     assert.ok(['skill', 'rule', 'context', 'root'].includes(t.kind), `${t.path} kind`)
     assert.ok(Array.isArray(t.tags), `${t.path} tags`)
+    assert.ok(t.track === 'seed' || t.track === 'reconcile', `${t.path} track`)
+  }
+})
+
+test('track mode: CLAUDE.md and rules are seed, skills and context reconcile (ADR-017)', () => {
+  for (const t of entries) {
+    const expected = (t.path === 'CLAUDE.md' || t.path.startsWith('rules/')) ? 'seed' : 'reconcile'
+    assert.equal(t.track, expected, `${t.path} track should be ${expected} (${HINT})`)
   }
 })
 

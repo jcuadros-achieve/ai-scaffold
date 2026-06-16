@@ -14,11 +14,14 @@ export async function diff(): Promise<void> {
   const toUpdate   = updates.filter(a => a.merge !== 'conflict')
   const conflicts  = updates.filter(a => a.merge === 'conflict')
   const customized = actions.filter(a => a.type === 'skip' && a.merge === 'customized')
+  const seedKept   = actions.filter(a => a.type === 'skip' && a.merge === 'seed')
 
   if (!toCreate.length && !updates.length) {
     console.log(chalk.green('  Project is up to date.'))
     if (customized.length)
       console.log(chalk.gray(`  (${customized.length} customized files, no upstream changes)`))
+    if (seedKept.length)
+      console.log(chalk.gray(`  (${seedKept.length} seed files — install-once, not tracked by update)`))
     return
   }
 
@@ -48,4 +51,6 @@ export async function diff(): Promise<void> {
 
   if (customized.length)
     console.log(chalk.gray(`${customized.length} customized files untouched (no upstream changes).`))
+  if (seedKept.length)
+    console.log(chalk.gray(`${seedKept.length} seed files (CLAUDE.md, rules) — install-once, not tracked by update.`))
 }

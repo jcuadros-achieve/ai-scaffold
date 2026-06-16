@@ -15,8 +15,15 @@ export const SCAFFOLD_VERSION = '2.14.0'
  *  clean      = local untouched, upstream changed   → safe fast-forward
  *  customized = local changed, upstream unchanged   → skipped, nothing new
  *  conflict   = both changed                        → never auto-applied
- *  unknown    = no base recorded (pre-2.3 install)  → legacy behavior */
-export type MergeState = 'clean' | 'customized' | 'conflict' | 'unknown'
+ *  unknown    = no base recorded (pre-2.3 install)  → legacy behavior
+ *  seed       = install-once template already present → never reconciled (ADR-017) */
+export type MergeState = 'clean' | 'customized' | 'conflict' | 'unknown' | 'seed'
+
+/** How `update` treats a template (ADR-017).
+ *  seed      = installed once if absent, then never reconciled/overwritten —
+ *              the project owns the content after `ai-init` (CLAUDE.md, rules).
+ *  reconcile = three-way base-aware update (ADR-006) — skills, context. */
+export type TrackMode = 'seed' | 'reconcile'
 
 export interface FileAction {
   type: 'create' | 'update' | 'skip'
@@ -52,6 +59,21 @@ export interface CatalogEntry {
   updated: string
   hash:    string
   tags?:   string[]
+  /** install-once vs base-aware reconcile (ADR-017); defaults to reconcile. */
+  track?:  TrackMode
+}
+
+/** One file change in a release (ADR-017). */
+export interface ChangelogChange {
+  path:  string
+  kind:  'added' | 'modified' | 'removed'
+  track: TrackMode
+}
+
+/** A release's file changes, keyed by SCAFFOLD_VERSION in the manifest. */
+export interface ChangelogEntry {
+  date:    string
+  changes: ChangelogChange[]
 }
 
 /**
@@ -92,6 +114,44 @@ export function loadCatalog(): CatalogEntry[] {
   } catch {
     return []
   }
+}
+
+/** Per-template track mode (ADR-017): logical path → seed | reconcile.
+ *  Anything absent from the catalog defaults to reconcile (ADR-006 behavior). */
+export function loadTrackMap(): Map<string, TrackMode> {
+  return new Map(loadCatalog().map(e => [e.path, e.track ?? 'reconcile']))
+}
+
+/** Per-release file changes (ADR-017), keyed by SCAFFOLD_VERSION. */
+export function loadChangelog(): Record<string, ChangelogEntry> {
+  if (!fs.existsSync(MANIFEST_FILE)) return {}
+  try {
+    const parsed = JSON.parse(fs.readFileSync(MANIFEST_FILE, 'utf8'))
+    return typeof parsed.changelog === 'object' && parsed.changelog !== null
+      ? parsed.changelog : {}
+  } catch {
+    return {}
+  }
+}
+
+/** Compare two `a.b.c` versions: negative if a<b, positive if a>b, 0 if equal. */
+function compareVersions(a: string, b: string): number {
+  const pa = a.split('.').map(Number)
+  const pb = b.split('.').map(Number)
+  for (let i = 0; i < 3; i++) {
+    const d = (pa[i] ?? 0) - (pb[i] ?? 0)
+    if (d !== 0) return d
+  }
+  return 0
+}
+
+/** Changelog entries newer than the installed version, oldest-first (ADR-017).
+ *  installed === null (never installed) returns the whole changelog. */
+export function changelogSince(installed: string | null): Array<{ version: string } & ChangelogEntry> {
+  return Object.entries(loadChangelog())
+    .filter(([version]) => installed === null || compareVersions(version, installed) > 0)
+    .sort(([a], [b]) => compareVersions(a, b))
+    .map(([version, entry]) => ({ version, ...entry }))
 }
 
 /** The verified MCP server catalog and the ids offered to every project. */
@@ -184,10 +244,22 @@ export function readInstalledBases(
 }
 
 function planFile(src: string, dest: string, incoming: string, label: string,
-                  baseHash?: string): FileAction {
+                  track: TrackMode, baseHash?: string): FileAction {
   if (!fs.existsSync(dest)) return { type: 'create', src, dest }
   const current = fs.readFileSync(dest, 'utf8')
   if (current === incoming) return { type: 'skip', src, dest }
+
+  // Seed templates are installed once, then owned by the project (ADR-017):
+  // present-and-differing means ai-init customized it — never reconcile or
+  // overwrite. The changelog surfaces upstream changes for a manual pull.
+  // Exception: a legacy symlink (pre-2.0 CLAUDE.md) is not project content —
+  // replace it with the real file (invariant: applyAction replaces symlinks).
+  if (track === 'seed') {
+    try {
+      if (fs.lstatSync(dest).isSymbolicLink()) return { type: 'create', src, dest }
+    } catch { /* dest vanished between checks; fall through to skip */ }
+    return { type: 'skip', src, dest, merge: 'seed' }
+  }
 
   if (baseHash) {
     const localModified    = hashContent(current)  !== baseHash
@@ -211,13 +283,14 @@ export function planInstall(projectRoot: string, selected: string[] = []): FileA
   const actions: FileAction[] = []
   const excluded = excludedPaths(selected)
   const bases = readInstalledBases(projectRoot)
+  const tracks = loadTrackMap()
 
   walkDir(TEMPLATES_DIR, (srcPath) => {
     const rel = path.relative(TEMPLATES_DIR, srcPath).split(path.sep).join('/')
     if (excluded.has(rel)) return            // optional module not selected
     const dest = path.join(projectRoot, mapTemplatePath(rel))
     actions.push(planFile(srcPath, dest, fs.readFileSync(srcPath, 'utf8'), rel,
-      bases?.[rel]?.hash))
+      tracks.get(rel) ?? 'reconcile', bases?.[rel]?.hash))
   })
 
   return actions
