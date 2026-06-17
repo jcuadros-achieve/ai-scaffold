@@ -37,8 +37,8 @@ a form that was filled in. Inventory (what exists) is the floor; synthesis
 
 ```
 Phase 1  Scan & analyze   → understand the codebase (the central artifact)
-Phase 2  Profile          → write .scaffold/project-profile.json; run `ai-scaffold suggest`
-Phase 3  Curate           → rank/justify candidates, confirm with the human, run `ai-scaffold apply`
+Phase 2  Profile          → write .scaffold/project-profile.json; run `npx github:jcuadros-achieve/ai-scaffold suggest`
+Phase 3  Curate           → rank/justify candidates, confirm with the human, run `npx github:jcuadros-achieve/ai-scaffold apply`
 Phase 4  Generate         → concretize the installed rules/skills + CLAUDE.md
 Phase 5  Write            → write CLAUDE.md (+ nested per-workspace files)
 ```
@@ -193,7 +193,7 @@ re-derives them, so they must be accurate. Schema:
 Write the file, then run:
 
 ```
-ai-scaffold suggest
+npx github:jcuadros-achieve/ai-scaffold suggest
 ```
 
 It writes `.scaffold/candidates.json` — `{ candidates: [{id, entry, workspaces}],
@@ -254,7 +254,7 @@ your own record — the CLI ignores it.
 5. **Apply** — hand the plan to the single writer:
 
 ```
-ai-scaffold apply
+npx github:jcuadros-achieve/ai-scaffold apply
 ```
 
 It writes each entry to its install location, classifies three-way per id
