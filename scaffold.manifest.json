@@ -140,9 +140,9 @@
     {
       "path": "rules/accessibility.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:ca436fa857c296ed8b6e5d18eb1904e9ec0b4ab8ad0e5ae0fa8193512dd901dd",
+      "version": "1.0.1",
+      "updated": "2026-06-17",
+      "hash": "sha256:b4fe724845e269b22cc4a09c8bf4806f2a4b6fcf2250aa693fd83a9bf5250ad4",
       "tags": [
         "accessibility"
       ]
@@ -150,9 +150,9 @@
     {
       "path": "rules/api-contract.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:196baa3648b8a409595a088b5c16cfad42ee75fcac834728f802b81f3de633f4",
+      "version": "1.0.1",
+      "updated": "2026-06-17",
+      "hash": "sha256:fc2cc9d5bc75d0990b01db775e6f5d085d1fb119f8424f535c073425744512b6",
       "tags": [
         "api-contract"
       ]
@@ -160,25 +160,25 @@
     {
       "path": "rules/ci-gates.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:c75eef63fe650c10bd342b58127bc8d28e97f6bbcf5ea1022edd66c52704bb21",
+      "version": "1.0.1",
+      "updated": "2026-06-17",
+      "hash": "sha256:f2e80517bf375e84e2b68dd4b175963559ab6a4691537d181b9cad3633e34014",
       "tags": []
     },
     {
       "path": "rules/code-style.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:dd395a9f4cf98fce59154847af61bc5ce926f6dcc0311e43ebca26fee3267fcc",
+      "version": "1.0.1",
+      "updated": "2026-06-17",
+      "hash": "sha256:c1f62761f0c14f611c274e17c8b03ebf4db268350c5b00b4e8aa4218e48d5023",
       "tags": []
     },
     {
       "path": "rules/config-secrets.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:a99b33e36e4fe199ccbb8d18a0437831c3174dfcff5b4e6fe00b55ddb7c2a4bf",
+      "version": "1.0.1",
+      "updated": "2026-06-17",
+      "hash": "sha256:7a24d13fe33953ec4760b0b0cae760d087d1b9f8411c76a463e1c7a64958336f",
       "tags": [
         "config-secrets"
       ]
@@ -186,17 +186,17 @@
     {
       "path": "rules/context.md",
       "kind": "rule",
-      "version": "1.0.1",
-      "updated": "2026-06-12",
-      "hash": "sha256:9b4ea8b69a33b0f7571b8debfa09cec4c1934e5291d1b522066ce0ecbd48ea54",
+      "version": "1.0.2",
+      "updated": "2026-06-17",
+      "hash": "sha256:2a6823b32a7ebdb3ad1d6e62b045f3834b9c665e0355e5245ad49f28da4398c6",
       "tags": []
     },
     {
       "path": "rules/data-privacy.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:355eae78618ca013476cf314b4f344e0f4ad0eabae15b6e4ba778e3e1f8b1284",
+      "version": "1.0.1",
+      "updated": "2026-06-17",
+      "hash": "sha256:3e63cc5e9be545fb8bd73c1f901aeea10249be9ef1e87e45d6e045d9cff932a3",
       "tags": [
         "data-privacy"
       ]
@@ -204,33 +204,33 @@
     {
       "path": "rules/dependency.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:3445a9d19872625cd25a88a769630960d57aa69a0888477441862f58747582a6",
+      "version": "1.0.1",
+      "updated": "2026-06-17",
+      "hash": "sha256:cbf62e071fc6a25b5d8df46eb7946ad915388e25635c61d4410283545fbbd0eb",
       "tags": []
     },
     {
       "path": "rules/docs.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:6c7548a41fabdbc37ab5b89ee3809d7359690c7f98deb86737ea0a63c65238a6",
+      "version": "1.0.1",
+      "updated": "2026-06-17",
+      "hash": "sha256:3768a14f3fa4950f9aba14340149ac09fc7af42d9882f743bf22cbc4d8195234",
       "tags": []
     },
     {
       "path": "rules/git-workflow.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:45fc65f17bf82b949519c6765a980038c6a6b263ba7eb96c39046380848798c4",
+      "version": "1.0.1",
+      "updated": "2026-06-17",
+      "hash": "sha256:ce633a8c7499769b02a50d336afb4be37d298aa3fd2fa6182dfd14e5d686e735",
       "tags": []
     },
     {
       "path": "rules/i18n.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:6722af07f1779522995d7c1c0cd9638b05899b0028c516371a4173d6a5cf9af9",
+      "version": "1.0.1",
+      "updated": "2026-06-17",
+      "hash": "sha256:d9597d87e3db493c78407da35782b0760acd9874891e3307d9f80c2785fb378e",
       "tags": [
         "i18n"
       ]
@@ -238,17 +238,17 @@
     {
       "path": "rules/no-touch.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:010b68b0822000fbb9096eb366b3b7cf7d7338884bc15247dcb1737aae60f64d",
+      "version": "1.0.1",
+      "updated": "2026-06-17",
+      "hash": "sha256:d52e037146c56ab23c5f3494162dfb717741935cbf9b4c467111f89cbb396d52",
       "tags": []
     },
     {
       "path": "rules/observability.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:d49d855810f63359c1db8e55ef6e2184393495b88c27cc60d557298e3655a9a8",
+      "version": "1.0.1",
+      "updated": "2026-06-17",
+      "hash": "sha256:8e3f8a4b09c43c3ddebb736255d585986a2660f9ad79e361e9e2642aa89dd446",
       "tags": [
         "observability"
       ]
@@ -256,17 +256,17 @@
     {
       "path": "rules/performance.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:47379074b1d2a14c4cf22c8bec01d736bd217eda1e10ef02660270b2271f30a9",
+      "version": "1.0.1",
+      "updated": "2026-06-17",
+      "hash": "sha256:f538baefd6ab7785cc1cfca0468b9e8617c075715efddb58ecf907eba8f53940",
       "tags": []
     },
     {
       "path": "rules/resilience.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:5598e8275f5338fe2289c12eb852e06603f8dd35c9aaadcd41be78f44dbe38f0",
+      "version": "1.0.1",
+      "updated": "2026-06-17",
+      "hash": "sha256:0ed031e56ed40dfaa84dc2bc2d28593799f8b2ad957ceb9a26f10d96e7d2eef2",
       "tags": [
         "resilience"
       ]
@@ -302,9 +302,9 @@
     {
       "path": "rules/test-strategy.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:e87011d51ca6a0ba7c9046c75861a6ad3ebacd7c48017558ba2814c81c3c238a",
+      "version": "1.0.1",
+      "updated": "2026-06-17",
+      "hash": "sha256:936d69cae9818165e4b6c6fdb8e3687d6e1303d790256a651815ba25b689030d",
       "tags": []
     },
     {

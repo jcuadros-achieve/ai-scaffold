@@ -2,6 +2,359 @@
   "schemaVersion": 1,
   "entries": [
     {
+      "id": "rule/accessibility",
+      "surface": "rule",
+      "title": "Accessibility rules",
+      "summary": "Inclusive UI baseline — semantic markup, keyboard/focus, contrast, and target WCAG level",
+      "body": "rules/accessibility.md",
+      "tags": [
+        "accessibility",
+        "frontend",
+        "web"
+      ],
+      "rationale": "Only meaningful for projects with a user-facing UI; gated to frontend workspaces",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "frontend"
+          },
+          {
+            "dep": "react"
+          },
+          {
+            "dep": "next"
+          },
+          {
+            "dep": "vue"
+          },
+          {
+            "dep": "svelte"
+          },
+          {
+            "dep": "@angular/core"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:b4fe724845e269b22cc4a09c8bf4806f2a4b6fcf2250aa693fd83a9bf5250ad4"
+    },
+    {
+      "id": "rule/api-contract",
+      "surface": "rule",
+      "title": "API & contract rules",
+      "summary": "Backward-compatible interfaces, edge validation, stable error shapes for API producers/consumers",
+      "body": "rules/api-contract.md",
+      "tags": [
+        "api",
+        "contract"
+      ],
+      "rationale": "Relevant to projects that expose or consume an API surface",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:fc2cc9d5bc75d0990b01db775e6f5d085d1fb119f8424f535c073425744512b6"
+    },
+    {
+      "id": "rule/ci-gates",
+      "surface": "rule",
+      "title": "CI gates & enforcement rules",
+      "summary": "At least one automated check that fails the build on violation; never merge red, never disable a gate",
+      "body": "rules/ci-gates.md",
+      "tags": [
+        "ci",
+        "gates"
+      ],
+      "rationale": "Enforcement baseline every project needs; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:f2e80517bf375e84e2b68dd4b175963559ab6a4691537d181b9cad3633e34014"
+    },
+    {
+      "id": "rule/code-style",
+      "surface": "rule",
+      "title": "Code style rules",
+      "summary": "Language-neutral baseline — type safety at boundaries, small focused functions, consistent naming",
+      "body": "rules/code-style.md",
+      "tags": [
+        "code-style"
+      ],
+      "rationale": "Universal style floor; ai-init concretizes it per language",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:c1f62761f0c14f611c274e17c8b03ebf4db268350c5b00b4e8aa4218e48d5023"
+    },
+    {
+      "id": "rule/config-secrets",
+      "surface": "rule",
+      "title": "Configuration & secrets rules",
+      "summary": "Env-driven config, startup validation, secrets never committed, rotation without a code change",
+      "body": "rules/config-secrets.md",
+      "tags": [
+        "config",
+        "secrets",
+        "security"
+      ],
+      "rationale": "Relevant to anything with runtime configuration or secret material",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          },
+          {
+            "archetype": "data-pipeline"
+          },
+          {
+            "archetype": "iac"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:7a24d13fe33953ec4760b0b0cae760d087d1b9f8411c76a463e1c7a64958336f"
+    },
+    {
+      "id": "rule/context",
+      "surface": "rule",
+      "title": "Context rules",
+      "summary": "How the AI reads and writes the append-only .context/ project memory (ADRs + AI log)",
+      "body": "rules/context.md",
+      "tags": [
+        "context",
+        "memory"
+      ],
+      "rationale": "Governs the context chain shipped in every install; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:2a6823b32a7ebdb3ad1d6e62b045f3834b9c665e0355e5245ad49f28da4398c6"
+    },
+    {
+      "id": "rule/data-privacy",
+      "surface": "rule",
+      "title": "Data privacy rules",
+      "summary": "Minimize and retain deliberately, protect PII in transit and at rest, never log it, honor consent",
+      "body": "rules/data-privacy.md",
+      "tags": [
+        "privacy",
+        "pii",
+        "security"
+      ],
+      "rationale": "Relevant to projects that handle personal or sensitive data",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:3e63cc5e9be545fb8bd73c1f901aeea10249be9ef1e87e45d6e045d9cff932a3"
+    },
+    {
+      "id": "rule/dependency",
+      "surface": "rule",
+      "title": "Dependency & supply-chain rules",
+      "summary": "Justify and vet every dependency, pin deliberately, keep the lockfile honest, remove dead deps",
+      "body": "rules/dependency.md",
+      "tags": [
+        "dependency",
+        "supply-chain",
+        "security"
+      ],
+      "rationale": "Supply-chain hygiene applies to every project; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:cbf62e071fc6a25b5d8df46eb7946ad915388e25635c61d4410283545fbbd0eb"
+    },
+    {
+      "id": "rule/docs",
+      "surface": "rule",
+      "title": "Documentation rules",
+      "summary": "Keep docs in sync with the change, document the non-obvious, record decisions as ADRs",
+      "body": "rules/docs.md",
+      "tags": [
+        "docs"
+      ],
+      "rationale": "Documentation discipline applies to every project; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:3768a14f3fa4950f9aba14340149ac09fc7af42d9882f743bf22cbc4d8195234"
+    },
+    {
+      "id": "rule/git-workflow",
+      "surface": "rule",
+      "title": "Git workflow rules",
+      "summary": "Branch per change, conventional commits, small reviewable PRs, no force-push to shared branches",
+      "body": "rules/git-workflow.md",
+      "tags": [
+        "git",
+        "workflow"
+      ],
+      "rationale": "Version-control discipline applies to every project; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:ce633a8c7499769b02a50d336afb4be37d298aa3fd2fa6182dfd14e5d686e735"
+    },
+    {
+      "id": "rule/i18n",
+      "surface": "rule",
+      "title": "Internationalization (i18n) rules",
+      "summary": "Externalized strings, locale-aware formatting, no concatenated translations",
+      "body": "rules/i18n.md",
+      "tags": [
+        "i18n",
+        "l10n",
+        "frontend"
+      ],
+      "rationale": "Only meaningful once a localization library is in use",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "dep": "i18next"
+          },
+          {
+            "dep": "react-i18next"
+          },
+          {
+            "dep": "next-intl"
+          },
+          {
+            "dep": "react-intl"
+          },
+          {
+            "dep": "vue-i18n"
+          },
+          {
+            "dep": "@formatjs/intl"
+          },
+          {
+            "dep": "@lingui/core"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:d9597d87e3db493c78407da35782b0760acd9874891e3307d9f80c2785fb378e"
+    },
+    {
+      "id": "rule/no-touch",
+      "surface": "rule",
+      "title": "No-touch zones",
+      "summary": "Files that must not change without explicit human approval — secrets, lockfiles, generated, state",
+      "body": "rules/no-touch.md",
+      "tags": [
+        "no-touch",
+        "safety"
+      ],
+      "rationale": "Protected-zone safety baseline every project needs; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:d52e037146c56ab23c5f3494162dfb717741935cbf9b4c467111f89cbb396d52"
+    },
+    {
+      "id": "rule/observability",
+      "surface": "rule",
+      "title": "Observability rules",
+      "summary": "Structured logs with correlation ids, metrics and tracing, honest health — no silent failures",
+      "body": "rules/observability.md",
+      "tags": [
+        "observability",
+        "logging",
+        "metrics"
+      ],
+      "rationale": "Relevant to software that runs and must be debuggable in production",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          },
+          {
+            "archetype": "data-pipeline"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:8e3f8a4b09c43c3ddebb736255d585986a2660f9ad79e361e9e2642aa89dd446"
+    },
+    {
+      "id": "rule/performance",
+      "surface": "rule",
+      "title": "Performance & scalability rules",
+      "summary": "Avoid N+1, paginate unbounded lists, parallelize independent I/O, respect explicit budgets",
+      "body": "rules/performance.md",
+      "tags": [
+        "performance",
+        "scalability"
+      ],
+      "rationale": "Performance discipline applies to every project; ai-init sets real budgets",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:f538baefd6ab7785cc1cfca0468b9e8617c075715efddb58ecf907eba8f53940"
+    },
+    {
+      "id": "rule/resilience",
+      "surface": "rule",
+      "title": "Resilience & reliability rules",
+      "summary": "Timeouts on every external call, capped retries on idempotent ops only, honest degradation",
+      "body": "rules/resilience.md",
+      "tags": [
+        "resilience",
+        "reliability"
+      ],
+      "rationale": "Relevant to software that crosses network or process boundaries",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          },
+          {
+            "archetype": "data-pipeline"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:0ed031e56ed40dfaa84dc2bc2d28593799f8b2ad957ceb9a26f10d96e7d2eef2"
+    },
+    {
       "id": "rule/security",
       "surface": "rule",
       "title": "Security rules",
@@ -68,6 +421,22 @@
       "version": "1.0.0",
       "updated": "2026-06-17",
       "hash": "sha256:4c33391d964903b8f2c6f8bd9756dac652ec39f9c8f53fb30c4e3a5b4d1955ac"
+    },
+    {
+      "id": "rule/test-strategy",
+      "surface": "rule",
+      "title": "Test strategy rules",
+      "summary": "TDD by default, a test pyramid, mock only true boundaries, coverage is a floor on changed code",
+      "body": "rules/test-strategy.md",
+      "tags": [
+        "testing",
+        "tdd"
+      ],
+      "rationale": "Testing discipline applies to every project; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:936d69cae9818165e4b6c6fdb8e3687d6e1303d790256a651815ba25b689030d"
     },
     {
       "id": "skill/migration",

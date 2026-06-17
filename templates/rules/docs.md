@@ -1,3 +1,13 @@
+---
+id: rule/docs
+surface: rule
+title: Documentation rules
+summary: Keep docs in sync with the change, document the non-obvious, record decisions as ADRs
+tags: [docs]
+rationale: Documentation discipline applies to every project; universal
+stability: stable
+---
+
 # Documentation rules
 
 > Generic defaults. Run `ai-init` to align with the project's docs layout.

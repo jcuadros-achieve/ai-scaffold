@@ -1,3 +1,17 @@
+---
+id: rule/data-privacy
+surface: rule
+title: Data privacy rules
+summary: Minimize and retain deliberately, protect PII in transit and at rest, never log it, honor consent
+tags: [privacy, pii, security]
+appliesWhen:
+  any:
+    - archetype: service
+    - archetype: app
+rationale: Relevant to projects that handle personal or sensitive data
+stability: stable
+---
+
 # Data privacy rules
 
 > Optional module — relevant to projects that handle personal or sensitive data

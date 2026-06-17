@@ -1,3 +1,13 @@
+---
+id: rule/test-strategy
+surface: rule
+title: Test strategy rules
+summary: TDD by default, a test pyramid, mock only true boundaries, coverage is a floor on changed code
+tags: [testing, tdd]
+rationale: Testing discipline applies to every project; universal
+stability: stable
+---
+
 # Test strategy rules
 
 > Generic defaults. Run `ai-init` to replace these with rules derived from your

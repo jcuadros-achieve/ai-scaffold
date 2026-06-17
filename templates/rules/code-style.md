@@ -1,3 +1,13 @@
+---
+id: rule/code-style
+surface: rule
+title: Code style rules
+summary: Language-neutral baseline — type safety at boundaries, small focused functions, consistent naming
+tags: [code-style]
+rationale: Universal style floor; ai-init concretizes it per language
+stability: stable
+---
+
 # Code style rules
 
 > Language-neutral principles. Run `ai-init` to turn these into concrete,

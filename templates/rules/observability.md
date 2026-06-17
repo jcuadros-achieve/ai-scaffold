@@ -1,3 +1,18 @@
+---
+id: rule/observability
+surface: rule
+title: Observability rules
+summary: Structured logs with correlation ids, metrics and tracing, honest health — no silent failures
+tags: [observability, logging, metrics]
+appliesWhen:
+  any:
+    - archetype: service
+    - archetype: app
+    - archetype: data-pipeline
+rationale: Relevant to software that runs and must be debuggable in production
+stability: stable
+---
+
 # Observability rules
 
 > Generic defaults. Run `ai-init` to align with the project's logging, metrics,

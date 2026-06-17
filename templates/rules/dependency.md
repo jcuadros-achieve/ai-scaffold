@@ -1,3 +1,13 @@
+---
+id: rule/dependency
+surface: rule
+title: Dependency & supply-chain rules
+summary: Justify and vet every dependency, pin deliberately, keep the lockfile honest, remove dead deps
+tags: [dependency, supply-chain, security]
+rationale: Supply-chain hygiene applies to every project; universal
+stability: stable
+---
+
 # Dependency & supply-chain rules
 
 > Generic defaults. Run `ai-init` to align these with your package manager and
