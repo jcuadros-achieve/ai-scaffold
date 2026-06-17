@@ -5,10 +5,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 `ai-scaffold` is a CLI that installs a standardized AI workflow structure
-(`CLAUDE.md`, `.claude/` and `.context/`) into **other** projects. One command
-gives any repo a consistent set of context files, rules, and reusable skill
-templates for AI-assisted development. Claude Code is the primary target
-(ADR-002): skills install as native Claude skills under `.claude/skills/`,
+(`CLAUDE.md`, `.claude/` and `.context/`) into **other** projects. `install`
+lays a minimal **seed**; the keystone `ai-init` skill then scans the repo and
+**curates** the rest from a catalog of rules, skills, agents, and MCP servers —
+so each repo gets a consistent, project-shaped set of context files for
+AI-assisted development (the inverted flow, ADR-017). Claude Code is the primary
+target (ADR-002): skills install as native Claude skills under `.claude/skills/`,
 which GitHub Copilot also discovers natively.
 
 This repo is the tool itself. The files under `templates/` are **not** this
@@ -42,9 +44,10 @@ Shipped rules enforce consistency, protected zones, and "read the memory first":
 `code-style`, `security`, `no-touch`, `context`, `test-strategy`, `dependency`,
 `ci-gates`, `performance`, `observability`, `resilience`, `api-contract`, `docs`,
 `git-workflow`. On-demand skills (`security-review`, `refactor`, `migration`, …)
-cover deeper tasks. `ai-init` is the keystone: it analyzes a real codebase and
-fills the generic rules with project-specific facts. Full breakdown:
-[`docs/OVERVIEW.md`](docs/OVERVIEW.md).
+cover deeper tasks. These are catalog entries, not auto-installed: `ai-init`
+scans the codebase, curates which apply, installs them, and concretizes the
+generic rules with project-specific facts (only `skill/ai-init` + `rule/context`
+are seed). Full breakdown: [`docs/OVERVIEW.md`](docs/OVERVIEW.md).
 
 ## Commands
 
