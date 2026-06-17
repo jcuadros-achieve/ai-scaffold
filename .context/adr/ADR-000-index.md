@@ -34,8 +34,18 @@ document decisions about **this tool**; they are not installed into targets.
 
 ## Pending decisions
 
-The `feature/redesign` design (ADR-017 through ADR-020) is decided; implementation
-has not started. Open follow-ups deferred to implementation, not blocking:
-- Naming of the CLI verbs (`install`/`init`, the explicit `apply`).
-- Exact literal frontmatter the `build-catalog.mjs` compiler expects per surface.
-- Where ephemeral `.scaffold/` artifacts are written and their gitignore.
+The `feature/redesign` design (ADR-017 through ADR-020) is **fully implemented**
+on `feature/redesign`: seed `install`; catalog compiled to `catalog.index.json`;
+pure `suggest` matcher; single-writer `apply`; id-keyed `.scaffold-state.json`;
+the `agents` surface (read-only specialists); and `ai-init` rewritten to drive
+scan → profile → curate → apply. The follow-ups deferred at design time are
+resolved:
+- CLI verbs settled: `install` (seed) · `suggest` · `apply` · `update` · `diff` · `status`.
+- `build-catalog.mjs` frontmatter envelope is defined per surface — `skill`/`rule`/`agent`
+  as `.md` frontmatter, `mcp` as JSON under `templates/mcp/`; a drift test plus a
+  parse-failure guard fail the suite on an unindexed or unquoted entry.
+- Ephemeral `.scaffold/` artifacts (`project-profile`/`candidates`/`install-plan`)
+  are written under `.scaffold/` and gitignored (ADR-017 §4).
+
+No open ADR-level decisions. Future work, each needing its own ADR: writer agents
+(ADR-019 §2 defers them), and an on-demand body registry (ADR-018 §5).
