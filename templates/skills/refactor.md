@@ -2,6 +2,12 @@
 name: refactor
 description: Improve structure without changing behavior, tests-first.
 tier: deep
+id: skill/refactor
+surface: skill
+summary: Improve structure without changing behavior, tests-first
+tags: [refactoring]
+rationale: Behavior-preserving refactoring applies to any project; universal
+stability: stable
 ---
 
 # Skill: refactor

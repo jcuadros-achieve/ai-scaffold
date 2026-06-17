@@ -1,7 +1,18 @@
 ---
 name: incident
-description: Handle a production incident: mitigate first, then hotfix and postmortem.
+description: "Handle a production incident: mitigate first, then hotfix and postmortem."
 tier: deep
+id: skill/incident
+surface: skill
+summary: Mitigate a production incident first, then hotfix and postmortem
+tags: [incident, operations]
+appliesWhen:
+  any:
+    - archetype: service
+    - archetype: app
+    - archetype: data-pipeline
+rationale: Production incident response, only relevant for deployed runtimes
+stability: stable
 ---
 
 # Skill: incident

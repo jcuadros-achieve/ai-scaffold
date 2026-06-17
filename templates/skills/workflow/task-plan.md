@@ -2,6 +2,12 @@
 name: task-plan
 description: Produce a file-level technical plan from an approved brief.
 tier: deep
+id: skill/task-plan
+surface: skill
+summary: Produce a file-level technical plan from an approved brief
+tags: [planning, workflow]
+rationale: Planning step of the work chain; universal
+stability: stable
 ---
 
 # Skill: task-plan

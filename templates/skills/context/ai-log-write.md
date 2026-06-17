@@ -2,6 +2,12 @@
 name: ai-log-write
 description: Log a session where AI generated committed code.
 tier: fast
+id: skill/ai-log-write
+surface: skill
+summary: Append an AI session log entry after committed code, with context for future sessions
+tags: [context, logging]
+rationale: Session-memory step of the context chain; universal
+stability: stable
 ---
 
 # Skill: ai-log-write

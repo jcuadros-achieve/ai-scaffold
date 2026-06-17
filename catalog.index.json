@@ -439,6 +439,115 @@
       "hash": "sha256:936d69cae9818165e4b6c6fdb8e3687d6e1303d790256a651815ba25b689030d"
     },
     {
+      "id": "skill/adr-write",
+      "surface": "skill",
+      "title": "adr-write",
+      "summary": "Record a significant technical decision as a complete ADR and refresh the index",
+      "body": "skills/context/adr-write.md",
+      "tags": [
+        "context",
+        "adr",
+        "decisions"
+      ],
+      "rationale": "Decision-capture step of the context chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:32a9a5c85349b92b87dc60260370f4e958cf48f327db711de6bd2d4dae1d5c53"
+    },
+    {
+      "id": "skill/ai-init",
+      "surface": "skill",
+      "title": "ai-init",
+      "summary": "Analyze a real codebase and concretize the generic scaffold into project-specific context",
+      "body": "skills/ai-init.md",
+      "tags": [
+        "scaffold",
+        "onboarding"
+      ],
+      "rationale": "The keystone bootstrap skill every project runs once; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:0291beb0f80022d6400358166b8ab66a2e15fb78599eacbb7cf09ba5d73bc8c7"
+    },
+    {
+      "id": "skill/ai-log-write",
+      "surface": "skill",
+      "title": "ai-log-write",
+      "summary": "Append an AI session log entry after committed code, with context for future sessions",
+      "body": "skills/context/ai-log-write.md",
+      "tags": [
+        "context",
+        "logging"
+      ],
+      "rationale": "Session-memory step of the context chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:8efc7484951317852f2ad6b7dd2eeaa6c149351a4b859ff28393177f3aa5df01"
+    },
+    {
+      "id": "skill/context-update",
+      "surface": "skill",
+      "title": "context-update",
+      "summary": "Regenerate .context/INDEX.md from sources and surface pending rule updates",
+      "body": "skills/context/context-update.md",
+      "tags": [
+        "context",
+        "index"
+      ],
+      "rationale": "Index-maintenance step of the context chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:afd19e72782100ab4951065916120679592cda2d2c885ccdc98cbb72f736eca5"
+    },
+    {
+      "id": "skill/debug",
+      "surface": "skill",
+      "title": "debug",
+      "summary": "Find a bug's root cause with evidence before proposing any fix",
+      "body": "skills/debug.md",
+      "tags": [
+        "debugging"
+      ],
+      "rationale": "Root-cause discipline applies to any project; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:982d9d5eeb706e3708a83ce91df7a72219e4fc340a2b803ea4042818961e9dc9"
+    },
+    {
+      "id": "skill/incident",
+      "surface": "skill",
+      "title": "incident",
+      "summary": "Mitigate a production incident first, then hotfix and postmortem",
+      "body": "skills/incident.md",
+      "tags": [
+        "incident",
+        "operations"
+      ],
+      "rationale": "Production incident response, only relevant for deployed runtimes",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          },
+          {
+            "archetype": "data-pipeline"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:fddf48c0ba4b4da2df3a97935a973b17b4fd4c26eed57f51f120e4857cd99fe5"
+    },
+    {
       "id": "skill/migration",
       "surface": "skill",
       "title": "migration",
@@ -475,6 +584,207 @@
       "version": "1.0.0",
       "updated": "2026-06-17",
       "hash": "sha256:9397c2a3b7ca87bda9409ff7a73ef0296ca3f3d91eb25b146aab6159edff7190"
+    },
+    {
+      "id": "skill/new-endpoint",
+      "surface": "skill",
+      "title": "new-endpoint",
+      "summary": "Scaffold a new HTTP endpoint following the project's existing pattern",
+      "body": "skills/new-endpoint.md",
+      "tags": [
+        "api",
+        "scaffolding"
+      ],
+      "rationale": "Endpoint scaffolding, only relevant where there is an HTTP surface",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:1df6fd80a76e55f3ef8e58a9554e13d0f3b94b5787831f7085ee9121364e4e42"
+    },
+    {
+      "id": "skill/pr-review",
+      "surface": "skill",
+      "title": "pr-review",
+      "summary": "Review a diff in seven structured passes with actionable findings",
+      "body": "skills/workflow/pr-review.md",
+      "tags": [
+        "review",
+        "pr",
+        "workflow"
+      ],
+      "rationale": "Final review step of the work chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:59a8043b462a56cc10f6d109539842073877bb18712757f526f57ca70b2b252a"
+    },
+    {
+      "id": "skill/pr-write",
+      "surface": "skill",
+      "title": "pr-write",
+      "summary": "Generate a conventional-commits PR description from the diff and brief",
+      "body": "skills/workflow/pr-write.md",
+      "tags": [
+        "pr",
+        "workflow"
+      ],
+      "rationale": "PR-authoring step of the work chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:4845782098e319dd2d763ece23a482f6c7076a8e54e07d0bc9a790d57f511a72"
+    },
+    {
+      "id": "skill/refactor",
+      "surface": "skill",
+      "title": "refactor",
+      "summary": "Improve structure without changing behavior, tests-first",
+      "body": "skills/refactor.md",
+      "tags": [
+        "refactoring"
+      ],
+      "rationale": "Behavior-preserving refactoring applies to any project; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:34c82a18aa34a3c1b07859ef2537fcbe0eca045bc9ae5c63f783129d44f6fdcc"
+    },
+    {
+      "id": "skill/review",
+      "surface": "skill",
+      "title": "review",
+      "summary": "Quick review of a diff for rule violations, edge cases, security and tests",
+      "body": "skills/review.md",
+      "tags": [
+        "review"
+      ],
+      "rationale": "Lightweight self-review applies to any change; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:1810a4efb149683810c7cff69802ba075435ec6dee72ec94d8df64936b3b05ec"
+    },
+    {
+      "id": "skill/security-review",
+      "surface": "skill",
+      "title": "security-review",
+      "summary": "Threat-model-style security pass — authz, injection, SSRF, secrets, crypto",
+      "body": "skills/security-review.md",
+      "tags": [
+        "security",
+        "review"
+      ],
+      "rationale": "Security review applies to every project; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:dec13150c23350a6911df5c4f290d08babb335a6586dd04e902699f3a907107b"
+    },
+    {
+      "id": "skill/task-implement",
+      "surface": "skill",
+      "title": "task-implement",
+      "summary": "Execute an approved plan test-first (TDD), without silent deviation",
+      "body": "skills/workflow/task-implement.md",
+      "tags": [
+        "implementation",
+        "tdd",
+        "workflow"
+      ],
+      "rationale": "Implementation step of the work chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:c15db1efff160ce5846adffb58d599821e167e0599cbbb15034b4f280faa7c0f"
+    },
+    {
+      "id": "skill/task-plan",
+      "surface": "skill",
+      "title": "task-plan",
+      "summary": "Produce a file-level technical plan from an approved brief",
+      "body": "skills/workflow/task-plan.md",
+      "tags": [
+        "planning",
+        "workflow"
+      ],
+      "rationale": "Planning step of the work chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:7d0295b6bef2e230bae57173f70ca40ded5c5a27d5410245e4085da50f5cac93"
+    },
+    {
+      "id": "skill/test-gen",
+      "surface": "skill",
+      "title": "test-gen",
+      "summary": "Write tests for a function or module following the project's test conventions",
+      "body": "skills/test-gen.md",
+      "tags": [
+        "testing"
+      ],
+      "rationale": "Test authoring applies to any project; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:7163b76bc1e6b51d5caf664037b70608691098219a835b40a128cc4a8e1769e6"
+    },
+    {
+      "id": "skill/ticket-clarify",
+      "surface": "skill",
+      "title": "ticket-clarify",
+      "summary": "Turn any input into a structured technical brief, marking gaps",
+      "body": "skills/workflow/ticket-clarify.md",
+      "tags": [
+        "requirements",
+        "workflow"
+      ],
+      "rationale": "Clarification step of the work chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:62a09210e005efb3f9e610ed461d4fd9476edba4a25255aa170cdccb5700d4d3"
+    },
+    {
+      "id": "skill/ticket-create",
+      "surface": "skill",
+      "title": "ticket-create",
+      "summary": "Author a complete ticket from a rough idea by asking the right questions first",
+      "body": "skills/workflow/ticket-create.md",
+      "tags": [
+        "requirements",
+        "workflow"
+      ],
+      "rationale": "Ticket-authoring entry of the work chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:4aedddfce7576e0c1676807b80dba3a6d7057019770606611378643ad8d759ab"
+    },
+    {
+      "id": "skill/verify",
+      "surface": "skill",
+      "title": "verify",
+      "summary": "Run build, tests, lint, coverage and audit to prove a change before a PR",
+      "body": "skills/workflow/verify.md",
+      "tags": [
+        "verification",
+        "workflow"
+      ],
+      "rationale": "Verification gate of the work chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:d2714cfd54a1bb0f206cf0f77dda4d6dc05b8d01091cf2718a8be851956d7847"
     }
   ]
 }

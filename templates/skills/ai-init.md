@@ -2,6 +2,12 @@
 name: ai-init
 description: Analyze the codebase and generate the project-specific AI context (run once).
 tier: deep
+id: skill/ai-init
+surface: skill
+summary: Analyze a real codebase and concretize the generic scaffold into project-specific context
+tags: [scaffold, onboarding]
+rationale: The keystone bootstrap skill every project runs once; universal
+stability: stable
 ---
 
 # Skill: ai-init

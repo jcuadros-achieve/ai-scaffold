@@ -11,7 +11,7 @@ export const MANIFEST_FILE = path.resolve(__dirname, '../scaffold.manifest.json'
 export const CATALOG_INDEX_FILE = path.resolve(__dirname, '../catalog.index.json')
 export const SCAFFOLD_VERSION_FILE = '.claude/.scaffold-version'
 export const LEGACY_VERSION_FILE = '.ai/.scaffold-version'
-export const SCAFFOLD_VERSION = '2.16.0'
+export const SCAFFOLD_VERSION = '2.17.0'
 
 /** Three-way classification against the installed base (ADR-006).
  *  clean      = local untouched, upstream changed   → safe fast-forward

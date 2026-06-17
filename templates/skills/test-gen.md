@@ -2,6 +2,12 @@
 name: test-gen
 description: Write tests for a function/module following the project test conventions.
 tier: fast
+id: skill/test-gen
+surface: skill
+summary: Write tests for a function or module following the project's test conventions
+tags: [testing]
+rationale: Test authoring applies to any project; universal
+stability: stable
 ---
 
 # Skill: test-gen

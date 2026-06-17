@@ -2,6 +2,12 @@
 name: adr-write
 description: Record a significant technical decision as an ADR and update the index.
 tier: deep
+id: skill/adr-write
+surface: skill
+summary: Record a significant technical decision as a complete ADR and refresh the index
+tags: [context, adr, decisions]
+rationale: Decision-capture step of the context chain; universal
+stability: stable
 ---
 
 # Skill: adr-write

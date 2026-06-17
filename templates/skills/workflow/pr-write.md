@@ -2,6 +2,12 @@
 name: pr-write
 description: Generate a conventional-commits PR description from the diff and brief.
 tier: fast
+id: skill/pr-write
+surface: skill
+summary: Generate a conventional-commits PR description from the diff and brief
+tags: [pr, workflow]
+rationale: PR-authoring step of the work chain; universal
+stability: stable
 ---
 
 # Skill: pr-write

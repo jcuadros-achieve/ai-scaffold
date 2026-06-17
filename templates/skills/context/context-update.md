@@ -2,6 +2,12 @@
 name: context-update
 description: Rebuild .context/INDEX.md from sources and surface pending rule updates.
 tier: fast
+id: skill/context-update
+surface: skill
+summary: Regenerate .context/INDEX.md from sources and surface pending rule updates
+tags: [context, index]
+rationale: Index-maintenance step of the context chain; universal
+stability: stable
 ---
 
 # Skill: context-update

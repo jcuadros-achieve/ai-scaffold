@@ -2,6 +2,16 @@
 name: new-endpoint
 description: Scaffold a new endpoint following an existing pattern.
 tier: fast
+id: skill/new-endpoint
+surface: skill
+summary: Scaffold a new HTTP endpoint following the project's existing pattern
+tags: [api, scaffolding]
+appliesWhen:
+  any:
+    - archetype: service
+    - archetype: app
+rationale: Endpoint scaffolding, only relevant where there is an HTTP surface
+stability: stable
 ---
 
 # Skill: new-endpoint
