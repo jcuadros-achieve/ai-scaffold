@@ -1,7 +1,16 @@
 import path from 'path'
 import chalk from 'chalk'
 import prompts from 'prompts'
-import { apply as applyPlan, loadCatalogIndex, readState, reconcile } from '../installer.js'
+import {
+  apply as applyPlan,
+  getRemoteVersion,
+  getCurrentPackageVersion,
+  loadCatalogIndex,
+  readState,
+  readVersion,
+  reconcile,
+  writeVersion
+} from '../installer.js'
 import type { ApplyItem } from '../installer.js'
 
 /**
@@ -22,6 +31,45 @@ export async function update(): Promise<void> {
     console.log(chalk.gray('  Run: npx github:jcuadros-achieve/ai-scaffold install\n'))
     return
   }
+
+  // Check for ai-scaffold version updates
+  const localVersion = readVersion(root)
+  const remoteVersion = await getRemoteVersion()
+  const currentVersion = getCurrentPackageVersion()
+
+  if (localVersion && remoteVersion && currentVersion) {
+    const localVer = localVersion.version
+    console.log(chalk.gray(`  Current version: ${localVer}`))
+
+    if (remoteVersion !== localVer) {
+      console.log(chalk.yellow(`  New version available: ${remoteVersion}`))
+
+      const autoApply = !process.stdin.isTTY
+      if (!autoApply) {
+        const { upgrade } = await prompts({
+          type: 'confirm',
+          name: 'upgrade',
+          message: '\nUpgrade ai-scaffold to the latest version?',
+          initial: true,
+        })
+        if (!upgrade) {
+          console.log(chalk.gray('\nSkipping ai-scaffold upgrade. Continuing with catalog update...\n'))
+        } else {
+          // Update the version file
+          writeVersion(root, {
+            version: remoteVersion,
+            installedAt: new Date().toISOString()
+          })
+          console.log(chalk.green(`\n  Upgraded to version ${remoteVersion}`))
+          console.log(chalk.yellow('  Note: Use npx github:jcuadros-achieve/ai-scaffold@latest for commands\n'))
+        }
+      }
+    } else {
+      console.log(chalk.green('  ai-scaffold is up to date'))
+    }
+  }
+
+  console.log('')
 
   const catalog = loadCatalogIndex()
   const recon   = reconcile(root, catalog)

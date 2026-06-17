@@ -102,6 +102,12 @@ export interface ApplyItem {
   workspaces: string[]
 }
 
+/** Version file written by install and read by ai-init. */
+export interface ScaffoldVersion {
+  version: string
+  installedAt: string
+}
+
 /** What `apply` did to one entry, for the command layer to render. */
 export interface AppliedAction {
   id:    string
@@ -142,6 +148,66 @@ export function writeState(projectRoot: string, state: ScaffoldState): void {
   const p = path.join(projectRoot, SCAFFOLD_STATE_FILE)
   fs.mkdirSync(path.dirname(p), { recursive: true })
   fs.writeFileSync(p, JSON.stringify(state, null, 2) + '\n')
+}
+
+export const VERSION_FILE = '.claude/scaffold-version.json'
+
+/** Read the installed version. Returns null if not installed. */
+export function readVersion(projectRoot: string): ScaffoldVersion | null {
+  const p = path.join(projectRoot, VERSION_FILE)
+  if (!fs.existsSync(p)) return null
+  try {
+    const parsed = JSON.parse(fs.readFileSync(p, 'utf8'))
+    if (typeof parsed !== 'object' || parsed === null) return null
+    const version = (parsed as Record<string, unknown>).version
+    if (typeof version !== 'string') return null
+    return parsed as ScaffoldVersion
+  } catch {
+    return null
+  }
+}
+
+/** Write the installed version. */
+export function writeVersion(projectRoot: string, versionInfo: ScaffoldVersion): void {
+  const p = path.join(projectRoot, VERSION_FILE)
+  fs.mkdirSync(path.dirname(p), { recursive: true })
+  fs.writeFileSync(p, JSON.stringify(versionInfo, null, 2) + '\n')
+}
+
+/** Get the current package version from local package.json. */
+export function getCurrentPackageVersion(): string | null {
+  const packagePath = path.resolve(fileURLToPath(import.meta.url), '../../package.json')
+  try {
+    const pkg = JSON.parse(fs.readFileSync(packagePath, 'utf8'))
+    return (pkg as Record<string, unknown>).version as string || null
+  } catch {
+    return null
+  }
+}
+
+/** Get the remote version from git tags. Returns null if unavailable. */
+export async function getRemoteVersion(): Promise<string | null> {
+  try {
+    const { execSync } = await import('child_process')
+    const stdout = execSync('git ls-remote --tags github-achieve:jcuadros-achieve/ai-scaffold', {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore']
+    })
+    // Find 'latest' tag or get the highest versioned tag
+    const tags = stdout
+      .split('\n')
+      .filter(line => line.includes('refs/tags/'))
+      .map(line => {
+        const match = line.match(/refs\/tags\/(?:v)?(\d+\.\d+\.\d+)/)
+        return match ? match[1] : null
+      })
+      .filter((v): v is string => v !== null)
+    if (tags.length === 0) return null
+    // Return highest version (simple string comparison works for semver)
+    return tags.sort().reverse()[0]
+  } catch {
+    return null
+  }
 }
 
 /** Classify a body-bearing entry against its recorded base (ADR-006, per id).
@@ -281,6 +347,15 @@ export function installSeed(projectRoot: string): SeedResult {
     .filter(e => e.seed)
     .map(entry => ({ entry, workspaces: [] }))
   const result = apply(projectRoot, seedItems)
+
+  // Write the current version
+  const currentVersion = getCurrentPackageVersion()
+  if (currentVersion) {
+    writeVersion(projectRoot, {
+      version: currentVersion,
+      installedAt: new Date().toISOString()
+    })
+  }
 
   return { files, apply: result }
 }
