@@ -2,255 +2,56 @@ import path from 'path'
 import chalk from 'chalk'
 import prompts from 'prompts'
 import { execSync } from 'child_process'
-import {
-  planInstall, applyAction, writeVersionFile, loadManifest,
-  readInstalledSelection, readInstalledMcp, loadMcpCatalog, mcpChoicesFor,
-  mergeMcpServers, FileAction, OptionalModule,
-} from '../installer.js'
-import { renderDiff } from '../differ.js'
+import { installSeed } from '../installer.js'
 
-interface Flags { yes: boolean; all: boolean; modules: string[] | null; mcp: string[] | null }
-
-function parseFlags(argv: string[]): Flags {
-  const flags: Flags = { yes: false, all: false, modules: null, mcp: null }
-  for (const arg of argv) {
-    if (arg === '--yes' || arg === '-y') flags.yes = true
-    else if (arg === '--all') flags.all = true
-    else if (arg === '--core') flags.modules = []
-    else if (arg.startsWith('--modules='))
-      flags.modules = arg.slice('--modules='.length).split(',').map(s => s.trim()).filter(Boolean)
-    else if (arg === '--mcp=none') flags.mcp = []
-    else if (arg.startsWith('--mcp='))
-      flags.mcp = arg.slice('--mcp='.length).split(',').map(s => s.trim()).filter(Boolean)
-  }
-  return flags
-}
-
-/** Decide which MCP servers to add: explicit flag wins; otherwise prompt
- *  (pre-selecting what was chosen before); otherwise keep the previous set.
- *  MCP servers are opt-in — a fresh non-interactive install adds none. */
-async function resolveMcp(
-  selectedModules: string[],
-  flags: Flags,
-  previous: string[],
-): Promise<string[]> {
-  const choices = mcpChoicesFor(selectedModules)
-  if (flags.mcp !== null) {
-    const valid = new Set(choices)
-    const unknown = flags.mcp.filter(id => !valid.has(id))
-    if (unknown.length) console.log(chalk.yellow(`  Ignoring unknown MCP servers: ${unknown.join(', ')}`))
-    return flags.mcp.filter(id => valid.has(id))
-  }
-
-  const interactive = !flags.yes && Boolean(process.stdin.isTTY)
-  if (!interactive || choices.length === 0) return previous.filter(id => choices.includes(id))
-
-  const { servers } = loadMcpCatalog()
-  const preset = new Set(previous)
-  const res = await prompts({
-    type: 'multiselect',
-    name: 'mcp',
-    message: 'MCP servers to add to .mcp.json (optional — existing entries are never touched)',
-    instructions: false,
-    hint: '- space to toggle, enter to confirm',
-    choices: choices.map(id => ({
-      title:       servers[id].label,
-      description: servers[id].description,
-      value:       id,
-      selected:    preset.has(id),
-    })),
-  })
-  return (res.mcp as string[] | undefined) ?? previous
-}
-
-/** Decide which optional modules to install: explicit flags win; otherwise
- *  prompt interactively (pre-selecting what's already installed); otherwise
- *  core-only. Returns null if the user cancelled. */
-async function resolveSelection(
-  optional: OptionalModule[],
-  flags: Flags,
-  previous: string[],
-): Promise<string[] | null> {
-  const ids = new Set(optional.map(m => m.id))
-
-  if (flags.all)             return optional.map(m => m.id)
-  if (flags.modules !== null) {
-    const unknown = flags.modules.filter(m => !ids.has(m))
-    if (unknown.length) console.log(chalk.yellow(`  Ignoring unknown modules: ${unknown.join(', ')}`))
-    return flags.modules.filter(m => ids.has(m))
-  }
-
-  const interactive = !flags.yes && Boolean(process.stdin.isTTY)
-  if (!interactive || optional.length === 0) return previous   // core-only on fresh, keep on update
-
-  const preset = new Set(previous)
-  const res = await prompts({
-    type: 'multiselect',
-    name: 'modules',
-    message: 'Optional modules to add (core is always installed)',
-    instructions: false,
-    hint: '- space to toggle, enter to confirm',
-    choices: optional.map(m => ({
-      title:       m.label,
-      description: m.description,
-      value:       m.id,
-      selected:    preset.has(m.id),
-    })),
-  })
-  if (res.modules === undefined) return null   // cancelled
-  return res.modules as string[]
-}
-
+/**
+ * `install` lays only the seed (ADR-017 §1): the minimum for `ai-init` to run.
+ * No checklist, no module/MCP selection — that decision moves to `ai-init`,
+ * which curates with the user after a real scan. This produces a bootstrap,
+ * not a usable scaffold.
+ */
 export async function install(): Promise<void> {
-  const root  = process.cwd()
-  const flags = parseFlags(process.argv.slice(3))
-  console.log(chalk.bold('\nai-scaffold — install\n'))
+  const root = process.cwd()
+  console.log(chalk.bold('\nai-scaffold — install (seed)\n'))
 
-  const optional = loadManifest()
-  const previous = readInstalledSelection(root) ?? []
-  const selected = await resolveSelection(optional, flags, previous)
-  if (selected === null) { console.log(chalk.gray('\nAborted.')); return }
+  const { files, apply } = installSeed(root)
 
-  const mcpChosen = await resolveMcp(selected, flags, readInstalledMcp(root))
+  const created = [
+    ...files.filter(f => f.type === 'create').map(f => f.dest),
+    ...apply.actions.filter(a => a.type === 'create').map(a => a.dest),
+  ]
+  const total   = files.length + apply.actions.length
+  const skipped = total - created.length
 
-  console.log(`  Optional modules: ${selected.length ? selected.join(', ') : chalk.gray('core only')}`)
-  console.log(`  MCP servers: ${mcpChosen.length ? mcpChosen.join(', ') : chalk.gray('none')}\n`)
+  for (const dest of created)
+    console.log(chalk.green('  created') + '  ' + path.relative(root, dest))
+  if (skipped)
+    console.log(chalk.gray(`  ${skipped} files already present (unchanged)`))
+  if (!created.length)
+    console.log(chalk.gray('  Seed already in place — nothing to create.'))
 
-  const actions    = planInstall(root, selected)
-  const toCreate   = actions.filter(a => a.type === 'create')
-  const updates    = actions.filter(a => a.type === 'update')
-  const toUpdate   = updates.filter(a => a.merge !== 'conflict')
-  const conflicts  = updates.filter(a => a.merge === 'conflict')
-  const customized = actions.filter(a => a.type === 'skip' && a.merge === 'customized')
-  const skipped    = actions.filter(a => a.type === 'skip' && a.merge !== 'customized')
-
-  console.log(chalk.green(`  ${toCreate.length} files to create`))
-  console.log(chalk.yellow(`  ${toUpdate.length} files with changes`))
-  if (conflicts.length)
-    console.log(chalk.red(`  ${conflicts.length} conflicts (customized locally AND changed upstream)`))
-  if (customized.length)
-    console.log(chalk.gray(`  ${customized.length} customized files untouched (no upstream changes)`))
-  console.log(chalk.gray(`  ${skipped.length} files unchanged\n`))
-
-  if (!toCreate.length && !toUpdate.length && !conflicts.length) {
-    console.log(chalk.gray('Nothing to do.'))
-    applyMcp(root, mcpChosen)
-    writeVersionFile(root, selected, mcpChosen)   // still record selection
-    return
-  }
-
-  const autoApply = flags.yes || !process.stdin.isTTY
-
-  if (toUpdate.length > 0) {
-    console.log(chalk.bold('Files with changes:\n'))
-    for (const a of toUpdate) {
-      console.log(chalk.yellow(`  ${path.relative(root, a.dest)}`))
-      console.log(renderDiff(a.diff!))
-      console.log()
-    }
-  }
-
-  if (conflicts.length > 0) {
-    console.log(chalk.bold(chalk.red('Conflicts — customized locally AND changed upstream:\n')))
-    for (const a of conflicts) {
-      console.log(chalk.red(`  ${path.relative(root, a.dest)}`) +
-        chalk.gray('  (diff is local vs incoming; merge manually if you want both)'))
-      console.log(renderDiff(a.diff!))
-      console.log()
-    }
-  }
-
-  if (!autoApply) {
-    const { proceed } = await prompts({
-      type: 'confirm', name: 'proceed',
-      message: 'Apply these changes?', initial: true,
-    })
-    if (!proceed) { console.log(chalk.gray('\nAborted.')); return }
-  }
-
-  const approved: FileAction[] = [...toCreate]
-
-  for (const a of toUpdate) {
-    if (autoApply) { approved.push(a); continue }
-    const rel = path.relative(root, a.dest)
-    const { choice } = await prompts({
-      type: 'select', name: 'choice',
-      message: `  ${rel}:`,
-      choices: [
-        { title: 'Apply incoming version', value: 'apply' },
-        { title: 'Keep current version',   value: 'keep'  },
-      ],
-    })
-    if (choice === 'apply') approved.push(a)
-  }
-
-  // Conflicts are never auto-applied (ADR-006): a known customization must be
-  // overwritten only by an explicit, per-file human choice.
-  for (const a of conflicts) {
-    if (autoApply) {
-      console.log(chalk.gray(`  kept (conflict): ${path.relative(root, a.dest)}`))
-      continue
-    }
-    const rel = path.relative(root, a.dest)
-    const { choice } = await prompts({
-      type: 'select', name: 'choice',
-      message: `  ${rel} ${chalk.red('(conflict)')}:`,
-      choices: [
-        { title: 'Keep current version (recommended — merge manually)', value: 'keep'  },
-        { title: 'Overwrite with incoming (discards local changes)',    value: 'apply' },
-      ],
-    })
-    if (choice === 'apply') approved.push(a)
-  }
-
-  for (const a of approved) {
-    applyAction(a)
-    const rel  = path.relative(root, a.dest)
-    const icon = a.type === 'create' ? chalk.green('  created') :
-                 chalk.yellow('  updated')
-    console.log(`${icon}  ${rel}`)
-  }
-
-  applyMcp(root, mcpChosen)
-  writeVersionFile(root, selected, mcpChosen)
-
-  if (!autoApply) {
+  const interactive = Boolean(process.stdin.isTTY)
+  if (interactive && created.length) {
     const { doCommit } = await prompts({
       type: 'confirm', name: 'doCommit',
-      message: '\nCreate initial commit for the AI scaffold?', initial: true,
+      message: '\nCommit the seed scaffold?', initial: true,
     })
     if (doCommit) commitScaffold(root)
   }
 
-  console.log(chalk.bold('\nDone. Run ai-init in your AI agent to populate CLAUDE.md.\n'))
-}
-
-/** Add the chosen MCP servers to .mcp.json and report. Add-only: existing
- *  entries always win (ADR-008). */
-function applyMcp(root: string, ids: string[]): void {
-  if (!ids.length) return
-  const res = mergeMcpServers(root, ids)
-  if (res.invalid) {
-    console.log(chalk.yellow('  .mcp.json could not be parsed — left untouched; add the servers manually.'))
-    return
-  }
-  for (const id of res.added)   console.log(chalk.green(`  mcp added  ${id}  (.mcp.json)`))
-  for (const id of res.skipped) console.log(chalk.gray(`  mcp kept   ${id}  (already configured)`))
-  if (res.added.length)
-    console.log(chalk.gray('  MCP servers use OAuth or ${ENV_VAR} placeholders — no credentials were written.'))
+  console.log(
+    chalk.bold('\nSeed laid. Next: run ') + chalk.cyan('ai-init') +
+    chalk.bold(' in your AI agent') +
+    chalk.gray(' — it scans the project and curates the scaffold for you.\n'))
 }
 
 function commitScaffold(root: string): void {
   try {
-    execSync(
-      'git add .claude/ .context/ CLAUDE.md 2>/dev/null || true',
-      { cwd: root, stdio: 'pipe' }
-    )
-    execSync(
-      'git commit -m "chore: initialize AI scaffold (.claude/ and .context/)"',
-      { cwd: root, stdio: 'pipe' }
-    )
-    console.log(chalk.green('\n  committed: chore: initialize AI scaffold'))
+    execSync('git add .claude/ .context/ CLAUDE.md 2>/dev/null || true',
+      { cwd: root, stdio: 'pipe' })
+    execSync('git commit -m "chore: initialize AI scaffold seed (.claude/ and .context/)"',
+      { cwd: root, stdio: 'pipe' })
+    console.log(chalk.green('\n  committed: chore: initialize AI scaffold seed'))
   } catch {
     console.log(chalk.yellow('\n  Could not commit — stage manually.'))
   }

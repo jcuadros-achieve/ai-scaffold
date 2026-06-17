@@ -7,6 +7,7 @@ surface: skill
 summary: Analyze a real codebase and concretize the generic scaffold into project-specific context
 tags: [scaffold, onboarding]
 rationale: The keystone bootstrap skill every project runs once; universal
+seed: true
 stability: stable
 ---
 

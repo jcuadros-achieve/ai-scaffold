@@ -9,7 +9,6 @@
   "files": [
     "dist",
     "templates",
-    "scaffold.manifest.json",
     "catalog.index.json"
   ],
   "repository": {

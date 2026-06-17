@@ -4,11 +4,9 @@ import fs from 'fs'
 import os from 'os'
 import path from 'path'
 import {
-  planInstall, applyAction, writeVersionFile, readVersionFile,
-  readInstalledSelection, loadManifest, loadCatalog, mapTemplatePath,
-  hashContent, readInstalledBases,
-  loadMcpCatalog, mcpChoicesFor, mergeMcpServers, readInstalledMcp,
-  SCAFFOLD_VERSION, SCAFFOLD_VERSION_FILE, LEGACY_VERSION_FILE,
+  installSeed, reconcile, readState, mapTemplatePath, applyAction,
+  loadCatalogIndex, hashContent, writeState,
+  SCAFFOLD_STATE_FILE, STATE_SCHEMA_VERSION,
 } from '../dist/installer.js'
 
 const tmpDirs = []
@@ -19,24 +17,6 @@ function tmpProject() {
 }
 after(() => { for (const d of tmpDirs) fs.rmSync(d, { recursive: true, force: true }) })
 
-function destsOf(actions) {
-  return new Set(actions.map(a => a.dest))
-}
-
-test('loadManifest returns the optional modules with logical paths', () => {
-  const modules = loadManifest()
-  assert.ok(modules.length > 0)
-  const ids = modules.map(m => m.id)
-  assert.ok(ids.includes('migration'))
-  assert.ok(ids.includes('observability'))
-  for (const m of modules) {
-    assert.ok(Array.isArray(m.paths) && m.paths.length > 0, `${m.id} has paths`)
-    for (const p of m.paths) {
-      assert.ok(/^(skills|rules|context)\//.test(p), `${p} is a logical template path`)
-    }
-  }
-})
-
 test('mapTemplatePath maps the logical layout to install locations', () => {
   assert.equal(mapTemplatePath('CLAUDE.md'), 'CLAUDE.md')
   assert.equal(mapTemplatePath('rules/security.md'),
@@ -45,148 +25,64 @@ test('mapTemplatePath maps the logical layout to install locations', () => {
     path.join('.claude', 'skills', 'verify', 'SKILL.md'))
   assert.equal(mapTemplatePath('skills/debug.md'),
     path.join('.claude', 'skills', 'debug', 'SKILL.md'))
+  assert.equal(mapTemplatePath('agents/code-explorer.md'),
+    path.join('.claude', 'agents', 'code-explorer.md'))
   assert.equal(mapTemplatePath('context/adr/ADR-000-index.md'),
     path.join('.context', 'adr', 'ADR-000-index.md'))
 })
 
-test('fresh core-only plan creates mapped + generated files, no optional paths', () => {
+test('installSeed lays only the seed: infra files + seed catalog entries (ADR-017 §1)', () => {
   const root = tmpProject()
-  const actions = planInstall(root, [])
+  const { files, apply } = installSeed(root)
 
-  assert.ok(actions.every(a => a.type === 'create'))
+  // infra files exist
+  assert.ok(fs.existsSync(path.join(root, 'CLAUDE.md')))
+  assert.ok(fs.existsSync(path.join(root, '.context/INDEX.md')))
+  assert.ok(fs.existsSync(path.join(root, '.context/adr/ADR-000-index.md')))
 
-  const dests = destsOf(actions)
-  assert.ok(dests.has(path.join(root, 'CLAUDE.md')))
-  assert.ok(dests.has(path.join(root, '.claude/rules/code-style.md')))
-  assert.ok(dests.has(path.join(root, '.claude/skills/verify/SKILL.md')))
-  assert.ok(dests.has(path.join(root, '.context/INDEX.md')))
-  // Claude-only payload: no generated per-tool artifacts (ADR-010/ADR-011)
-  assert.ok(!dests.has(path.join(root, '.github/copilot-instructions.md')))
-  assert.ok(!dests.has(path.join(root, '.cursor/rules/ai-scaffold.mdc')))
-  assert.ok(!dests.has(path.join(root, '.cursorrules')))
+  // seed catalog entries installed (ai-init skill, context rule)
+  assert.ok(fs.existsSync(path.join(root, '.claude/skills/ai-init/SKILL.md')))
+  assert.ok(fs.existsSync(path.join(root, '.claude/rules/context.md')))
 
-  for (const mod of loadManifest()) {
-    for (const rel of mod.paths) {
-      assert.ok(!dests.has(path.join(root, mapTemplatePath(rel))),
-        `${rel} must be excluded core-only`)
-    }
-  }
+  // NON-seed catalog entries are NOT laid by the seed
+  assert.ok(!fs.existsSync(path.join(root, '.claude/rules/security.md')))
+  assert.ok(!fs.existsSync(path.join(root, '.claude/skills/verify/SKILL.md')))
+
+  // every reported action is a create on a fresh project
+  assert.ok(files.every(f => f.type === 'create'))
+  assert.ok(apply.actions.every(a => a.type === 'create'))
 })
 
-test('selecting a module includes its paths; unselected modules stay excluded', () => {
+test('installSeed records seed entries in id-keyed state', () => {
   const root = tmpProject()
-  const dests = destsOf(planInstall(root, ['observability']))
-
-  assert.ok(dests.has(path.join(root, '.claude/rules/observability.md')))
-  assert.ok(!dests.has(path.join(root, '.claude/skills/migration/SKILL.md')))
+  installSeed(root)
+  const state = readState(root)
+  assert.equal(state.schemaVersion, STATE_SCHEMA_VERSION)
+  assert.ok(state.installed['skill/ai-init'], 'ai-init recorded')
+  assert.ok(state.installed['rule/context'], 'context rule recorded')
+  // non-seed entries are never recorded by the seed
+  assert.ok(!state.installed['rule/security'])
+  assert.ok(fs.existsSync(path.join(root, SCAFFOLD_STATE_FILE)))
 })
 
-test('stack modules install as optional rules (ADR-009)', () => {
+test('installSeed is idempotent — a second run creates nothing', () => {
   const root = tmpProject()
-  const dests = destsOf(planInstall(root, ['stack-nextjs']))
-
-  assert.ok(dests.has(path.join(root, '.claude/rules/stack-nextjs.md')))
-  assert.ok(!dests.has(path.join(root, '.claude/rules/stack-node-express.md')))
-  assert.ok(!destsOf(planInstall(root, [])).has(path.join(root, '.claude/rules/stack-nextjs.md')),
-    'stack modules are never core')
+  installSeed(root)
+  const { files, apply } = installSeed(root)
+  assert.ok(files.every(f => f.type === 'skip'), 'infra files skipped')
+  assert.ok(apply.actions.every(a => a.type === 'skip'), 'seed entries skipped')
 })
 
 test('installed skills are valid Claude skills (SKILL.md with frontmatter)', () => {
   const root = tmpProject()
-  planInstall(root, []).forEach(applyAction)
-
-  const verify = fs.readFileSync(path.join(root, '.claude/skills/verify/SKILL.md'), 'utf8')
-  assert.match(verify, /^---\nname: verify\ndescription: .+/m)
-})
-
-test('applying a plan then re-planning yields only skips', () => {
-  const root = tmpProject()
-  planInstall(root, []).forEach(applyAction)
-
-  const again = planInstall(root, [])
-  assert.ok(again.length > 0)
-  assert.ok(again.every(a => a.type === 'skip'))
-})
-
-test('a locally modified file with no base info is an update (legacy behavior)', () => {
-  const root = tmpProject()
-  planInstall(root, []).forEach(applyAction)
-
-  const target = path.join(root, 'CLAUDE.md')
-  fs.appendFileSync(target, '\nlocal customization\n')
-
-  const updates = planInstall(root, []).filter(a => a.type === 'update')
-  assert.equal(updates.length, 1)
-  assert.equal(updates[0].dest, target)
-  assert.equal(updates[0].merge, 'unknown')
-  assert.ok(typeof updates[0].diff === 'string' && updates[0].diff.length > 0)
-})
-
-function setRecordedBase(root, rel, hash) {
-  const p = path.join(root, SCAFFOLD_VERSION_FILE)
-  const data = JSON.parse(fs.readFileSync(p, 'utf8'))
-  data.templates[rel] = { version: '0.9.0', hash }
-  fs.writeFileSync(p, JSON.stringify(data))
-}
-
-function installWithBases(root) {
-  planInstall(root, []).forEach(applyAction)
-  writeVersionFile(root, [])
-}
-
-test('customized file with unchanged upstream is skipped silently (ADR-006)', () => {
-  const root = tmpProject()
-  installWithBases(root)
-
-  fs.appendFileSync(path.join(root, 'CLAUDE.md'), '\nai-init customization\n')
-
-  const action = planInstall(root, []).find(a => a.dest === path.join(root, 'CLAUDE.md'))
-  assert.equal(action.type, 'skip')
-  assert.equal(action.merge, 'customized')
-})
-
-test('unmodified file with changed upstream is a clean update (ADR-006)', () => {
-  const root = tmpProject()
-  installWithBases(root)
-
-  // Simulate an older install: local file matches its recorded base, but the
-  // base differs from the current template (upstream moved on).
-  const target = path.join(root, 'CLAUDE.md')
-  fs.writeFileSync(target, 'old template content\n')
-  setRecordedBase(root, 'CLAUDE.md', hashContent('old template content\n'))
-
-  const action = planInstall(root, []).find(a => a.dest === target)
-  assert.equal(action.type, 'update')
-  assert.equal(action.merge, 'clean')
-})
-
-test('customized file with changed upstream is a conflict (ADR-006)', () => {
-  const root = tmpProject()
-  installWithBases(root)
-
-  const target = path.join(root, 'CLAUDE.md')
-  fs.writeFileSync(target, 'locally customized content\n')
-  setRecordedBase(root, 'CLAUDE.md', hashContent('some older base content\n'))
-
-  const action = planInstall(root, []).find(a => a.dest === target)
-  assert.equal(action.type, 'update')
-  assert.equal(action.merge, 'conflict')
-  assert.ok(action.diff.length > 0)
-})
-
-test('readInstalledBases returns the recorded map, null when absent', () => {
-  const root = tmpProject()
-  assert.equal(readInstalledBases(root), null)
-
-  installWithBases(root)
-  const bases = readInstalledBases(root)
-  assert.ok(bases['CLAUDE.md'].hash.startsWith('sha256:'))
-  assert.ok(bases['skills/workflow/verify.md'])
+  installSeed(root)
+  const aiInit = fs.readFileSync(path.join(root, '.claude/skills/ai-init/SKILL.md'), 'utf8')
+  assert.match(aiInit, /^---\nname: ai-init\ndescription: .+/m)
 })
 
 test('CLAUDE.md installs as a real file', () => {
   const root = tmpProject()
-  planInstall(root, []).forEach(applyAction)
+  installSeed(root)
   assert.ok(fs.lstatSync(path.join(root, 'CLAUDE.md')).isFile())
 })
 
@@ -196,132 +92,66 @@ test('a legacy CLAUDE.md symlink is replaced, not written through', () => {
   fs.writeFileSync(path.join(root, '.ai/AI_CONTEXT.md'), 'legacy content')
   fs.symlinkSync('.ai/AI_CONTEXT.md', path.join(root, 'CLAUDE.md'))
 
-  const action = planInstall(root, []).find(
-    a => a.dest === path.join(root, 'CLAUDE.md'))
-  applyAction(action)
+  // applyAction replaces the link rather than writing through it
+  applyAction({ type: 'create',
+    src: path.resolve('templates/CLAUDE.md'),
+    dest: path.join(root, 'CLAUDE.md') })
 
   assert.ok(fs.lstatSync(path.join(root, 'CLAUDE.md')).isFile(), 'link replaced by real file')
   assert.equal(fs.readFileSync(path.join(root, '.ai/AI_CONTEXT.md'), 'utf8'),
     'legacy content', 'legacy target untouched')
 })
 
-test('version file round-trips version and module selection at the new location', () => {
+test('reconcile returns [] when nothing is installed', () => {
+  assert.deepEqual(reconcile(tmpProject()), [])
+})
+
+test('reconcile reports seed entries as up to date after a fresh install', () => {
   const root = tmpProject()
-  writeVersionFile(root, ['observability', 'incident'])
-
-  assert.ok(fs.existsSync(path.join(root, SCAFFOLD_VERSION_FILE)))
-  assert.equal(readVersionFile(root), SCAFFOLD_VERSION)
-  assert.deepEqual(readInstalledSelection(root), ['observability', 'incident'])
+  installSeed(root)
+  const recon = reconcile(root)
+  const ctx = recon.find(r => r.id === 'rule/context')
+  assert.ok(ctx, 'context rule reconciled')
+  assert.equal(ctx.type, 'skip')
+  assert.equal(ctx.merge, 'clean')
+  assert.equal(ctx.upstreamChanged, false)
 })
 
-test('version file records installed template bases, selection-aware', () => {
+test('reconcile flags an upstream change as an available update (ADR-006)', () => {
   const root = tmpProject()
-  writeVersionFile(root, ['migration'])
+  installSeed(root)
 
-  const data = JSON.parse(fs.readFileSync(path.join(root, SCAFFOLD_VERSION_FILE), 'utf8'))
-  const catalog = new Map(loadCatalog().map(t => [t.path, t]))
-  assert.ok(catalog.size > 0, 'catalog is loaded')
+  // Simulate an older base: disk still matches the recorded base, but the base
+  // differs from the current template (upstream moved on).
+  const dest = path.join(root, '.claude/rules/context.md')
+  const oldBody = '# older context rule\n'
+  fs.writeFileSync(dest, oldBody)
+  const state = readState(root)
+  state.installed['rule/context'].hash = hashContent(oldBody)
+  writeState(root, state)
 
-  assert.deepEqual(data.templates['skills/migration.md'], {
-    version: catalog.get('skills/migration.md').version,
-    hash:    catalog.get('skills/migration.md').hash,
-  })
-  assert.ok(data.templates['skills/workflow/verify.md'], 'core entries recorded')
-  assert.ok(!('rules/observability.md' in data.templates), 'unselected module excluded')
+  const r = reconcile(root).find(x => x.id === 'rule/context')
+  assert.equal(r.type, 'update')
+  assert.equal(r.merge, 'clean')
+  assert.ok(r.upstreamChanged)
 })
 
-test('a legacy .ai/.scaffold-version is still readable', () => {
+test('reconcile flags both-changed as a conflict (ADR-006)', () => {
   const root = tmpProject()
-  const p = path.join(root, LEGACY_VERSION_FILE)
-  fs.mkdirSync(path.dirname(p), { recursive: true })
-  fs.writeFileSync(p, JSON.stringify({ version: '1.5.0', optional: ['migration'] }))
+  installSeed(root)
 
-  assert.equal(readVersionFile(root), '1.5.0')
-  assert.deepEqual(readInstalledSelection(root), ['migration'])
+  const dest = path.join(root, '.claude/rules/context.md')
+  fs.writeFileSync(dest, '# locally customized\n')
+  const state = readState(root)
+  state.installed['rule/context'].hash = hashContent('# some older base\n')
+  writeState(root, state)
+
+  const r = reconcile(root).find(x => x.id === 'rule/context')
+  assert.equal(r.merge, 'conflict')
 })
 
-test('version helpers return null when not installed', () => {
-  const root = tmpProject()
-  assert.equal(readVersionFile(root), null)
-  assert.equal(readInstalledSelection(root), null)
-})
-
-test('version helpers tolerate a corrupted version file', () => {
-  const root = tmpProject()
-  const p = path.join(root, SCAFFOLD_VERSION_FILE)
-  fs.mkdirSync(path.dirname(p), { recursive: true })
-  fs.writeFileSync(p, 'not json{{')
-
-  assert.equal(readVersionFile(root), null)
-  assert.equal(readInstalledSelection(root), null)
-})
-
-test('MCP catalog: base ids resolve and entries are well-formed (ADR-008)', () => {
-  const { base, servers } = loadMcpCatalog()
-  assert.ok(base.includes('github') && base.includes('atlassian'))
-  for (const [id, s] of Object.entries(servers)) {
-    assert.ok(s.label && s.description, `${id} label/description`)
-    assert.match(s.docs, /^https:\/\//, `${id} docs URL`)
-    assert.ok(typeof s.config === 'object' && s.config !== null, `${id} config`)
-  }
-})
-
-test('MCP catalog contains no credential-shaped strings (ADR-008)', () => {
-  const raw = JSON.stringify(loadMcpCatalog().servers)
-  assert.ok(!/(ghp_[A-Za-z0-9]{10,}|github_pat_|xox[bp]-|AKIA[0-9A-Z]{16}|sk-[A-Za-z0-9]{20,}|Bearer [A-Za-z0-9]{15,})/.test(raw),
-    'catalog must use OAuth or ${ENV_VAR} placeholders, never credentials')
-})
-
-test('mcpChoicesFor: base always offered, module-linked only when selected', () => {
-  const core = mcpChoicesFor([])
-  assert.ok(core.includes('github') && core.includes('atlassian'))
-  assert.ok(!core.includes('datadog'))
-  assert.ok(mcpChoicesFor(['observability']).includes('datadog'))
-})
-
-test('mergeMcpServers is add-only and idempotent; user entries always win', () => {
-  const root = tmpProject()
-
-  const first = mergeMcpServers(root, ['github'])
-  assert.deepEqual(first, { added: ['github'], skipped: [], invalid: false })
-  const data = JSON.parse(fs.readFileSync(path.join(root, '.mcp.json'), 'utf8'))
-  assert.ok(data.mcpServers.github.url)
-
-  const again = mergeMcpServers(root, ['github'])
-  assert.deepEqual(again, { added: [], skipped: ['github'], invalid: false })
-
-  // A pre-existing user entry is never touched
-  const userOwned = { mcpServers: { atlassian: { type: 'http', url: 'https://example.test/custom' } } }
-  fs.writeFileSync(path.join(root, '.mcp.json'), JSON.stringify(userOwned))
-  const res = mergeMcpServers(root, ['atlassian'])
-  assert.deepEqual(res.skipped, ['atlassian'])
-  const after = JSON.parse(fs.readFileSync(path.join(root, '.mcp.json'), 'utf8'))
-  assert.equal(after.mcpServers.atlassian.url, 'https://example.test/custom')
-})
-
-test('mergeMcpServers leaves an unparseable .mcp.json untouched', () => {
-  const root = tmpProject()
-  fs.writeFileSync(path.join(root, '.mcp.json'), 'not json{{')
-
-  const res = mergeMcpServers(root, ['github'])
-  assert.equal(res.invalid, true)
-  assert.equal(fs.readFileSync(path.join(root, '.mcp.json'), 'utf8'), 'not json{{')
-})
-
-test('version file records the chosen MCP servers', () => {
-  const root = tmpProject()
-  assert.deepEqual(readInstalledMcp(root), [])
-
-  writeVersionFile(root, [], ['github', 'atlassian'])
-  assert.deepEqual(readInstalledMcp(root), ['github', 'atlassian'])
-})
-
-test('a version file without the optional field reads as core-only selection', () => {
-  const root = tmpProject()
-  const p = path.join(root, SCAFFOLD_VERSION_FILE)
-  fs.mkdirSync(path.dirname(p), { recursive: true })
-  fs.writeFileSync(p, JSON.stringify({ version: '1.0.0', installedAt: 'x' }))
-
-  assert.equal(readVersionFile(root), '1.0.0')
-  assert.deepEqual(readInstalledSelection(root), [])
+test('the seed never installs a non-seed catalog entry', () => {
+  // Guard: only entries flagged seed:true in the index may be laid by installSeed.
+  const seedIds = loadCatalogIndex().filter(e => e.seed).map(e => e.id)
+  assert.deepEqual(seedIds.sort(), ['rule/context', 'skill/ai-init'])
 })

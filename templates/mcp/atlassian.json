@@ -1,0 +1,13 @@
+{
+  "id": "mcp/atlassian",
+  "surface": "mcp",
+  "title": "Atlassian (Jira / Confluence)",
+  "summary": "Atlassian remote MCP server. OAuth 2.1 on first use. (Old /v1/sse endpoint dies 2026-06-30.)",
+  "tags": ["jira", "confluence", "tickets"],
+  "rationale": "Ticket and docs access for the work chain (ticket-create/clarify); broadly applicable",
+  "stability": "stable",
+  "server": {
+    "type": "http",
+    "url": "https://mcp.atlassian.com/v1/mcp/authv2"
+  }
+}

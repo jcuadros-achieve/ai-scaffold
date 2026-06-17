@@ -57,45 +57,39 @@ guarantees — in [`docs/OVERVIEW.md`](docs/OVERVIEW.md).
 > read access to the repo and git/SSH configured for `github.com`.
 
 ```bash
-# Fresh install in a project
+# 1. Lay the seed (the minimum for ai-init to run — no checklist)
 npx github:jcuadros-achieve/ai-scaffold install
 
-# Check what would change vs latest templates
-npx github:jcuadros-achieve/ai-scaffold diff
+# 2. In your AI agent, run ai-init — it scans the project and curates the
+#    scaffold WITH you. Under the hood it calls:
+npx github:jcuadros-achieve/ai-scaffold suggest   # match the catalog to the scan
+npx github:jcuadros-achieve/ai-scaffold apply     # write the curated plan
 
-# Pull latest templates (shows diff, asks per file)
-npx github:jcuadros-achieve/ai-scaffold update
-
-# Check installed version and file status
-npx github:jcuadros-achieve/ai-scaffold status
+# Later: keep installed entries current with the latest catalog
+npx github:jcuadros-achieve/ai-scaffold update    # shows diff, never overwrites conflicts
+npx github:jcuadros-achieve/ai-scaffold diff      # what changed vs latest
+npx github:jcuadros-achieve/ai-scaffold status    # installed entries + drift
 ```
 
 > **Future (company distribution):** once published to Artifactory/jfrog under the
 > `@achieve` scope, the same commands become `npx @achieve/ai-scaffold <command>`.
 
-### Choosing what to install
+### How "what to install" is decided
 
-The **core** (universal rules + the workflow/context chains) is always installed.
-Project-shape-dependent templates are **optional modules** you select — so a CLI
-or library doesn't get database or API rules it has no use for. **Stack
-modules** (`kind: stack` — e.g. Next.js, Node + Express) are optional modules
-carrying curated technology conventions and pitfalls; they state the version
-range they cover and `ai-init` concretizes them like any optional rule.
+The selection is **inverted**: it happens *after* a real scan, not as a blind
+checklist. `install` lays only a minimal **seed** (`CLAUDE.md`, the `ai-init`
+skill, the context rule, an empty `.context/`). Then `ai-init` reads the actual
+codebase, the CLI's `suggest` mechanically filters the catalog with declarative
+`appliesWhen` predicates (so a Postgres service is never offered MySQL rules),
+and `ai-init` ranks, justifies, and confirms the short list with you before
+`apply` writes it. So you choose from what the project plausibly needs, with
+evidence — not from the whole catalog up front.
 
-- **Interactive** (a TTY) — `install` shows a checklist of optional modules to
-  toggle.
-- **Non-interactive** (CI, `--yes`, piped) — **core only** by default.
-- **Flags:** `--all` (all optional), `--modules=migration,observability`
-  (specific), `--core` (core only), `--yes` (no prompts).
-
-`update` keeps the modules you previously chose (and lets you add more);
-`diff`/`status` only consider what you installed. The selection — and the
-installed base version of every template (per-file version + hash, from the
-catalog in `scaffold.manifest.json`) — is recorded in
-`.claude/.scaffold-version`.
-
-Modules are added on demand, not up front. A backlog of candidate modules for
-future phases is mapped in [`docs/CANDIDATE-MODULES.md`](docs/CANDIDATE-MODULES.md).
+Each installed entry is tracked by id in `.claude/.scaffold-state.json` (with the
+per-entry catalog version + hash, and the workspaces that justified it). `update`
+re-applies the installed entries against the latest catalog: clean changes
+fast-forward, files you customized are left alone, and conflicts are never
+auto-applied.
 
 ### Monorepos
 
@@ -109,33 +103,35 @@ Decisions and AI logs go to the **nearest** `.context/` — workspace-local ones
 get their own `<workspace>/.context/` with independent ADR numbering;
 cross-cutting ones stay at the root, whose `INDEX.md` aggregates. Stack rules
 carry an `Applies to:` scope that `ai-init` fills with the matching
-workspaces. Select the **union** of the modules your workspaces need.
+workspaces. `suggest` filters **per workspace** and installs the curated
+**union** at the root (Postgres *and* MySQL rules can coexist when different
+workspaces need them — each scoped by `Applies to:`).
 
-### MCP servers (optional)
+### MCP servers (catalog entries)
 
-The installer can add **verified MCP servers** to your project's `.mcp.json`
-(Claude Code's project-scope MCP config): a base set offered to every project
-(GitHub, Atlassian/Jira) plus module-linked suggestions (selecting
-`observability` offers Datadog). Interactive installs show a multiselect;
-non-interactively use `--mcp=github,atlassian` (or `--mcp=none`).
+The catalog includes **verified MCP servers** that `ai-init` can add to your
+project's `.mcp.json` (Claude Code's project-scope MCP config) — GitHub and
+Atlassian/Jira apply broadly; Datadog applies to services/apps/pipelines via its
+`appliesWhen`. They are offered alongside rules and skills during curation.
 
 - **Add-only:** existing `.mcp.json` entries are never updated or removed —
-  your entry always wins, and the file is yours (it is not tracked by
-  `diff`/`update`).
+  your entry always wins, and the file is yours.
 - **No credentials:** entries use OAuth-based remote servers or `${ENV_VAR}`
   placeholders only.
-- Your selection is remembered in `.claude/.scaffold-version` and preselected
-  on `update`.
 
 ---
 
 ## What install does
 
-1. Installs core templates + the optional modules you selected, mapping them to
-   their native locations (`.claude/skills/`, `.claude/rules/`, `.context/`)
-2. Shows a colored diff for any files that already exist
-3. Asks you to decide per file: apply incoming or keep current
-4. Records the selected modules and offers an initial git commit
+`install` lays only the **seed** — a bootstrap, not a usable scaffold:
+
+1. `CLAUDE.md` (placeholder for `ai-init` to populate)
+2. the `ai-init` skill and the context rule
+3. an empty `.context/` (INDEX + adr/ + ai-log/)
+4. `.claude/.scaffold-state.json` recording the seed, then offers a git commit
+
+Then you run **`ai-init`** in your AI agent: it scans the project, curates the
+catalog with you (`suggest` → `apply`), and fills `CLAUDE.md` with real content.
 
 Nothing else is generated — the payload is exactly `CLAUDE.md` + `.claude/` +
 `.context/`. Tools other than Claude Code (Copilot, Cursor) read `.claude/`
@@ -145,32 +141,35 @@ natively; if your team wants a tool-specific pointer file (`AGENTS.md`,
 
 ---
 
-## What gets installed
+## The catalog payload
+
+`install` lays only the **seed** (marked ⊙ below); everything else is a catalog
+entry that `ai-init` curates and `apply` writes when the project needs it.
 
 ```
-CLAUDE.md                   ← single source of truth — fill it in with ai-init
+CLAUDE.md                   ⊙ seed — single source of truth, filled in by ai-init
 
 .claude/
   rules/
     code-style.md
     security.md
     no-touch.md
-    context.md              ← rules for reading/writing .context/
+    context.md              ⊙ seed — rules for reading/writing .context/
     test-strategy.md        ← TDD + coverage
     dependency.md           ← supply chain
     ci-gates.md             ← machine-enforced checks
     performance.md
     docs.md
     git-workflow.md
-    observability.md        ← optional module
-    resilience.md           ← optional module
-    api-contract.md         ← optional module
-    accessibility.md        ← optional module
-    i18n.md                 ← optional module
-    config-secrets.md       ← optional module
-    data-privacy.md         ← optional module
-    stack-nextjs.md         ← optional stack module
-    stack-node-express.md   ← optional stack module
+    observability.md        ← curated by ai-init
+    resilience.md           ← curated by ai-init
+    api-contract.md         ← curated by ai-init
+    accessibility.md        ← curated by ai-init
+    i18n.md                 ← curated by ai-init
+    config-secrets.md       ← curated by ai-init
+    data-privacy.md         ← curated by ai-init
+    stack-nextjs.md         ← curated by ai-init (stack)
+    stack-node-express.md   ← curated by ai-init (stack)
   skills/                   ← native Claude skills, one folder per skill
     ticket-create/SKILL.md
     ticket-clarify/SKILL.md
@@ -182,24 +181,25 @@ CLAUDE.md                   ← single source of truth — fill it in with ai-in
     adr-write/SKILL.md
     ai-log-write/SKILL.md
     context-update/SKILL.md
-    ai-init/SKILL.md        ← run once to populate everything
+    ai-init/SKILL.md        ⊙ seed — run once to scan, curate, and populate
     new-endpoint/SKILL.md   ← generic, ai-init will customize
     test-gen/SKILL.md
     review/SKILL.md
     debug/SKILL.md
     security-review/SKILL.md  ← threat-model-style deep pass
     refactor/SKILL.md         ← behavior-preserving
-    migration/SKILL.md        ← optional module (safe DB/data migrations)
-    incident/SKILL.md         ← optional module (incident/hotfix/rollback)
-  .scaffold-version         ← tracks installed version + selected modules
+    migration/SKILL.md        ← curated by ai-init (safe DB/data migrations)
+    incident/SKILL.md         ← curated by ai-init (incident/hotfix/rollback)
+  .scaffold-state.json      ← installed entries tracked by id (version/hash/workspaces)
 
-.context/
+.context/                   ⊙ seed — empty project-memory scaffold
   INDEX.md
   adr/
     ADR-000-index.md
   ai-log/
     .gitkeep
 
+mcp/  (catalog source only — github / atlassian / datadog merged into .mcp.json)
 ```
 
 ---
@@ -264,23 +264,23 @@ Files you've customized are never silently overwritten.
 ```
 ai-scaffold/
   src/
-    cli.ts                  ← entry point
-    installer.ts            ← planning, logical→target mapping, generation
+    cli.ts                  ← entry point (install/suggest/apply/update/diff/status)
+    installer.ts            ← seed install, single writer (apply), reconcile, state
+    catalog.ts              ← pure appliesWhen matcher (suggest/detectConflicts)
     differ.ts               ← colored diff rendering
     commands/
-      install.ts
-      update.ts
-      diff.ts
-      status.ts
+      install.ts  suggest.ts  apply.ts
+      update.ts   diff.ts     status.ts
   templates/                ← logical layout; the installer maps it to targets
     CLAUDE.md               → CLAUDE.md
     rules/                  → .claude/rules/
     skills/                 → .claude/skills/<name>/SKILL.md
+    mcp/                    → catalog source for .mcp.json entries
     context/                → .context/
-  test/                     ← node --test unit tests (installer + catalog)
+  test/                     ← node --test unit tests (installer/catalog/payload)
   scripts/
-    update-catalog.mjs      ← maintains the per-template catalog (dev-only)
-  scaffold.manifest.json    ← optional modules + per-template catalog
+    build-catalog.mjs       ← compiles frontmatter → catalog.index.json (dev-only)
+  catalog.index.json        ← compiled catalog (the entries suggest filters)
   package.json
   tsconfig.json
 ```
@@ -294,8 +294,9 @@ ai-scaffold/
    work, `deep` for judgment-heavy; never a model ID) **and a help card**
    right after the title (`/<name> help` prints it and stops). The test suite
    rejects skills missing either.
-2. If it's optional, add its logical path to a module in `scaffold.manifest.json`
-3. Run `node scripts/update-catalog.mjs` (registers/bumps the template in the
-   catalog — the test suite fails if you skip this)
-4. Bump the version in `src/installer.ts` (`SCAFFOLD_VERSION`) and run `npm test`
-5. Commit and push — projects using `ai-scaffold update` will see the diff
+2. Add the catalog frontmatter envelope (`id`, `surface`, `rationale`,
+   `stability`, and `appliesWhen` unless it is universal). Mark `seed: true`
+   only for the ADR-017 bootstrap.
+3. Run `node scripts/build-catalog.mjs` (compiles the entry into
+   `catalog.index.json` — the test suite fails if you skip this), then `npm test`
+4. Commit and push — projects using `ai-scaffold update` will see the diff

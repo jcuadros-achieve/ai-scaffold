@@ -12,27 +12,29 @@ human gates and persistent memory**, driven from a single source of truth.
 
 ## 1. What it generates
 
-Running `install` copies a standard AI-context structure into the target project:
+`install` lays only a minimal **seed** — the bootstrap for `ai-init`:
 
 ```
-CLAUDE.md       → single source of truth (project context)
-.claude/rules/  → the rules
-.claude/skills/ → native Claude skills (one folder per skill, SKILL.md)
-.context/       → project memory: decisions (ADRs) + AI log + index
-.claude/.scaffold-version → version tracking, so updates are detectable
+CLAUDE.md                    → placeholder, populated by ai-init
+.claude/skills/ai-init/      → the keystone skill
+.claude/rules/context.md     → so ai-init reads/writes .context/
+.context/                    → empty project memory (ADRs + AI log + index)
+.claude/.scaffold-state.json → installed entries tracked by id (ADR-017 §3)
 ```
 
-The core idea: **one source of truth** (`CLAUDE.md` + `.claude/`) that every AI
-tool consumes natively — Claude Code, Copilot, and Cursor all read `.claude/`
+Then `ai-init` scans the project and curates the rest from the catalog. The core
+idea: **one source of truth** (`CLAUDE.md` + `.claude/`) that every AI tool
+consumes natively — Claude Code, Copilot, and Cursor all read `.claude/`
 directly — instead of N files that drift out of sync.
 
-**Core vs optional modules.** To stay agnostic across project types, the scaffold
-ships everything but installs selectively. The **core** (universal rules + the
-workflow/context chains) is always installed; **optional modules** —
-project-shape-dependent templates like `migration` (needs a DB), `api-contract`
-(needs an API), `observability`/`resilience` (needs a running/distributed
-service) — are chosen at install time. A CLI or pure library installs only the
-core. The selection is recorded so `update`/`diff`/`status` stay coherent.
+**Inverted selection (ADR-017/018).** The scaffold ships a **catalog** of rules,
+skills, agents, and MCP servers, each declaring `appliesWhen` (e.g. `migration`
+needs a DB, `api-contract` an API, `observability` a running service). After
+`install` lays the seed, `ai-init` scans the codebase; the CLI's `suggest`
+mechanically filters the catalog to what the project plausibly needs; `ai-init`
+ranks and justifies; `apply` writes the curated set. A CLI or pure library is
+offered almost nothing. Each installed entry is tracked by id so
+`update`/`diff`/`status` stay coherent.
 
 ---
 
