@@ -95,11 +95,14 @@ adr-write → ai-log-write → context-update
 
 Captures architectural decisions and per-session learnings, **append-only**.
 
-**The keystone — `ai-init`:** analyzes the real codebase (Read → Analyze →
-Generate → Write) and **replaces the generic placeholders with project-specific
-content**. It first classifies the project archetype (app/service, library,
-CLI, IaC, data pipeline, frontend) so the deep read and the generated rules fit
-the kind of repo it actually is, then produces a full analysis — including
+**The keystone — `ai-init`:** drives the inverted flow (Scan & analyze →
+Profile → Curate → Generate → Write). It scans the real codebase, **curates
+which catalog entries to install** (writing `project-profile.json`, running
+`suggest`, confirming the plan with the human, running `apply`), then **replaces
+the generic placeholders with project-specific content**. It first classifies the
+project archetype (service, app, frontend, library, cli, iac, data-pipeline) so
+the deep read and the generated rules fit the kind of repo it actually is, then
+produces a full analysis — including
 mandatory "non-obvious invariants & gotchas" and "observations & risks"
 synthesis — from which every file is derived. In a **monorepo** it classifies
 every workspace, turns the root `CLAUDE.md` into the repo map, writes a nested

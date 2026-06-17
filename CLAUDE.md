@@ -201,16 +201,19 @@ These caused real bugs and are easy to reintroduce:
 ## The `templates/` payload
 
 Generic placeholders, not finished content. The keystone is
-`templates/skills/ai-init.md`: a four-phase skill (Read → Analyze →
-Generate → Write) meant to be run by an AI agent **inside a target project** to
-analyze that codebase and replace the generic templates with project-specific
-versions. It is archetype-aware (app/service, library, CLI, IaC, data pipeline,
-frontend): the deep-read checklist and the generated rules adapt to the kind of
-repo, the Phase 2 analysis is the central artifact every file derives from, and
-"non-obvious invariants & gotchas" + "observations & risks" synthesis is
-mandatory — the target `CLAUDE.md` template's sections are a floor, not a
-ceiling. When editing templates, preserve that intent — they are starting points
-`ai-init` customizes, not final docs.
+`templates/skills/ai-init.md`: a five-phase skill (Scan & analyze → Profile →
+Curate → Generate → Write) meant to be run by an AI agent **inside a target
+project** to drive the inverted flow (ADR-017). It scans the codebase, writes
+`.scaffold/project-profile.json` (the agent→CLI boundary), runs `ai-scaffold
+suggest`, curates the catalog *with the human* (one ask-point, ADR-015) into
+`.scaffold/install-plan.json`, runs `ai-scaffold apply`, then concretizes the
+installed rules/skills and CLAUDE.md. It is archetype-aware (the fixed slug set
+`service`/`app`/`frontend`/`library`/`cli`/`iac`/`data-pipeline` — these MUST
+match the catalog's `appliesWhen`); the Phase 1 analysis is the central artifact
+every later file derives from, and "non-obvious invariants & gotchas" +
+"observations & risks" synthesis is mandatory. When editing this skill, keep the
+profile/plan schemas in lockstep with `src/catalog.ts` and the `suggest`/`apply`
+commands.
 
 **Keep core rules stack-neutral.** Core rules state language-agnostic principles;
 stack-specific guidance (e.g. TS `any`, zod, npm, SQL framing) appears only as
