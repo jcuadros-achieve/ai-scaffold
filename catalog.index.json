@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "rule/security",
+      "surface": "rule",
+      "title": "Security rules",
+      "summary": "Secrets hygiene, input validation at trust boundaries, parameterized queries, safe error handling",
+      "body": "rules/security.md",
+      "tags": [
+        "security"
+      ],
+      "rationale": "Transversal security baseline every project needs; universal (no appliesWhen)",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:8c82d53639a90bf8ec06506232ff1810349db950879fa4983a799a942d9dfb68"
+    },
+    {
+      "id": "rule/stack-nextjs",
+      "surface": "rule",
+      "title": "Stack: Next.js",
+      "summary": "Next.js conventions and pitfalls: server/client boundaries, caching, hydration, env exposure",
+      "body": "rules/stack-nextjs.md",
+      "tags": [
+        "stack",
+        "nextjs",
+        "react",
+        "frontend"
+      ],
+      "rationale": "Next.js-specific conventions the core rules can't carry generically",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "dep": "next"
+          },
+          {
+            "framework": "next"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:8b34c91ae96912d8abf59fe999dc6c187c984f8605d47572467468c031110893"
+    },
+    {
+      "id": "rule/stack-node-express",
+      "surface": "rule",
+      "title": "Stack: Node + Express",
+      "summary": "Express service conventions: one error middleware, edge validation, middleware order, graceful shutdown, event-loop discipline",
+      "body": "rules/stack-node-express.md",
+      "tags": [
+        "stack",
+        "node",
+        "express",
+        "backend"
+      ],
+      "rationale": "Express-specific conventions the core rules can't carry generically",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "dep": "express"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:4c33391d964903b8f2c6f8bd9756dac652ec39f9c8f53fb30c4e3a5b4d1955ac"
+    },
+    {
+      "id": "skill/migration",
+      "surface": "skill",
+      "title": "migration",
+      "summary": "Safe expand-contract DB/data migrations with a rollback path",
+      "body": "skills/migration.md",
+      "tags": [
+        "database",
+        "migration"
+      ],
+      "rationale": "DB migration discipline, only relevant when the project has a database",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "dep": "pg"
+          },
+          {
+            "dep": "mysql2"
+          },
+          {
+            "dep": "kysely"
+          },
+          {
+            "dep": "sequelize"
+          },
+          {
+            "dep": "@prisma/client"
+          },
+          {
+            "dep": "prisma"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:9397c2a3b7ca87bda9409ff7a73ef0296ca3f3d91eb25b146aab6159edff7190"
+    }
+  ]
+}

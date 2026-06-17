@@ -64,6 +64,12 @@ export interface CatalogIndexEntry {
   tools?:         string[]
   /** mcp surface (ADR-008): the server config block (no body). */
   server?:        Record<string, unknown>
+  /** Per-entry catalog version (ADR-018 §7, replaces the coarse SCAFFOLD_VERSION).
+   *  Stamped by build-catalog.mjs; the matcher ignores these. */
+  version?:       string
+  updated?:       string
+  /** sha256 of the entry body, for `update` drift detection (ADR-017 §3). */
+  hash?:          string
 }
 
 /** One workspace's declared facts (ADR-020 §1). In a single-project repo the

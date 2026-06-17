@@ -2,6 +2,20 @@
 name: migration
 description: Write a safe, reversible, backward-compatible DB/data migration.
 tier: deep
+id: skill/migration
+surface: skill
+summary: Safe expand-contract DB/data migrations with a rollback path
+tags: [database, migration]
+appliesWhen:
+  any:
+    - dep: pg
+    - dep: mysql2
+    - dep: kysely
+    - dep: sequelize
+    - dep: "@prisma/client"
+    - dep: prisma
+rationale: DB migration discipline, only relevant when the project has a database
+stability: stable
 ---
 
 # Skill: migration

@@ -274,17 +274,17 @@
     {
       "path": "rules/security.md",
       "kind": "rule",
-      "version": "1.0.0",
-      "updated": "2026-06-10",
-      "hash": "sha256:9634cadb90ab3b4e841655f1d43e84db86992dd291dae0aedeb4a792359ef90a",
+      "version": "1.0.1",
+      "updated": "2026-06-17",
+      "hash": "sha256:8c82d53639a90bf8ec06506232ff1810349db950879fa4983a799a942d9dfb68",
       "tags": []
     },
     {
       "path": "rules/stack-nextjs.md",
       "kind": "rule",
-      "version": "1.0.1",
-      "updated": "2026-06-12",
-      "hash": "sha256:967044a10b7bd6458255d3cb35546885c7c28b54d635e3caa238cce919d11a7f",
+      "version": "1.0.2",
+      "updated": "2026-06-17",
+      "hash": "sha256:8b34c91ae96912d8abf59fe999dc6c187c984f8605d47572467468c031110893",
       "tags": [
         "stack-nextjs"
       ]
@@ -292,9 +292,9 @@
     {
       "path": "rules/stack-node-express.md",
       "kind": "rule",
-      "version": "1.0.1",
-      "updated": "2026-06-12",
-      "hash": "sha256:57c86aac3721b909f4de732a2a84e0cb80678d63ae3a6430133c0fc8b4451727",
+      "version": "1.0.2",
+      "updated": "2026-06-17",
+      "hash": "sha256:4c33391d964903b8f2c6f8bd9756dac652ec39f9c8f53fb30c4e3a5b4d1955ac",
       "tags": [
         "stack-node-express"
       ]
@@ -366,9 +366,9 @@
     {
       "path": "skills/migration.md",
       "kind": "skill",
-      "version": "1.0.2",
-      "updated": "2026-06-12",
-      "hash": "sha256:f11be59b5b2077d161d6425b35159a07d9c7d40fbef368718c3c4c6b109c1b5b",
+      "version": "1.0.3",
+      "updated": "2026-06-17",
+      "hash": "sha256:9397c2a3b7ca87bda9409ff7a73ef0296ca3f3d91eb25b146aab6159edff7190",
       "tags": [
         "migration"
       ]

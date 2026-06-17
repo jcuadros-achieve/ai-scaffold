@@ -1,3 +1,17 @@
+---
+id: rule/stack-nextjs
+surface: rule
+title: "Stack: Next.js"
+summary: "Next.js conventions and pitfalls: server/client boundaries, caching, hydration, env exposure"
+tags: [stack, nextjs, react, frontend]
+appliesWhen:
+  any:
+    - dep: next
+    - framework: next
+rationale: Next.js-specific conventions the core rules can't carry generically
+stability: stable
+---
+
 # Stack rules: Next.js
 
 > Optional stack module — covers Next.js 13.4+ with the App Router (through

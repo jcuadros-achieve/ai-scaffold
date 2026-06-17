@@ -1,3 +1,13 @@
+---
+id: rule/security
+surface: rule
+title: Security rules
+summary: Secrets hygiene, input validation at trust boundaries, parameterized queries, safe error handling
+tags: [security]
+rationale: Transversal security baseline every project needs; universal (no appliesWhen)
+stability: stable
+---
+
 # Security rules
 
 > Generic defaults. Run `ai-init` to replace these with rules derived from your
