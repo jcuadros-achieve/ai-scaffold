@@ -190,6 +190,9 @@ CLAUDE.md                   ⊙ seed — single source of truth, filled in by ai
     refactor/SKILL.md         ← behavior-preserving
     migration/SKILL.md        ← curated by ai-init (safe DB/data migrations)
     incident/SKILL.md         ← curated by ai-init (incident/hotfix/rollback)
+  agents/                   ← read-only specialists (ADR-019), curated by ai-init
+    typescript-reviewer.md  ← curated by ai-init (TS/JS projects)
+    code-explorer.md        ← curated by ai-init (universal)
   .scaffold-state.json      ← installed entries tracked by id (version/hash/workspaces)
 
 .context/                   ⊙ seed — empty project-memory scaffold
@@ -275,6 +278,7 @@ ai-scaffold/
     CLAUDE.md               → CLAUDE.md
     rules/                  → .claude/rules/
     skills/                 → .claude/skills/<name>/SKILL.md
+    agents/                 → .claude/agents/ (read-only specialists, ADR-019)
     mcp/                    → catalog source for .mcp.json entries
     context/                → .context/
   test/                     ← node --test unit tests (installer/catalog/payload)

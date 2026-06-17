@@ -236,8 +236,16 @@ per-workspace installation logic without superseding ADR-013.
 **Parallelization is also content, not artifacts (ADR-014):** `ai-init`
 (per top-level workspace), `pr-review` and `security-review` carry subagent
 fan-out directives with a mandatory degradation clause (sequential = the
-contract). Subagents are read-only; no `.claude/agents/` or workflow scripts
-ship in the payload, and the work chain is never parallelized.
+contract). Subagents are read-only and the work chain is never parallelized.
+
+**Agents are a catalog surface (ADR-019, supersedes ADR-014's "no agents"
+clause):** read-only specialist agents (reviewers, explorers) ship under
+`templates/agents/*.md` and install to `.claude/agents/*` via `appliesWhen`, like
+any other entry. They declare `effort` (tier intent — **never** a model id,
+ADR-005/018 §6; the catalog test rejects ids), `readOnly: true`, and `tools: [...]`.
+`ai-init` maps `effort`→model at curate time. Writer agents and workflow scripts
+remain out of the payload until a future ADR. Fase-1 agents shipped:
+`agent/typescript-reviewer` (lang ts/js), `agent/code-explorer` (universal).
 
 ## Tool integration (ADR-002, ADR-010, ADR-011)
 

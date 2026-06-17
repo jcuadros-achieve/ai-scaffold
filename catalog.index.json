@@ -2,6 +2,68 @@
   "schemaVersion": 1,
   "entries": [
     {
+      "id": "agent/code-explorer",
+      "surface": "agent",
+      "title": "code-explorer",
+      "summary": "Fast read-only exploration: locate code, trace flows, map dependencies",
+      "body": "agents/code-explorer.md",
+      "tags": [
+        "explore",
+        "navigation",
+        "onboarding"
+      ],
+      "rationale": "A universal read-only explorer every project benefits from; keeps search off the main thread",
+      "stability": "stable",
+      "effort": "fast",
+      "readOnly": true,
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob"
+      ],
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:8423715aaca1c938bd9c1534118eb090a459218d0c4096f76c9afefae6486d4a"
+    },
+    {
+      "id": "agent/typescript-reviewer",
+      "surface": "agent",
+      "title": "typescript-reviewer",
+      "summary": "Specialist review pass for TS/JS changes (type safety, async, Node/web security)",
+      "body": "agents/typescript-reviewer.md",
+      "tags": [
+        "review",
+        "typescript",
+        "javascript"
+      ],
+      "rationale": "Per-stack reviewers are the canonical appliesWhen fit (ADR-019); only useful where TS/JS exists",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "lang": "typescript"
+          },
+          {
+            "lang": "javascript"
+          },
+          {
+            "file": "**/tsconfig.json"
+          }
+        ]
+      },
+      "effort": "deep",
+      "readOnly": true,
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash"
+      ],
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:88be9062d43fbcf0e0402dea1c881f85dee158a61150412d778934ba738a362e"
+    },
+    {
       "id": "mcp/atlassian",
       "surface": "mcp",
       "title": "Atlassian (Jira / Confluence)",
