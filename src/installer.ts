@@ -301,6 +301,159 @@ export function readInstalledMcp(projectRoot: string): string[] {
   return Array.isArray(data?.mcp) ? data.mcp as string[] : []
 }
 
+// ─── ADR-017 §3: state keyed by catalog entry id ───────────────────────────
+
+export const SCAFFOLD_STATE_FILE = '.claude/.scaffold-state.json'
+export const STATE_SCHEMA_VERSION = 1
+
+/** One installed catalog entry, tracked by id (ADR-017 §3). `hash`/`version`
+ *  are the catalog base at reconcile time: `update` compares the on-disk file
+ *  against `hash` (local drift) and the catalog against `version` (upstream
+ *  change). The unit of tracking is the entry id, not the raw file path. */
+export interface InstalledEntry {
+  version:    string
+  hash:       string
+  merge:      MergeState
+  workspaces: string[]
+}
+
+/** The id-keyed install state (ADR-017 §3), at `.claude/.scaffold-state.json`. */
+export interface ScaffoldState {
+  schemaVersion: number
+  installedAt:   string
+  installed:     Record<string, InstalledEntry>
+}
+
+/** One entry the curation (`ai-init`) decided to install, with the workspaces
+ *  that justified it (ADR-020 §2). The input unit of `apply`. */
+export interface ApplyItem {
+  entry:      CatalogIndexEntry
+  workspaces: string[]
+}
+
+/** What `apply` did to one entry, for the command layer to render. */
+export interface AppliedAction {
+  id:    string
+  type:  'create' | 'update' | 'skip'
+  dest:  string
+  merge: MergeState
+}
+
+export interface ApplyResult {
+  actions: AppliedAction[]
+  mcp:     McpMergeResult
+  state:   ScaffoldState
+}
+
+/** Read the id-keyed state. null when absent or unparseable. */
+export function readState(projectRoot: string): ScaffoldState | null {
+  const p = path.join(projectRoot, SCAFFOLD_STATE_FILE)
+  if (!fs.existsSync(p)) return null
+  try {
+    const parsed = JSON.parse(fs.readFileSync(p, 'utf8'))
+    if (typeof parsed !== 'object' || parsed === null) return null
+    const installed = (parsed as Record<string, unknown>).installed
+    if (typeof installed !== 'object' || installed === null) return null
+    return parsed as ScaffoldState
+  } catch {
+    return null
+  }
+}
+
+export function writeState(projectRoot: string, state: ScaffoldState): void {
+  const p = path.join(projectRoot, SCAFFOLD_STATE_FILE)
+  fs.mkdirSync(path.dirname(p), { recursive: true })
+  fs.writeFileSync(p, JSON.stringify(state, null, 2) + '\n')
+}
+
+/** Classify a body-bearing entry against its recorded base (ADR-006, per id).
+ *  No base → 'unknown' (legacy). Identical → 'clean' skip. Both changed →
+ *  'conflict', never auto-applied. */
+function classifyEntry(
+  dest: string, incoming: string, baseHash: string | undefined,
+): { type: 'create' | 'update' | 'skip'; merge: MergeState } {
+  if (!fs.existsSync(dest)) return { type: 'create', merge: 'clean' }
+  const current = fs.readFileSync(dest, 'utf8')
+  if (current === incoming) return { type: 'skip', merge: 'clean' }
+  if (!baseHash) return { type: 'update', merge: 'unknown' }
+  const localModified    = hashContent(current)  !== baseHash
+  const upstreamModified = hashContent(incoming) !== baseHash
+  if (localModified && !upstreamModified) return { type: 'skip', merge: 'customized' }
+  if (localModified && upstreamModified)  return { type: 'skip', merge: 'conflict' }
+  return { type: 'update', merge: 'clean' }
+}
+
+/** Add one mcp entry's server config to .mcp.json, add-only (ADR-008): the
+ *  user file wins, an existing server is never overwritten, an unparseable
+ *  file is left untouched. */
+function applyMcpEntry(
+  projectRoot: string, entry: CatalogIndexEntry,
+): 'added' | 'skipped' | 'invalid' {
+  if (!entry.server) return 'skipped'
+  const p = path.join(projectRoot, '.mcp.json')
+  let data: Record<string, unknown> = {}
+  if (fs.existsSync(p)) {
+    try { data = JSON.parse(fs.readFileSync(p, 'utf8')) }
+    catch { return 'invalid' }
+  }
+  const servers = (typeof data.mcpServers === 'object' && data.mcpServers !== null
+    ? data.mcpServers : {}) as Record<string, unknown>
+  data.mcpServers = servers
+  const name = entry.id.replace(/^mcp\//, '')
+  if (name in servers) return 'skipped'
+  servers[name] = entry.server
+  fs.writeFileSync(p, JSON.stringify(data, null, 2) + '\n')
+  return 'added'
+}
+
+/**
+ * The single writer (ADR-017 §2/§5). Given the curated plan, write each
+ * body-bearing entry to its install location, classify it three-way against the
+ * recorded base per id (ADR-006), merge any mcp entries add-only, and persist
+ * the new id-keyed state. Conflicts are never auto-applied. Prior state for ids
+ * not in the plan is preserved (deselecting never deletes user files). PURE of
+ * UI — the command layer renders the returned actions.
+ */
+export function apply(projectRoot: string, items: ApplyItem[]): ApplyResult {
+  const prior = readState(projectRoot)
+  const installed: Record<string, InstalledEntry> = { ...(prior?.installed ?? {}) }
+  const actions: AppliedAction[] = []
+  const mcp: McpMergeResult = { added: [], skipped: [], invalid: false }
+
+  for (const { entry, workspaces } of items) {
+    const base = { version: entry.version ?? '', hash: entry.hash ?? '', workspaces }
+
+    if (entry.surface === 'mcp') {
+      const r = applyMcpEntry(projectRoot, entry)
+      if (r === 'added')   mcp.added.push(entry.id)
+      if (r === 'skipped') mcp.skipped.push(entry.id)
+      if (r === 'invalid') mcp.invalid = true
+      const merge: MergeState = r === 'added' ? 'clean' : 'customized'
+      installed[entry.id] = { ...base, merge }
+      actions.push({ id: entry.id, type: r === 'added' ? 'create' : 'skip',
+        dest: '.mcp.json', merge })
+      continue
+    }
+
+    if (!entry.body) continue
+    const dest = path.join(projectRoot, mapTemplatePath(entry.body))
+    const src  = path.join(TEMPLATES_DIR, entry.body)
+    const incoming = fs.readFileSync(src, 'utf8')
+    const { type, merge } = classifyEntry(dest, incoming, installed[entry.id]?.hash)
+    if (type !== 'skip') applyAction({ type, src, dest })
+    installed[entry.id] = { ...base, merge }
+    actions.push({ id: entry.id, type, dest, merge })
+  }
+
+  const state: ScaffoldState = {
+    schemaVersion: STATE_SCHEMA_VERSION,
+    installedAt:   new Date().toISOString(),
+    installed,
+  }
+  writeState(projectRoot, state)
+  return { actions, mcp, state }
+}
+
 function walkDir(dir: string, cb: (f: string) => void): void {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, e.name)
