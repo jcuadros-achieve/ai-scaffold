@@ -37,8 +37,8 @@ a form that was filled in. Inventory (what exists) is the floor; synthesis
 
 ```
 Phase 1  Scan & analyze   → understand the codebase (the central artifact)
-Phase 2  Profile          → write .scaffold/project-profile.json; run `npx github:jcuadros-achieve/ai-scaffold@${VERSION} suggest`
-Phase 3  Curate           → rank/justify candidates, confirm with the human, run `npx github:jcuadros-achieve/ai-scaffold@${VERSION} apply`
+Phase 2  Profile          → write .scaffold/project-profile.json; run `npx github:jcuadros-achieve/ai-scaffold#${VERSION} suggest`
+Phase 3  Curate           → rank/justify candidates, confirm with the human, run `npx github:jcuadros-achieve/ai-scaffold#${VERSION} apply`
 Phase 4  Generate         → concretize the installed rules/skills + CLAUDE.md
 Phase 5  Write            → write CLAUDE.md (+ nested per-workspace files)
 ```
@@ -195,7 +195,7 @@ Write the file, then run:
 ```
 # Read the installed version (from .claude/scaffold-version.json)
 VERSION=$(cat .claude/scaffold-version.json | jq -r '.version')
-npx github:jcuadros-achieve/ai-scaffold@${VERSION} suggest
+npx github:jcuadros-achieve/ai-scaffold#${VERSION} suggest
 ```
 
 It writes `.scaffold/candidates.json` — `{ candidates: [{id, entry, workspaces}],
@@ -257,7 +257,7 @@ your own record — the CLI ignores it.
 
 ```
 # Use the same VERSION read in Phase 2
-npx github:jcuadros-achieve/ai-scaffold@${VERSION} apply
+npx github:jcuadros-achieve/ai-scaffold#${VERSION} apply
 ```
 
 It writes each entry to its install location, classifies three-way per id

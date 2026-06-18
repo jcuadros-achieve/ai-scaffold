@@ -61,7 +61,7 @@ export async function update(): Promise<void> {
             installedAt: new Date().toISOString()
           })
           console.log(chalk.green(`\n  Upgraded to version ${remoteVersion}`))
-          console.log(chalk.yellow('  Note: Use npx github:jcuadros-achieve/ai-scaffold@latest for commands\n'))
+          console.log(chalk.yellow('  Note: Use npx github:jcuadros-achieve/ai-scaffold#latest for commands\n'))
         }
       }
     } else {
