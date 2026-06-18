@@ -1,0 +1,22 @@
+{
+  "id": "mcp/circleci",
+  "surface": "mcp",
+  "title": "CircleCI",
+  "summary": "CircleCI official MCP server (local stdio). Builds, failure logs, flaky tests, pipeline status. Needs CIRCLECI_TOKEN.",
+  "tags": ["ci", "circleci"],
+  "appliesWhen": {
+    "any": [
+      { "file": "**/.circleci/config.yml" }
+    ]
+  },
+  "rationale": "CI/CD context (build logs, flaky tests, pipeline status) for projects on CircleCI; official server, run locally via npx",
+  "stability": "stable",
+  "server": {
+    "type": "stdio",
+    "command": "npx",
+    "args": ["-y", "@circleci/mcp-server-circleci@latest"],
+    "env": {
+      "CIRCLECI_TOKEN": "${CIRCLECI_TOKEN}"
+    }
+  }
+}

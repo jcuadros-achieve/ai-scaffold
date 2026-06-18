@@ -73,11 +73,23 @@ test('index drift: every entry-file is indexed with a matching body hash', () =>
   }
 })
 
-test('agent entries declare effort/tier, never a model id, and are read-only (ADR-019)', () => {
+test('agent entries declare effort/tier (never a model id) and a readOnly flag (ADR-019, ADR-021)', () => {
   for (const e of entries.filter(e => e.surface === 'agent')) {
     assert.ok(e.effort, `${e.id} agent must declare effort`)
     assert.ok(!MODEL_ID.test(String(e.effort)), `${e.id} effort is a model id — declare a tier`)
-    assert.equal(e.readOnly, true, `${e.id} fase-1 agents are read-only (ADR-019 §2)`)
+    assert.ok(typeof e.readOnly === 'boolean', `${e.id} agent must declare readOnly: true | false`)
+    // Read-only agents keep the ADR-019 tool set; writer agents (readOnly:false,
+    // ADR-021) must carry Edit/Write and be marked experimental while unproven.
+    const tools = new Set(e.tools ?? [])
+    if (e.readOnly === true) {
+      assert.ok(!tools.has('Edit') && !tools.has('Write'),
+        `${e.id} is readOnly:true but declares a write tool — drop Edit/Write or set readOnly:false`)
+    } else {
+      assert.ok(tools.has('Edit') && tools.has('Write'),
+        `${e.id} is readOnly:false but lacks Edit/Write — a writer needs the write tools`)
+      assert.equal(e.stability, 'experimental',
+        `${e.id} is a writer (readOnly:false) and must be stability: experimental until proven`)
+    }
   }
 })
 

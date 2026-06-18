@@ -2,9 +2,9 @@
   "id": "mcp/datadog",
   "surface": "mcp",
   "title": "Datadog",
-  "summary": "Datadog MCP server (preview). OAuth; non-US1 sites replace the host (e.g. mcp.datadoghq.eu).",
-  "tags": ["observability", "apm", "logs"],
-  "rationale": "Observability access for runnable services and pipelines that emit telemetry",
+  "summary": "Datadog MCP server (preview). OAuth; non-US1 sites replace the host (e.g. mcp.datadoghq.eu). Covers backend telemetry (APM/logs/metrics) and frontend RUM/browser.",
+  "tags": ["observability", "apm", "logs", "rum", "frontend"],
+  "rationale": "Observability access for runnable services, pipelines, and frontend apps — backend (APM/logs/metrics) and client-side (RUM/browser) telemetry alike",
   "stability": "experimental",
   "appliesWhen": {
     "any": [

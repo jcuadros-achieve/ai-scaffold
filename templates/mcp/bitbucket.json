@@ -1,0 +1,20 @@
+{
+  "id": "mcp/bitbucket",
+  "surface": "mcp",
+  "title": "Bitbucket (community)",
+  "summary": "Bitbucket Cloud MCP via community server (local stdio). Repos, branches, PRs, comments. Needs workspace + app-password credentials.",
+  "tags": ["git", "bitbucket", "ci"],
+  "rationale": "Bitbucket is the workspace's git host, but no official remote MCP server exists; this community stdio server fills the gap. Experimental — opt-in, until an official server ships",
+  "stability": "experimental",
+  "server": {
+    "type": "stdio",
+    "command": "npx",
+    "args": ["-y", "bitbucket-mcp@latest"],
+    "env": {
+      "BITBUCKET_URL": "https://api.bitbucket.org/2.0",
+      "BITBUCKET_WORKSPACE": "${BITBUCKET_WORKSPACE}",
+      "BITBUCKET_USERNAME": "${BITBUCKET_USERNAME}",
+      "BITBUCKET_PASSWORD": "${BITBUCKET_PASSWORD}"
+    }
+  }
+}

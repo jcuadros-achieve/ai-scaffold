@@ -25,6 +25,7 @@ document decisions about **this tool**; they are not installed into targets.
 | [ADR-018](ADR-018-catalog-model.md) | Catalog model — frontmatter-colocated entries compiled to an index, declarative `appliesWhen` | 2026-06-16 | Accepted | Per-entry metadata in frontmatter (one file per entry), compiled to `catalog.index.json`; `appliesWhen` declarative predicates (`dep`/`file`/`lang`/`framework`/`archetype`, `any`/`all`); absent ⇒ universal; mechanical filter in CLI + agent ranking/justification; index/body split for a future on-demand registry; hardened drift test. Supersedes ADR-007, ADR-009; absorbs ADR-008's MCP surface. |
 | [ADR-019](ADR-019-agents-in-payload.md) | Agents in the payload — read-only specialists, model by `effort`/tier | 2026-06-16 | Accepted | Agents ship as a catalog surface filtered by `appliesWhen`; fase 1 read-only only (no writers); `model` declared as `effort`/tier intent (never an id), concretized by `ai-init`; tool-scoped. Supersedes ADR-014's no-agents clause; extends ADR-005. |
 | [ADR-020](ADR-020-monorepo-curation.md) | Monorepo curation — per-workspace filtering, union install at the root | 2026-06-16 | Accepted | `project-profile.json` becomes a `workspaces[]` collection; `appliesWhen`/`conflictsWith` resolve per workspace; install stays single at root as a curated union; plan/state carry workspace attribution; dialog groups by workspace. Extends ADR-013's backbone. |
+| [ADR-021](ADR-021-writer-agents.md) | Writer agents — bounded read-write specialists under a human gate | 2026-06-18 | Accepted | Agents may declare `readOnly: false` (experimental) when they document a read-write contract: isolated worktree, scoped writes, human gate, durable hand-off; the catalog test checks the control fields rather than forcing all agents read-only. Supersedes ADR-019 §2. |
 
 ³ The "no agents/workflow artifacts" clause superseded by ADR-019 (read-only specialist agents now ship); the fan-out-as-content posture stands.
 
@@ -47,5 +48,6 @@ resolved:
 - Ephemeral `.scaffold/` artifacts (`project-profile`/`candidates`/`install-plan`)
   are written under `.scaffold/` and gitignored (ADR-017 §4).
 
-No open ADR-level decisions. Future work, each needing its own ADR: writer agents
-(ADR-019 §2 defers them), and an on-demand body registry (ADR-018 §5).
+No open ADR-level decisions. Future work, each needing its own ADR: an on-demand
+body registry (ADR-018 §5). Writer agents, deferred by ADR-019 §2, are now
+enabled by ADR-021 under a documented read-write contract.
