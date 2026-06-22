@@ -65,6 +65,11 @@ node dist/cli.js install   # also: suggest | apply | update | diff | status
 
 # Verify the package contents (run after any structural change):
 npm pack && tar -tzf achieve-ai-scaffold-*.tgz   # then rm the .tgz
+
+# Cut a release (codifies ADR-001 §6 — bump, lockfile sync, gate, tag, push):
+node scripts/release.mjs 2.9.0          # explicit version (or: minor | patch | major)
+node scripts/release.mjs 2.10.0-rc.1 --no-push   # RC without pushing
+node scripts/release.mjs patch --dry-run          # preview the plan
 ```
 
 Unit tests cover the pure logic in `installer.ts` (`test/installer.test.mjs`,
