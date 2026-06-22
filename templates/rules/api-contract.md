@@ -1,3 +1,17 @@
+---
+id: rule/api-contract
+surface: rule
+title: API & contract rules
+summary: Backward-compatible interfaces, edge validation, stable error shapes for API producers/consumers
+tags: [api, contract]
+appliesWhen:
+  any:
+    - archetype: service
+    - archetype: app
+rationale: Relevant to projects that expose or consume an API surface
+stability: stable
+---
+
 # API & contract rules
 
 > Generic defaults. Run `ai-init` to align with the project's API style and

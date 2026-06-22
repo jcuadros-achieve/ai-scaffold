@@ -1,3 +1,21 @@
+---
+id: rule/accessibility
+surface: rule
+title: Accessibility rules
+summary: Inclusive UI baseline — semantic markup, keyboard/focus, contrast, and target WCAG level
+tags: [accessibility, frontend, web]
+appliesWhen:
+  any:
+    - archetype: frontend
+    - dep: react
+    - dep: next
+    - dep: vue
+    - dep: svelte
+    - dep: "@angular/core"
+rationale: Only meaningful for projects with a user-facing UI; gated to frontend workspaces
+stability: stable
+---
+
 # Accessibility rules
 
 > Optional module — relevant to projects with a user-facing UI. Run `ai-init` to

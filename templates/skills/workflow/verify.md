@@ -2,6 +2,12 @@
 name: verify
 description: Run build, tests, lint, coverage and audit to prove the change works before a PR.
 tier: fast
+id: skill/verify
+surface: skill
+summary: Run build, tests, lint, coverage and audit to prove a change before a PR
+tags: [verification, workflow]
+rationale: Verification gate of the work chain; universal
+stability: stable
 ---
 
 # Skill: verify

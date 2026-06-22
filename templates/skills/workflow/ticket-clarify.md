@@ -2,6 +2,12 @@
 name: ticket-clarify
 description: Turn any input into a structured technical brief; mark gaps instead of asking.
 tier: deep
+id: skill/ticket-clarify
+surface: skill
+summary: Turn any input into a structured technical brief, marking gaps
+tags: [requirements, workflow]
+rationale: Clarification step of the work chain; universal
+stability: stable
 ---
 
 # Skill: ticket-clarify

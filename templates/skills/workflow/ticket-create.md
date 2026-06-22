@@ -2,6 +2,12 @@
 name: ticket-create
 description: Author a complete ticket from a rough idea by asking the right questions first.
 tier: deep
+id: skill/ticket-create
+surface: skill
+summary: Author a complete ticket from a rough idea by asking the right questions first
+tags: [requirements, workflow]
+rationale: Ticket-authoring entry of the work chain; universal
+stability: stable
 ---
 
 # Skill: ticket-create

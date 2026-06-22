@@ -1,3 +1,13 @@
+---
+id: rule/ci-gates
+surface: rule
+title: CI gates & enforcement rules
+summary: At least one automated check that fails the build on violation; never merge red, never disable a gate
+tags: [ci, gates]
+rationale: Enforcement baseline every project needs; universal
+stability: stable
+---
+
 # CI gates & enforcement rules
 
 > Generic defaults. Run `ai-init` to map these to your actual CI config and

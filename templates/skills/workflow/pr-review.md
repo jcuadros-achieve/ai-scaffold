@@ -2,6 +2,12 @@
 name: pr-review
 description: Review a diff in seven structured passes with actionable findings.
 tier: deep
+id: skill/pr-review
+surface: skill
+summary: Review a diff in seven structured passes with actionable findings
+tags: [review, pr, workflow]
+rationale: Final review step of the work chain; universal
+stability: stable
 ---
 
 # Skill: pr-review

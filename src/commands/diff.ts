@@ -1,56 +1,44 @@
 import path from 'path'
 import chalk from 'chalk'
-import { planInstall, readInstalledSelection } from '../installer.js'
-import { renderDiff }  from '../differ.js'
+import { readState, reconcile } from '../installer.js'
+import { createDiff, renderDiff } from '../differ.js'
 
+/** `diff` shows, per installed entry (ADR-017 §3), the change between the
+ *  on-disk file and the incoming catalog body. Conflicts are flagged. */
 export async function diff(): Promise<void> {
   const root = process.cwd()
   console.log(chalk.bold('\nai-scaffold — diff\n'))
 
-  const selected   = readInstalledSelection(root) ?? []
-  const actions    = planInstall(root, selected)
-  const toCreate   = actions.filter(a => a.type === 'create')
-  const updates    = actions.filter(a => a.type === 'update')
-  const toUpdate   = updates.filter(a => a.merge !== 'conflict')
-  const conflicts  = updates.filter(a => a.merge === 'conflict')
-  const customized = actions.filter(a => a.type === 'skip' && a.merge === 'customized')
-  const seedKept   = actions.filter(a => a.type === 'skip' && a.merge === 'seed')
-
-  if (!toCreate.length && !updates.length) {
-    console.log(chalk.green('  Project is up to date.'))
-    if (customized.length)
-      console.log(chalk.gray(`  (${customized.length} customized files, no upstream changes)`))
-    if (seedKept.length)
-      console.log(chalk.gray(`  (${seedKept.length} seed files — install-once, not tracked by update)`))
+  if (!readState(root)) {
+    console.log(chalk.red('  Not installed.\n'))
     return
   }
 
-  if (toCreate.length) {
-    console.log(chalk.green(`New files (${toCreate.length}):`))
-    toCreate.forEach(a => console.log(chalk.green(`  + ${path.relative(root, a.dest)}`)))
-    console.log()
+  const recon = reconcile(root).filter(
+    r => r.dest && r.incoming !== undefined && r.current !== undefined && r.current !== r.incoming)
+  const changed   = recon.filter(r => r.merge !== 'conflict')
+  const conflicts = recon.filter(r => r.merge === 'conflict')
+
+  if (!changed.length && !conflicts.length) {
+    console.log(chalk.green('  All installed entries up to date.\n'))
+    return
   }
 
-  if (toUpdate.length) {
-    console.log(chalk.yellow(`Changed files (${toUpdate.length}):\n`))
-    for (const a of toUpdate) {
-      console.log(chalk.yellow(`  ${path.relative(root, a.dest)}`))
-      console.log(renderDiff(a.diff!))
+  if (changed.length) {
+    console.log(chalk.yellow(`Changed entries (${changed.length}):\n`))
+    for (const r of changed) {
+      console.log(chalk.yellow(`  ${r.id}  ${chalk.gray(path.relative(root, r.dest!))}`))
+      console.log(renderDiff(createDiff(r.current!, r.incoming!, path.relative(root, r.dest!))))
       console.log()
     }
   }
 
   if (conflicts.length) {
     console.log(chalk.red(`Conflicts — customized locally AND changed upstream (${conflicts.length}):\n`))
-    for (const a of conflicts) {
-      console.log(chalk.red(`  ${path.relative(root, a.dest)}`))
-      console.log(renderDiff(a.diff!))
+    for (const r of conflicts) {
+      console.log(chalk.red(`  ${r.id}  ${chalk.gray(path.relative(root, r.dest!))}`))
+      console.log(renderDiff(createDiff(r.current!, r.incoming!, path.relative(root, r.dest!))))
       console.log()
     }
   }
-
-  if (customized.length)
-    console.log(chalk.gray(`${customized.length} customized files untouched (no upstream changes).`))
-  if (seedKept.length)
-    console.log(chalk.gray(`${seedKept.length} seed files (CLAUDE.md, rules) — install-once, not tracked by update.`))
 }

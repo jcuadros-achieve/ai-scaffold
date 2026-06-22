@@ -1,3 +1,18 @@
+---
+id: rule/resilience
+surface: rule
+title: Resilience & reliability rules
+summary: Timeouts on every external call, capped retries on idempotent ops only, honest degradation
+tags: [resilience, reliability]
+appliesWhen:
+  any:
+    - archetype: service
+    - archetype: app
+    - archetype: data-pipeline
+rationale: Relevant to software that crosses network or process boundaries
+stability: stable
+---
+
 # Resilience & reliability rules
 
 > Generic defaults. Run `ai-init` to align with the project's failure modes and

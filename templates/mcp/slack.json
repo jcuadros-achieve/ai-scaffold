@@ -1,0 +1,13 @@
+{
+  "id": "mcp/slack",
+  "surface": "mcp",
+  "title": "Slack",
+  "summary": "Slack official remote MCP server. Search messages/channels/users, read threads, send messages, canvases. OAuth on first use.",
+  "tags": ["slack", "communication"],
+  "rationale": "Team-communication access (search, threads, post) for the work/incident chains; official hosted remote, useful on almost any team project",
+  "stability": "stable",
+  "server": {
+    "type": "http",
+    "url": "https://mcp.slack.com/mcp"
+  }
+}

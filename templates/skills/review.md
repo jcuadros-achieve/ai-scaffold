@@ -2,6 +2,12 @@
 name: review
 description: Quick review of a diff for rule violations, edge cases, security and tests.
 tier: fast
+id: skill/review
+surface: skill
+summary: Quick review of a diff for rule violations, edge cases, security and tests
+tags: [review]
+rationale: Lightweight self-review applies to any change; universal
+stability: stable
 ---
 
 # Skill: review

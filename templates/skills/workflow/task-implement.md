@@ -2,6 +2,12 @@
 name: task-implement
 description: Execute an approved plan test-first (TDD), without silent deviation.
 tier: deep
+id: skill/task-implement
+surface: skill
+summary: Execute an approved plan test-first (TDD), without silent deviation
+tags: [implementation, tdd, workflow]
+rationale: Implementation step of the work chain; universal
+stability: stable
 ---
 
 # Skill: task-implement

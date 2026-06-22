@@ -5,10 +5,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 `ai-scaffold` is a CLI that installs a standardized AI workflow structure
-(`CLAUDE.md`, `.claude/` and `.context/`) into **other** projects. One command
-gives any repo a consistent set of context files, rules, and reusable skill
-templates for AI-assisted development. Claude Code is the primary target
-(ADR-002): skills install as native Claude skills under `.claude/skills/`,
+(`CLAUDE.md`, `.claude/` and `.context/`) into **other** projects. `install`
+lays a minimal **seed**; the keystone `ai-init` skill then scans the repo and
+**curates** the rest from a catalog of rules, skills, agents, and MCP servers —
+so each repo gets a consistent, project-shaped set of context files for
+AI-assisted development (the inverted flow, ADR-017). Claude Code is the primary
+target (ADR-002): skills install as native Claude skills under `.claude/skills/`,
 which GitHub Copilot also discovers natively.
 
 This repo is the tool itself. The files under `templates/` are **not** this
@@ -42,9 +44,10 @@ Shipped rules enforce consistency, protected zones, and "read the memory first":
 `code-style`, `security`, `no-touch`, `context`, `test-strategy`, `dependency`,
 `ci-gates`, `performance`, `observability`, `resilience`, `api-contract`, `docs`,
 `git-workflow`. On-demand skills (`security-review`, `refactor`, `migration`, …)
-cover deeper tasks. `ai-init` is the keystone: it analyzes a real codebase and
-fills the generic rules with project-specific facts. Full breakdown:
-[`docs/OVERVIEW.md`](docs/OVERVIEW.md).
+cover deeper tasks. These are catalog entries, not auto-installed: `ai-init`
+scans the codebase, curates which apply, installs them, and concretizes the
+generic rules with project-specific facts (only `skill/ai-init` + `rule/context`
+are seed). Full breakdown: [`docs/OVERVIEW.md`](docs/OVERVIEW.md).
 
 ## Commands
 
@@ -54,11 +57,11 @@ npm run build          # tsc → compiles src/ to dist/
 npm run dev            # node --watch dist/cli.js  (build first)
 npm test               # builds, then unit tests (node --test, test/*.test.mjs)
 
-# After ANY change under templates/ (test/catalog.test.mjs fails otherwise):
-node scripts/update-catalog.mjs
+# After ANY change under templates/ (test/catalog-index.test.mjs fails otherwise):
+node scripts/build-catalog.mjs
 
 # Run a command locally after building:
-node dist/cli.js install   # also: update | diff | status
+node dist/cli.js install   # also: suggest | apply | update | diff | status
 
 # Verify the package contents (run after any structural change):
 npm pack && tar -tzf achieve-ai-scaffold-*.tgz   # then rm the .tgz
@@ -78,49 +81,52 @@ node /ABS/PATH/ai-scaffold/dist/cli.js install
 
 ## Architecture
 
-Two layers, deliberately separated:
+The flow is **inverted** (ADR-017): `install` lays only a minimal *seed*; the
+decision of *what else to install* moves to `ai-init`, which scans the real
+codebase and curates with the user. The data flow is:
 
-- **`src/installer.ts` — pure logic, no UI.** `planInstall(root, selected)` walks
-  `templates/` recursively and, for each file, emits a `FileAction`
-  (`create` / `update` / `skip`) by diffing the incoming content
-  against the target — skipping optional-module files whose id isn't in
-  `selected`. `mapTemplatePath()` translates the logical template path to its
-  install location; nothing is generated — the payload is exactly the mapped
-  templates (ADR-011). Each template's catalog `track` mode (ADR-017) decides
-  how a present file is treated: `seed` files (CLAUDE.md, rules — owned by the
-  project after `ai-init`) are install-once and skipped (`merge: 'seed'`),
-  never reconciled; `reconcile` files are classified three-way against the
-  recorded installed base (`FileAction.merge`:
-  `clean` / `customized` / `conflict` / `unknown`, ADR-006) — commands render
-  the classification but never re-derive it. `loadTrackMap()` exposes the modes;
-  `loadChangelog()` / `changelogSince()` read the catalog-derived per-version
-  changelog. `applyAction()` executes
-  one action. `loadManifest()` reads the optional-module list;
-  `writeVersionFile()` / `readVersionFile()` / `readInstalledSelection()` manage
-  `.claude/.scaffold-version` (which records the chosen modules; the pre-2.0
-  `.ai/.scaffold-version` is still readable). `loadMcpCatalog()` /
-  `mcpChoicesFor()` / `mergeMcpServers()` implement the MCP catalog (ADR-008):
-  add-only merge into the user-owned `.mcp.json` — existing entries always win,
-  the file is never tracked by diff/update, and the catalog carries no
-  credentials (a test rejects credential-shaped strings). No prompts, no
-  `console`.
-- **`src/commands/*.ts` — UI / orchestration.** Each command calls
-  `planInstall()`, renders with `src/differ.ts`, drives `prompts`, then calls
-  `applyAction()`. `install` parses flags
-  (`--all`/`--core`/`--modules=`/`--mcp=`/`--yes`)
-  and, in a TTY, prompts a module checklist plus an MCP-server multiselect.
-  **`update` is its own command, not a re-run of install (ADR-017):** it reads
-  the previously-installed selection silently (no module/MCP wizard, no commit
-  prompt), prints the catalog-derived changelog since the installed version,
-  installs new files, reconciles `reconcile` files (ADR-006), and never touches
-  `seed` files that already exist. Adding/dropping a module is an `install`
-  operation. `diff`/`status` plan against the installed selection so they don't
-  report unselected optional files as missing.
-- **`src/cli.ts`** routes `argv[2]` to one of the four commands; flags are read
-  from `process.argv` inside the command.
+```
+ai-init (scan)      AGENT → .scaffold/project-profile.json   (facts + evidence)
+ai-scaffold suggest CLI   → .scaffold/candidates.json         (pure appliesWhen match)
+ai-init (curation)  AGENT → .scaffold/install-plan.json       (rank + justify + dialog)
+ai-scaffold apply   CLI   → writes files / merges .mcp.json / updates state
+```
 
-When adding behavior, keep planning/applying in `installer.ts` and all
-user interaction in `commands/`.
+`project-profile.json` is the **only** agent→CLI boundary; `suggest` trusts its
+facts and never re-derives them. `apply` is the **single writer** (the agent
+never writes payload). The three `.scaffold/*.json` artifacts are gitignored
+(ADR-017 §4). Two layers, deliberately separated:
+
+- **`src/installer.ts` — pure logic, no UI.**
+  - `installSeed(root)` lays the seed (ADR-017 §1): every template file *not*
+    owned by a catalog entry (infra: `CLAUDE.md`, `.context/**`) created-if-absent,
+    plus the catalog entries flagged `seed: true` (ai-init skill, context rule)
+    applied through the single writer. `templates/mcp/**` is skipped (mcp has no
+    body).
+  - `apply(root, items)` is the single writer: for each `{entry, workspaces}` it
+    writes the body via `mapTemplatePath()`, classifies three-way against the
+    recorded base per **id** (`merge`: `clean`/`customized`/`conflict`/`unknown`,
+    ADR-006 — conflicts never auto-applied), merges mcp entries add-only into
+    `.mcp.json` (ADR-008), and persists id-keyed state. Prior ids not in the plan
+    are preserved.
+  - `reconcile(root, catalog)` is read-only: classifies each installed id against
+    the current catalog (upstream change vs local drift). `status`/`diff`/`update`
+    all share it.
+  - `readState`/`writeState` manage `.claude/.scaffold-state.json`
+    (`installed: { <id> → {version, hash, merge, workspaces} }`). `loadCatalogIndex()`
+    reads the compiled catalog. No prompts, no `console`.
+- **`src/catalog.ts` — the pure matcher.** `suggest(profile, catalog)` filters
+  the index against the per-workspace profile (ADR-020), `detectConflicts()`
+  finds same-workspace clashes. Filesystem-free and fully unit-tested.
+- **`src/commands/*.ts` — UI / orchestration.** `install`→`installSeed`;
+  `suggest` reads the profile, runs the matcher, writes candidates; `apply` reads
+  the plan, resolves ids → `apply()`; `update` reconciles installed state against
+  the catalog and re-applies (clean fast-forwards, conflicts kept); `status`/`diff`
+  render `reconcile()`. Render with `src/differ.ts`, drive `prompts`.
+- **`src/cli.ts`** routes `argv[2]` to one of the six commands.
+
+When adding behavior, keep planning/applying in `installer.ts`, the matcher in
+`catalog.ts`, and all user interaction in `commands/`.
 
 ## Critical, non-obvious invariants
 
@@ -129,22 +135,19 @@ These caused real bugs and are easy to reintroduce:
 1. **`templates/` is a logical layout; `mapTemplatePath()` is the only bridge.**
    `templates/skills/**/<name>.md` → `.claude/skills/<name>/SKILL.md` (subdirs
    like `workflow/` are organizational and flattened — skill basenames must stay
-   unique), `templates/rules/*` → `.claude/rules/*`, `templates/context/**` →
-   `.context/**`, root files (`CLAUDE.md`) verbatim. Manifest `paths` and the
-   exclusion check use the **logical** form (`skills/migration.md`), not the
-   install form. Tests in `test/installer.test.mjs` pin this mapping.
+   unique), `templates/rules/*` → `.claude/rules/*`, `templates/agents/*` →
+   `.claude/agents/*`, `templates/context/**` → `.context/**`, root files
+   (`CLAUDE.md`) verbatim. Catalog entry `body` uses the **logical** form
+   (`skills/migration.md`), not the install form. Tests in
+   `test/installer.test.mjs` pin this mapping.
 
-2. **Two version signals, both mandatory on template changes.**
-   `SCAFFOLD_VERSION` (in `src/installer.ts`) is the coarse signal — bump it or
-   `status`/`update` won't notice. The **per-template catalog** in
-   `scaffold.manifest.json` (`templates`: version/date/sha256 per file, ADR-007)
-   is the fine signal — run `node scripts/update-catalog.mjs` after any change
-   under `templates/`; `test/catalog.test.mjs` fails the suite on drift. That
-   script also stamps each entry's `track` (seed/reconcile, ADR-017 — `trackOf`
-   is its single source) and appends the per-version `changelog` keyed by
-   `SCAFFOLD_VERSION`. Never hand-edit catalog or changelog entries.
-   `scripts/` is dev-only (not in the `files`
-   whitelist, ships nowhere).
+2. **One version signal: the per-entry catalog (ADR-018 §7).** The coarse
+   `SCAFFOLD_VERSION` is **gone** (redesign). Each catalog entry carries its own
+   `version`/`updated`/`hash` in `catalog.index.json`, compiled from frontmatter
+   by `node scripts/build-catalog.mjs` — run it after ANY change under
+   `templates/`; `test/catalog-index.test.mjs` fails the suite on drift. Never
+   hand-edit the index. `scripts/` is dev-only (not in the `files` whitelist,
+   ships nowhere).
 
 3. **Every skill template must carry frontmatter** (`name` + `description` +
    `tier: fast | deep`) — name/description make the installed `SKILL.md`
@@ -162,41 +165,33 @@ These caused real bugs and are easy to reintroduce:
 5. **`TEMPLATES_DIR` assumes `dist/` is a sibling of `templates/`.**
    `installer.ts` resolves `path.resolve(__dirname, '../templates')`, i.e.
    `dist/installer.js` → `../templates`. Changing `outDir` breaks this path. The
-   same applies to `MANIFEST_FILE` (`../scaffold.manifest.json`).
+   same applies to `CATALOG_INDEX_FILE` (`../catalog.index.json`).
 
-6. **Core is implicit; optional is explicit.** `scaffold.manifest.json` lists
-   only the **optional** modules (and the template paths each owns); everything
-   else under `templates/` is core and always installed. A new template is core
-   by default — to make it optional, add it to the manifest. The manifest lives
-   at the repo root (sibling of `templates/`, so it is *not* copied into targets)
-   and the `paths` use the logical rel form (`rules/x.md`, `skills/x.md`) that
-   `path.relative(TEMPLATES_DIR, …)` produces. Future module ideas are mapped in
-   `docs/CANDIDATE-MODULES.md` — add on demand, not up front.
+6. **Almost nothing auto-installs; the catalog is offered, not laid (ADR-018 §7).**
+   Only entries flagged `seed: true` are installed by `install` (the ADR-017
+   bootstrap: `skill/ai-init`, `rule/context`); everything else is offered through
+   `appliesWhen` and laid only when a curated plan names it. The old
+   "core implicit / optional explicit" manifest model is **retired** — there is no
+   `scaffold.manifest.json`. To add a catalog entry, drop a `.md` (or
+   `templates/mcp/*.json`) with the frontmatter envelope and rebuild the index.
 
-7. **The installed selection is persisted** in `.claude/.scaffold-version`
-   (`optional: [...]`; pre-2.0 installs used `.ai/.scaffold-version`, which the
-   readers still fall back to). Since 2.3.0 it also records the **installed
-   base** per template (`templates: { path → {version, hash} }`, selection-aware),
-   which drives the 3-way update classification of `reconcile` files
-   (ADR-006/ADR-007): customized + upstream-unchanged skips silently; conflicts
-   are never auto-applied, even with `--yes`. `seed` files (ADR-017) skip the
-   classification entirely — install-once, never reconciled (so their recorded
-   base is unused). Since 2.9.0 it also records the chosen MCP servers
-   (`mcp: [...]`, ADR-008) so `update` preselects them. The recorded base is always a catalog hash, never a local
-   file's hash — and applying/declining an update re-records the latest catalog,
-   so a declined conflict is not re-nagged until upstream changes again.
-   `diff`/`status`/`update` all read it via
-   `readInstalledSelection` so they stay coherent. Deselecting a module on
-   re-install does **not** delete its files (we never delete user files) — it
-   just stops tracking them; note this if it surprises you.
+7. **State is keyed by catalog entry `id`, in `.claude/.scaffold-state.json`**
+   (`installed: { <id> → {version, hash, merge, workspaces} }`, ADR-017 §3). The
+   recorded base drives the 3-way update classification (ADR-006): customized +
+   upstream-unchanged skips silently; conflicts are never auto-applied. The base
+   is always a catalog hash, never a local file's hash — and applying/declining
+   an update re-records the latest catalog, so a declined conflict is not
+   re-nagged until upstream changes again. `workspaces` attribute each entry to
+   the workspaces that justified it (ADR-020). `status`/`diff`/`update` all read
+   state via `reconcile()` so they stay coherent. We never delete user files.
 
 ## Packaging & distribution
 
-- **`package.json` `files: ["dist", "templates", "scaffold.manifest.json"]`** is
+- **`package.json` `files: ["dist", "templates", "catalog.index.json"]`** is
   the publish whitelist. `templates` MUST stay in it — otherwise `install`
-  copies nothing; the manifest MUST stay in it or every module reads as core.
-  The `files` whitelist intentionally overrides `.gitignore` (which excludes
-  `dist/`). Re-verify with `npm pack` after structural changes.
+  copies nothing; `catalog.index.json` MUST stay in it or `suggest`/`apply` see
+  an empty catalog. The `files` whitelist intentionally overrides `.gitignore`
+  (which excludes `dist/`). Re-verify with `npm pack` after structural changes.
 - **`prepare: tsc`** builds on install. This is what makes
   `npx github:<owner>/ai-scaffold` work: npm clones the repo, runs `prepare` to
   compile, then runs the `bin` (`dist/cli.js`).
@@ -209,23 +204,26 @@ These caused real bugs and are easy to reintroduce:
 ## The `templates/` payload
 
 Generic placeholders, not finished content. The keystone is
-`templates/skills/ai-init.md`: a four-phase skill (Read → Analyze →
-Generate → Write) meant to be run by an AI agent **inside a target project** to
-analyze that codebase and replace the generic templates with project-specific
-versions. It is archetype-aware (app/service, library, CLI, IaC, data pipeline,
-frontend): the deep-read checklist and the generated rules adapt to the kind of
-repo, the Phase 2 analysis is the central artifact every file derives from, and
-"non-obvious invariants & gotchas" + "observations & risks" synthesis is
-mandatory — the target `CLAUDE.md` template's sections are a floor, not a
-ceiling. When editing templates, preserve that intent — they are starting points
-`ai-init` customizes, not final docs.
+`templates/skills/ai-init.md`: a five-phase skill (Scan & analyze → Profile →
+Curate → Generate → Write) meant to be run by an AI agent **inside a target
+project** to drive the inverted flow (ADR-017). It scans the codebase, writes
+`.scaffold/project-profile.json` (the agent→CLI boundary), runs `ai-scaffold
+suggest`, curates the catalog *with the human* (one ask-point, ADR-015) into
+`.scaffold/install-plan.json`, runs `ai-scaffold apply`, then concretizes the
+installed rules/skills and CLAUDE.md. It is archetype-aware (the fixed slug set
+`service`/`app`/`frontend`/`library`/`cli`/`iac`/`data-pipeline` — these MUST
+match the catalog's `appliesWhen`); the Phase 1 analysis is the central artifact
+every later file derives from, and "non-obvious invariants & gotchas" +
+"observations & risks" synthesis is mandatory. When editing this skill, keep the
+profile/plan schemas in lockstep with `src/catalog.ts` and the `suggest`/`apply`
+commands.
 
 **Keep core rules stack-neutral.** Core rules state language-agnostic principles;
 stack-specific guidance (e.g. TS `any`, zod, npm, SQL framing) appears only as
 *examples*, and `ai-init` concretizes them per project. Do not hardcode one
 stack's idioms as a core requirement — that breaks the agnostic promise. Truly
-stack-shaped concerns belong in optional modules (see `scaffold.manifest.json`),
-not the core.
+stack-shaped concerns belong in their own catalog entries with an `appliesWhen`
+predicate (e.g. `rule/stack-nextjs`), not the universal rules.
 
 `templates/context/` holds the append-only project-memory structure (ADRs +
 AI interaction log + a regenerated `INDEX.md`); its rules live in
@@ -241,8 +239,16 @@ per-workspace installation logic without superseding ADR-013.
 **Parallelization is also content, not artifacts (ADR-014):** `ai-init`
 (per top-level workspace), `pr-review` and `security-review` carry subagent
 fan-out directives with a mandatory degradation clause (sequential = the
-contract). Subagents are read-only; no `.claude/agents/` or workflow scripts
-ship in the payload, and the work chain is never parallelized.
+contract). Subagents are read-only and the work chain is never parallelized.
+
+**Agents are a catalog surface (ADR-019, supersedes ADR-014's "no agents"
+clause):** read-only specialist agents (reviewers, explorers) ship under
+`templates/agents/*.md` and install to `.claude/agents/*` via `appliesWhen`, like
+any other entry. They declare `effort` (tier intent — **never** a model id,
+ADR-005/018 §6; the catalog test rejects ids), `readOnly: true`, and `tools: [...]`.
+`ai-init` maps `effort`→model at curate time. Writer agents and workflow scripts
+remain out of the payload until a future ADR. Fase-1 agents shipped:
+`agent/typescript-reviewer` (lang ts/js), `agent/code-explorer` (universal).
 
 ## Tool integration (ADR-002, ADR-010, ADR-011)
 
@@ -272,10 +278,11 @@ targets).
    - Touched user-facing behavior or commands → update `README.md`.
    - Made a cross-cutting or structural decision → record an ADR in
      `.context/adr/` **before** implementing (see ADR-001 for what qualifies).
-   - Touched anything under `templates/` → bump `SCAFFOLD_VERSION` in
-     `src/installer.ts` **and** run `node scripts/update-catalog.mjs`
-     (otherwise `status`/`update` can't detect the change and the catalog
-     test fails).
+   - Touched anything under `templates/` → run `node scripts/build-catalog.mjs`
+     (otherwise `status`/`update` can't detect the change and
+     `test/catalog-index.test.mjs` fails). A new catalog entry needs its
+     frontmatter envelope (`id`/`surface`/`rationale`/`stability`, + `appliesWhen`
+     unless universal); mark `seed: true` only for the ADR-017 bootstrap.
    - Commit messages use conventional-commits (`type(scope): summary`) and state
      **what** changed and **why** — never "modified file X". Undocumented changes
      should be rejected in review.
@@ -288,8 +295,8 @@ targets).
      `security.md` (no `any`, small focused functions, validate external input,
      no hardcoded secrets) apply to this repo's own `src/` too — dogfood them.
    - Verify before committing: `npm test`, install into a throwaway dir, and run
-     `npm pack` to confirm the tarball still contains `templates/` and the
-     manifest after any structural change.
+     `npm pack` to confirm the tarball still contains `templates/` and
+     `catalog.index.json` after any structural change.
 
 3. **New skills and rules must fit a correct flow and be justified.** Anything
    added under `templates/skills/` or `templates/rules/`:
@@ -306,6 +313,6 @@ targets).
    - Every **skill** template starts with `name`/`description`/`tier`
      frontmatter (invariant 3) **and a help card** right after the title
      (`/<name> help` prints it and stops — ADR-016; behavior changes must
-     update the card in the same edit). If the skill is optional, add its
-     logical path (`skills/<name>.md`) to the module's `paths` in
-     `scaffold.manifest.json`.
+     update the card in the same edit). Add the catalog frontmatter envelope
+     (`id: skill/<name>`, `surface: skill`, `rationale`, `stability`, and
+     `appliesWhen` unless it is universal), then rebuild the index.

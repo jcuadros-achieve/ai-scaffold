@@ -2,6 +2,12 @@
 name: debug
 description: Analyze a bug root cause before proposing a fix.
 tier: deep
+id: skill/debug
+surface: skill
+summary: Find a bug's root cause with evidence before proposing any fix
+tags: [debugging]
+rationale: Root-cause discipline applies to any project; universal
+stability: stable
 ---
 
 # Skill: debug

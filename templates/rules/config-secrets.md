@@ -1,3 +1,19 @@
+---
+id: rule/config-secrets
+surface: rule
+title: Configuration & secrets rules
+summary: Env-driven config, startup validation, secrets never committed, rotation without a code change
+tags: [config, secrets, security]
+appliesWhen:
+  any:
+    - archetype: service
+    - archetype: app
+    - archetype: data-pipeline
+    - archetype: iac
+rationale: Relevant to anything with runtime configuration or secret material
+stability: stable
+---
+
 # Configuration & secrets rules
 
 > Optional module — relevant to projects with runtime configuration or secrets.

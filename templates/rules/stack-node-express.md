@@ -1,3 +1,16 @@
+---
+id: rule/stack-node-express
+surface: rule
+title: "Stack: Node + Express"
+summary: "Express service conventions: one error middleware, edge validation, middleware order, graceful shutdown, event-loop discipline"
+tags: [stack, node, express, backend]
+appliesWhen:
+  any:
+    - dep: express
+rationale: Express-specific conventions the core rules can't carry generically
+stability: stable
+---
+
 # Stack rules: Node + Express
 
 > Optional stack module — covers Express 4/5 services on Node 18+. Durable

@@ -1,3 +1,13 @@
+---
+id: rule/git-workflow
+surface: rule
+title: Git workflow rules
+summary: Branch per change, conventional commits, small reviewable PRs, no force-push to shared branches
+tags: [git, workflow]
+rationale: Version-control discipline applies to every project; universal
+stability: stable
+---
+
 # Git workflow rules
 
 > Generic defaults. Run `ai-init` to align with the team's branching model.

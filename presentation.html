@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ai-scaffold — Presentation</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --border: #2a2d3a;
+    --accent: #6366f1;
+    --accent2: #22d3ee;
+    --accent3: #a78bfa;
+    --green: #34d399;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --text: #e2e8f0;
+    --muted: #64748b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    overflow: hidden;
+    height: 100vh;
+  }
+  .slides { width: 100%; height: 100vh; position: relative; }
+  .slide {
+    display: none;
+    position: absolute;
+    inset: 0;
+    padding: 48px 64px;
+    flex-direction: column;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+  }
+  .slide.active { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .nav {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(26,29,39,0.9);
+    border: 1px solid var(--border);
+    border-radius: 40px;
+    padding: 10px 20px;
+    backdrop-filter: blur(10px);
+    z-index: 100;
+  }
+  .nav button {
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: background 0.15s;
+  }
+  .nav button:hover { background: var(--border); }
+  .slide-count { font-size: 13px; color: var(--muted); min-width: 60px; text-align: center; }
+
+  .tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .tag-main { background: rgba(99,102,241,0.2); color: var(--accent); border: 1px solid rgba(99,102,241,0.3); }
+  .tag-redesign { background: rgba(34,211,238,0.15); color: var(--accent2); border: 1px solid rgba(34,211,238,0.3); }
+  .tag-new { background: rgba(52,211,153,0.15); color: var(--green); border: 1px solid rgba(52,211,153,0.3); }
+  .tag-skill { background: rgba(167,139,250,0.15); color: var(--accent3); }
+  .tag-rule { background: rgba(251,191,36,0.15); color: var(--yellow); }
+  .tag-agent { background: rgba(248,113,113,0.15); color: var(--red); }
+  .tag-mcp { background: rgba(52,211,153,0.15); color: var(--green); }
+
+  h1 { font-size: 52px; font-weight: 800; line-height: 1.1; }
+  h2 { font-size: 36px; font-weight: 700; margin-bottom: 32px; }
+  h3 { font-size: 20px; font-weight: 600; margin-bottom: 12px; }
+  p { color: var(--muted); line-height: 1.7; }
+  .subtitle { font-size: 20px; color: var(--muted); margin-top: 12px; max-width: 680px; line-height: 1.6; }
+  .label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; }
+  .card-grid { display: grid; gap: 16px; }
+  .card-grid-2 { grid-template-columns: 1fr 1fr; }
+  .card-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .card-grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .chain { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+  .chain-step { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 500; white-space: nowrap; }
+  .chain-step.highlight { border-color: var(--accent); color: var(--accent); }
+  .chain-step.gate { border-color: var(--yellow); color: var(--yellow); font-size: 11px; padding: 6px 10px; }
+  .chain-arrow { color: var(--muted); font-size: 14px; padding: 0 2px; }
+
+  .flow { display: flex; align-items: center; gap: 12px; }
+  .flow-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-size: 13px; text-align: center; min-width: 140px; }
+  .flow-box .flow-title { font-weight: 600; margin-bottom: 4px; }
+  .flow-box .flow-sub { font-size: 11px; color: var(--muted); }
+  .flow-arrow { color: var(--accent); font-size: 20px; flex-shrink: 0; }
+
+  .diff-table { width: 100%; border-collapse: collapse; }
+  .diff-table th { text-align: left; padding: 10px 16px; font-size: 12px; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--border); }
+  .diff-table td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid rgba(42,45,58,0.5); vertical-align: top; line-height: 1.5; }
+  .diff-table tr:last-child td { border-bottom: none; }
+  .diff-table .col-dim { color: var(--muted); font-weight: 500; font-size: 13px; }
+  .diff-table .col-main { color: #94a3b8; }
+  .diff-table .col-new { color: var(--green); }
+
+  .stat { text-align: center; }
+  .stat-num { font-size: 48px; font-weight: 800; }
+  .stat-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  .badge-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .badge { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 500; }
+
+  .code-block { background: #0a0c10; border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.7; color: #a8b4c2; }
+  .code-block .comment { color: var(--muted); }
+  .code-block .cmd { color: var(--accent2); }
+  .code-block .out { color: var(--green); }
+
+  .title-slide { background: radial-gradient(ellipse at 60% 40%, rgba(99,102,241,0.08) 0%, transparent 60%); }
+  .logo-text { font-size: 14px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 24px; }
+  .title-divider { width: 60px; height: 3px; background: var(--accent); border-radius: 2px; margin: 24px 0; }
+
+  .highlight-box { border-left: 3px solid var(--accent); padding: 14px 20px; background: rgba(99,102,241,0.06); border-radius: 0 8px 8px 0; font-size: 14px; line-height: 1.7; color: var(--text); }
+  .highlight-box.green { border-color: var(--green); background: rgba(52,211,153,0.06); }
+  .highlight-box.yellow { border-color: var(--yellow); background: rgba(251,191,36,0.06); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; align-items: start; }
+
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+  .pill-accent { background: rgba(99,102,241,0.15); color: var(--accent); }
+  .pill-green { background: rgba(52,211,153,0.15); color: var(--green); }
+
+  ul.list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  ul.list li { display: flex; gap: 10px; font-size: 14px; line-height: 1.5; }
+  ul.list li::before { content: '→'; color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+
+  .separator { height: 1px; background: var(--border); margin: 20px 0; }
+</style>
+</head>
+<body>
+
+<div class="slides">
+
+  <!-- SLIDE 1: TITLE -->
+  <div class="slide title-slide active" id="slide-1">
+    <div class="logo-text">Achieve · AI Platform</div>
+    <h1>ai-scaffold</h1>
+    <div class="title-divider"></div>
+    <p class="subtitle">
+      Installs a standardized AI workflow structure (<code>CLAUDE.md</code>, <code>.claude/</code>, <code>.context/</code>)
+      into any project. One command to get the entire team working with AI consistently.
+    </p>
+    <div style="display:flex;gap:12px;margin-top:32px;flex-wrap:wrap;">
+      <span class="pill pill-accent">⬢ main — v2.8.x (classic)</span>
+      <span class="pill pill-green">✦ feature/redesign — v2.9.0-rc.1 (inverted)</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: PROBLEM -->
+  <div class="slide" id="slide-2">
+    <div class="label">Context</div>
+    <h2>What problem does it solve?</h2>
+    <div class="card-grid card-grid-2" style="gap:20px;">
+      <div class="card" style="border-color:rgba(248,113,113,0.3);">
+        <h3 style="color:var(--red);">Without ai-scaffold</h3>
+        <ul class="list" style="margin-top:12px;">
+          <li>Every repo has its own CLAUDE.md — inconsistent across projects</li>
+          <li>The agent has no context: stack, decisions, protected zones</li>
+          <li>No persistent memory → AI repeats mistakes across sessions</li>
+          <li>No workflow → devs decide ad-hoc what to ask Claude</li>
+          <li>No gates → code merged without real verification</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:rgba(52,211,153,0.3);">
+        <h3 style="color:var(--green);">With ai-scaffold</h3>
+        <ul class="list" style="margin-top:12px;">
+          <li>Single source of truth: <code>CLAUDE.md</code> + <code>.claude/</code> per project</li>
+          <li>AI contextualized to the project: stack, ADRs, own patterns</li>
+          <li>Append-only memory → decisions and sessions persist</li>
+          <li>Disciplined workflow with human gates between every step</li>
+          <li>Real verification (build/tests/lint/audit) before any PR</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: WORK CHAIN -->
+  <div class="slide" id="slide-3">
+    <div class="label">Core Workflow</div>
+    <h2>Work Chain</h2>
+    <div class="highlight-box" style="margin-bottom:24px;">
+      Full workflow from idea to PR, with <strong>human gates</strong> between stages. Each skill ends with a <em>hand-off</em> that proposes the next step — the human approves.
+    </div>
+    <div class="chain" style="margin-bottom:28px;">
+      <div class="chain-step highlight">/ticket-create</div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-step gate">✋ gate</div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-step highlight">/ticket-clarify</div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-step gate">✋ gate</div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-step highlight">/task-plan</div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-step gate">✋ gate</div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-step highlight">/task-implement</div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-step highlight">/verify</div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-step highlight">/pr-write</div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-step highlight">/pr-review</div>
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="label" style="margin-bottom:12px;">What each skill does</div>
+        <ul class="list">
+          <li><strong>/ticket-create</strong> — asks What/Why/How, can file ticket via MCP</li>
+          <li><strong>/ticket-clarify</strong> — understands the ticket before planning</li>
+          <li><strong>/task-plan</strong> — implementation plan (approval required before code)</li>
+          <li><strong>/task-implement</strong> — writes ADR first, then code with TDD</li>
+          <li><strong>/verify</strong> — runs real build/tests/lint/audit</li>
+          <li><strong>/pr-write</strong> — verifies ADR vs implementation, generates PR</li>
+        </ul>
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:12px;">Additional ticket skills</div>
+        <div class="badge-row">
+          <span class="badge">/ticket-from-finding</span>
+          <span class="badge">/ticket-from-report</span>
+          <span class="badge">/ticket-refine</span>
+          <span class="badge">/ticket-update</span>
+          <span class="badge">/prevent-tickets</span>
+        </div>
+        <div class="separator"></div>
+        <div class="highlight-box yellow" style="font-size:13px;">
+          <strong>TDD enforced:</strong> <code>/task-implement</code> requires tests before production code. <code>/verify</code> runs real gates — no merge without green.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: CONTEXT CHAIN -->
+  <div class="slide" id="slide-4">
+    <div class="label">Memory System</div>
+    <h2>Context Chain</h2>
+    <div class="highlight-box green" style="margin-bottom:28px;">
+      Append-only project memory. The AI <strong>reads context before proposing anything</strong> (enforced by the <code>context</code> rule). Decisions and sessions are written automatically during the work chain.
+    </div>
+    <div class="flow" style="margin-bottom:32px;flex-wrap:wrap;">
+      <div class="flow-box">
+        <div class="flow-title">/adr-write</div>
+        <div class="flow-sub">Architecture Decision Records — append-only</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">
+        <div class="flow-title">/ai-log-write</div>
+        <div class="flow-sub">Session log on task close</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">
+        <div class="flow-title">/context-update</div>
+        <div class="flow-sub">Regenerates INDEX.md</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <h3><code>.context/</code> structure</h3>
+        <div class="code-block" style="margin-top:12px;padding:14px;">
+.context/<br>
+├── adr/          <span class="comment"># ADRs — append-only</span><br>
+│   └── ADR-001-*.md<br>
+├── ai-log/       <span class="comment"># Session logs</span><br>
+│   └── 2026-06-17.md<br>
+└── INDEX.md      <span class="comment"># Auto-regenerated</span>
+        </div>
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:12px;">How it flows automatically</div>
+        <ul class="list">
+          <li>On plan approval → <code>/task-implement</code> writes the ADR at step 0, before any code</li>
+          <li>On task close → <code>/ai-log-write</code> logs the full session</li>
+          <li>On PR → <code>/pr-write</code> verifies ADR vs code, refreshes INDEX</li>
+          <li>Rule <code>context</code> instructs the agent: "read <code>.context/</code> before proposing anything"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: CATALOG OVERVIEW -->
+  <div class="slide" id="slide-5">
+    <div class="label">Catalog — 76 entries</div>
+    <h2>Rules · Skills · Agents · MCP</h2>
+    <div class="card-grid card-grid-4" style="margin-bottom:24px;">
+      <div class="card stat">
+        <div class="stat-num" style="color:var(--accent3);">34</div>
+        <div class="stat-label">Skills</div>
+      </div>
+      <div class="card stat">
+        <div class="stat-num" style="color:var(--yellow);">27</div>
+        <div class="stat-label">Rules</div>
+      </div>
+      <div class="card stat">
+        <div class="stat-num" style="color:var(--red);">9</div>
+        <div class="stat-label">Agents</div>
+      </div>
+      <div class="card stat">
+        <div class="stat-num" style="color:var(--green);">6</div>
+        <div class="stat-label">MCP Servers</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="label" style="margin-bottom:10px;">Consistency rules</div>
+        <div class="badge-row">
+          <span class="badge tag-rule">code-style</span>
+          <span class="badge tag-rule">security</span>
+          <span class="badge tag-rule">no-touch</span>
+          <span class="badge tag-rule">test-strategy</span>
+          <span class="badge tag-rule">dependency</span>
+          <span class="badge tag-rule">ci-gates</span>
+          <span class="badge tag-rule">performance</span>
+          <span class="badge tag-rule">observability</span>
+          <span class="badge tag-rule">resilience</span>
+          <span class="badge tag-rule">api-contract</span>
+          <span class="badge tag-rule">git-workflow</span>
+          <span class="badge tag-rule">docs</span>
+          <span class="badge tag-rule">context</span>
+          <span class="badge tag-rule">config-secrets</span>
+          <span class="badge tag-rule">data-privacy</span>
+          <span class="badge tag-rule">i18n</span>
+          <span class="badge tag-rule">messaging</span>
+          <span class="badge tag-rule">multi-tenant</span>
+          <span class="badge tag-rule">accessibility</span>
+          <span class="badge tag-rule">incident-response</span>
+          <span class="badge tag-rule">openapi-contract</span>
+          <span class="badge tag-rule">dependency-scan</span>
+        </div>
+        <div class="separator"></div>
+        <div class="label" style="margin-bottom:10px;">Stack rules (appliesWhen)</div>
+        <div class="badge-row">
+          <span class="badge tag-rule">stack-nextjs</span>
+          <span class="badge tag-rule">stack-node-express</span>
+          <span class="badge tag-rule">stack-go</span>
+          <span class="badge tag-rule">stack-python</span>
+          <span class="badge tag-rule">stack-terraform</span>
+        </div>
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:10px;">Agents — read-only specialists</div>
+        <div class="badge-row">
+          <span class="badge tag-agent">code-explorer</span>
+          <span class="badge tag-agent">typescript-reviewer</span>
+          <span class="badge tag-agent">typescript-builder</span>
+          <span class="badge tag-agent">go-reviewer</span>
+          <span class="badge tag-agent">go-builder</span>
+          <span class="badge tag-agent">python-reviewer</span>
+          <span class="badge tag-agent">python-builder</span>
+          <span class="badge tag-agent">terraform-reviewer</span>
+          <span class="badge tag-agent">terraform-builder</span>
+        </div>
+        <div class="separator"></div>
+        <div class="label" style="margin-bottom:10px;">MCP servers</div>
+        <div class="badge-row">
+          <span class="badge tag-mcp">github</span>
+          <span class="badge tag-mcp">atlassian</span>
+          <span class="badge tag-mcp">slack</span>
+          <span class="badge tag-mcp">circleci</span>
+          <span class="badge tag-mcp">datadog</span>
+          <span class="badge tag-mcp">bitbucket</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: ON-DEMAND SKILLS -->
+  <div class="slide" id="slide-6">
+    <div class="label">On-demand skills</div>
+    <h2>Deep Engineering Skills</h2>
+    <div class="highlight-box" style="margin-bottom:28px;">
+      Deeper or recurring tasks invoked when needed. Not part of the daily work chain but available in any project where they apply.
+    </div>
+    <div class="three-col">
+      <div>
+        <div class="label" style="margin-bottom:12px;">Security &amp; quality</div>
+        <ul class="list">
+          <li><code>/security-review</code> — full security audit</li>
+          <li><code>/snyk-scan</code> — dependency scanning</li>
+          <li><code>/refactor</code> — guided refactor</li>
+          <li><code>/review</code> — deep code review</li>
+          <li><code>/test-gen</code> — test generation</li>
+          <li><code>/e2e-test-gen</code> — E2E tests</li>
+          <li><code>/debug</code> — structured debugging</li>
+        </ul>
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:12px;">Observability &amp; ops</div>
+        <ul class="list">
+          <li><code>/obs-audit</code> — observability audit</li>
+          <li><code>/obs-instrument</code> — instrumentation</li>
+          <li><code>/perf-budget</code> — performance budget</li>
+          <li><code>/perf-investigate</code> — perf investigation</li>
+          <li><code>/incident</code> — incident management</li>
+          <li><code>/postmortem-write</code> — postmortem writing</li>
+        </ul>
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:12px;">Architecture &amp; infra</div>
+        <ul class="list">
+          <li><code>/migration</code> — guided migrations</li>
+          <li><code>/new-endpoint</code> — new endpoint with TDD</li>
+          <li><code>/openapi</code> — OpenAPI contract</li>
+          <li><code>/terraform-plan</code> — infra plan</li>
+          <li><code>/tenant-build</code> — multi-tenant setup</li>
+          <li><code>/ai-init</code> ★ — keystone: bootstraps the whole scaffold</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: MAIN VS REDESIGN -->
+  <div class="slide" id="slide-7">
+    <div class="label">Product evolution</div>
+    <h2>main <span style="color:var(--muted);font-weight:400;">vs</span> feature/redesign</h2>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="diff-table">
+        <thead>
+          <tr>
+            <th style="width:22%;">Dimension</th>
+            <th style="width:39%;"><span class="tag tag-main">main · v2.8.x</span></th>
+            <th style="width:39%;"><span class="tag tag-redesign">redesign · v2.9.0-rc.1</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-dim">Install model</td>
+            <td class="col-main">CLI installs a predefined set of skills/rules directly</td>
+            <td class="col-new">Inverted flow: <code>install</code> lays only a minimal seed; <code>ai-init</code> curates the rest</td>
+          </tr>
+          <tr>
+            <td class="col-dim">What does <code>install</code> write?</td>
+            <td class="col-main">Core rules + full skill set by default</td>
+            <td class="col-new">Seed only: <code>skill/ai-init</code> + <code>rule/context</code>. Everything else is offered, not imposed</td>
+          </tr>
+          <tr>
+            <td class="col-dim">Who decides what to install</td>
+            <td class="col-main">Hard-coded in the CLI</td>
+            <td class="col-new">Agent scans the real repo, curates with the human, generates an explicit plan</td>
+          </tr>
+          <tr>
+            <td class="col-dim">Catalog</td>
+            <td class="col-main">No formal catalog, flat files</td>
+            <td class="col-new"><strong>76 entries</strong> in <code>catalog.index.json</code> with <code>appliesWhen</code>, version, hash per entry</td>
+          </tr>
+          <tr>
+            <td class="col-dim">Agents</td>
+            <td class="col-main">Not included</td>
+            <td class="col-new"><strong>9 specialized agents</strong> (reviewer + builder per stack)</td>
+          </tr>
+          <tr>
+            <td class="col-dim">Updates / drift</td>
+            <td class="col-main">Manual, no tracking</td>
+            <td class="col-new">3-way merge: <code>clean</code> / <code>customized</code> / <code>conflict</code>. Conflicts never auto-applied</td>
+          </tr>
+          <tr>
+            <td class="col-dim">Monorepo support</td>
+            <td class="col-main">No</td>
+            <td class="col-new">ADR-013: <code>ai-init</code> detects workspaces and generates per-workspace CLAUDE.md</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: AI-INIT FLOW -->
+  <div class="slide" id="slide-8">
+    <div class="label">feature/redesign — Keystone</div>
+    <h2>/ai-init — The inverted flow</h2>
+    <div class="highlight-box" style="margin-bottom:24px;">
+      <strong>ADR-017:</strong> the agent, not the CLI, decides what to install. It analyzes the real code → curates with the human → CLI executes. The decision always belongs to the human — the agent proposes, never imposes.
+    </div>
+    <div class="flow" style="flex-wrap:wrap;gap:8px;margin-bottom:24px;">
+      <div class="flow-box" style="min-width:120px;border-color:var(--accent);">
+        <div class="flow-title">① Scan</div>
+        <div class="flow-sub">Analyzes real repo<br>→ project-profile.json</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="min-width:120px;">
+        <div class="flow-title">② Suggest</div>
+        <div class="flow-sub">CLI filters catalog<br>→ candidates.json</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="min-width:120px;border-color:var(--yellow);">
+        <div class="flow-title">③ Curate</div>
+        <div class="flow-sub">Agent + human<br>→ install-plan.json</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="min-width:120px;">
+        <div class="flow-title">④ Apply</div>
+        <div class="flow-sub">CLI writes files<br>with state tracking</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="min-width:120px;border-color:var(--green);">
+        <div class="flow-title">⑤ Concretize</div>
+        <div class="flow-sub">Rules → stack-specific<br>CLAUDE.md → project</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <h3>Detected archetypes</h3>
+        <div class="badge-row" style="margin-top:10px;">
+          <span class="badge">service</span>
+          <span class="badge">app</span>
+          <span class="badge">frontend</span>
+          <span class="badge">library</span>
+          <span class="badge">cli</span>
+          <span class="badge">iac</span>
+          <span class="badge">data-pipeline</span>
+        </div>
+        <div class="separator" style="margin:14px 0;"></div>
+        <p style="font-size:13px;">Each <code>appliesWhen</code> in the catalog filters by archetype + stack + features detected in the repo. A Next.js + Postgres project gets different rules than a Go CLI.</p>
+      </div>
+      <div class="card">
+        <h3>State tracking</h3>
+        <div class="code-block" style="padding:12px;font-size:12px;margin-top:10px;">
+<span class="comment"># .claude/.scaffold-state.json</span><br>
+{<br>
+&nbsp;&nbsp;<span class="out">"installed"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="out">"rule/security"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="out">"version"</span>: <span class="cmd">"1.2.0"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="out">"merge"</span>: <span class="cmd">"customized"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="out">"workspaces"</span>: [<span class="cmd">"api"</span>]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;}<br>
+}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: DEMO COMMANDS -->
+  <div class="slide" id="slide-9">
+    <div class="label">Demo</div>
+    <h2>How it works today</h2>
+    <div class="two-col">
+      <div>
+        <div class="label" style="margin-bottom:12px;">Install into a project</div>
+        <div class="code-block">
+<span class="comment"># From the redesign branch (private demo)</span><br>
+<span class="cmd">npx github:jcuadros-achieve/ai-scaffold#feature/redesign install</span><br>
+<br>
+<span class="comment"># Installs only the seed</span><br>
+<span class="out">✓ CLAUDE.md created</span><br>
+<span class="out">✓ .claude/skills/ai-init/SKILL.md created</span><br>
+<span class="out">✓ .claude/rules/context.md created</span><br>
+<span class="out">✓ .context/ scaffold created</span>
+        </div>
+        <div style="margin-top:16px;" class="code-block">
+<span class="comment"># Then in Claude Code (target project)</span><br>
+<span class="cmd">/ai-init</span><br>
+<br>
+<span class="comment"># Agent scans, curates, and installs the catalog</span><br>
+<span class="comment"># tailored to THAT specific project</span>
+        </div>
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:12px;">Status &amp; updates</div>
+        <div class="code-block">
+<span class="comment"># Check what is installed and if updates are available</span><br>
+<span class="cmd">npx ... status</span><br>
+<br>
+<span class="out">● rule/security        v1.2.0  customized</span><br>
+<span class="out">↑ rule/performance     v2.0.0  upstream change</span><br>
+<span class="out">✓ skill/ai-init        v3.1.0  clean</span><br>
+<br>
+<span class="comment"># Apply available updates</span><br>
+<span class="cmd">npx ... update</span>
+        </div>
+        <div class="separator"></div>
+        <div class="highlight-box green" style="font-size:13px;">
+          <strong>3-way merge:</strong> if you customized a rule locally and upstream changes, it is flagged as <code>conflict</code> — never overwritten without human confirmation.
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<div class="nav">
+  <button onclick="prev()">←</button>
+  <div class="slide-count" id="count">1 / 10</div>
+  <button onclick="next()">→</button>
+</div>
+
+<script>
+  let cur = 1;
+  const total = 9;
+  function show(n) {
+    document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+    document.getElementById('slide-' + n).classList.add('active');
+    document.getElementById('count').textContent = n + ' / ' + total;
+    cur = n;
+  }
+  function next() { if (cur < total) show(cur + 1); }
+  function prev() { if (cur > 1) show(cur - 1); }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'Space') next();
+    if (e.key === 'ArrowLeft') prev();
+  });
+</script>
+</body>
+</html>

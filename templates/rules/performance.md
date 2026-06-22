@@ -1,3 +1,13 @@
+---
+id: rule/performance
+surface: rule
+title: Performance & scalability rules
+summary: Avoid N+1, paginate unbounded lists, parallelize independent I/O, respect explicit budgets
+tags: [performance, scalability]
+rationale: Performance discipline applies to every project; ai-init sets real budgets
+stability: stable
+---
+
 # Performance & scalability rules
 
 > Generic defaults. Run `ai-init` to set real budgets and the project's known

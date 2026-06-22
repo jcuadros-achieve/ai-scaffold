@@ -1,0 +1,1999 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "agent/code-explorer",
+      "surface": "agent",
+      "title": "code-explorer",
+      "summary": "Fast read-only exploration: locate code, trace flows, map dependencies",
+      "body": "agents/code-explorer.md",
+      "tags": [
+        "explore",
+        "navigation",
+        "onboarding"
+      ],
+      "rationale": "A universal read-only explorer every project benefits from; keeps search off the main thread",
+      "stability": "stable",
+      "effort": "fast",
+      "readOnly": true,
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob"
+      ],
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:8423715aaca1c938bd9c1534118eb090a459218d0c4096f76c9afefae6486d4a"
+    },
+    {
+      "id": "agent/go-builder",
+      "surface": "agent",
+      "title": "go-builder",
+      "summary": "Implements Go changes (write code, vet, test -race, draft PR) with a human gate before merge",
+      "body": "agents/go-builder.md",
+      "tags": [
+        "go",
+        "implement"
+      ],
+      "rationale": "A builder that owns a Go change end-to-end under a human gate, where write/vet/test add real value",
+      "stability": "experimental",
+      "appliesWhen": {
+        "any": [
+          {
+            "file": "**/go.mod"
+          },
+          {
+            "lang": "go"
+          }
+        ]
+      },
+      "effort": "deep",
+      "readOnly": false,
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:d199264e1881f52ae691816e699dd392eca0ea67faef0196164fe494cf6156bc"
+    },
+    {
+      "id": "agent/go-reviewer",
+      "surface": "agent",
+      "title": "go-reviewer",
+      "summary": "Specialist review pass for Go changes (errors, concurrency, context, idioms)",
+      "body": "agents/go-reviewer.md",
+      "tags": [
+        "review",
+        "go"
+      ],
+      "rationale": "Per-stack reviewers are the canonical appliesWhen fit (ADR-019); only useful where Go exists",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "file": "**/go.mod"
+          },
+          {
+            "lang": "go"
+          }
+        ]
+      },
+      "effort": "deep",
+      "readOnly": true,
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash"
+      ],
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:c7a25d593f3e0b80ae9339a5c37bb951c47e27bd2043524c197d9178cb79da13"
+    },
+    {
+      "id": "agent/python-builder",
+      "surface": "agent",
+      "title": "python-builder",
+      "summary": "Implements Python changes (write code, ruff, mypy, pytest, draft PR) with a human gate before merge",
+      "body": "agents/python-builder.md",
+      "tags": [
+        "python",
+        "implement"
+      ],
+      "rationale": "A builder that owns a Python change end-to-end under a human gate, where write/lint/test add real value",
+      "stability": "experimental",
+      "appliesWhen": {
+        "any": [
+          {
+            "file": "**/pyproject.toml"
+          },
+          {
+            "file": "**/requirements.txt"
+          },
+          {
+            "file": "**/setup.py"
+          },
+          {
+            "lang": "python"
+          }
+        ]
+      },
+      "effort": "deep",
+      "readOnly": false,
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:b70e0400b07658fb5fdcb4e217ea0d93bfac83181ab153d15168d156fe0662d1"
+    },
+    {
+      "id": "agent/python-reviewer",
+      "surface": "agent",
+      "title": "python-reviewer",
+      "summary": "Specialist review pass for Python changes (typing, exceptions, packaging, idioms)",
+      "body": "agents/python-reviewer.md",
+      "tags": [
+        "review",
+        "python"
+      ],
+      "rationale": "Per-stack reviewers are the canonical appliesWhen fit (ADR-019); only useful where Python exists",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "file": "**/pyproject.toml"
+          },
+          {
+            "file": "**/requirements.txt"
+          },
+          {
+            "file": "**/setup.py"
+          },
+          {
+            "lang": "python"
+          }
+        ]
+      },
+      "effort": "deep",
+      "readOnly": true,
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash"
+      ],
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:ba0fbb80106aab63d019d006b5ac0ce7869a15de57290c34a317e3a1b6ddf2b3"
+    },
+    {
+      "id": "agent/terraform-builder",
+      "surface": "agent",
+      "title": "terraform-builder",
+      "summary": "Implements Terraform changes (write HCL, plan, draft PR) with a human gate before any apply",
+      "body": "agents/terraform-builder.md",
+      "tags": [
+        "terraform",
+        "iac",
+        "implement"
+      ],
+      "rationale": "A builder that owns the IaC change end-to-end under a human gate, where write/plan add real value",
+      "stability": "experimental",
+      "appliesWhen": {
+        "any": [
+          {
+            "file": "**/*.tf"
+          },
+          {
+            "file": "**/*.tf.json"
+          }
+        ]
+      },
+      "effort": "deep",
+      "readOnly": false,
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:ef214fc907725ae9a222d5aa8a85ff7ef9a7789426bbfc8771a5e63f1d1a2e23"
+    },
+    {
+      "id": "agent/terraform-reviewer",
+      "surface": "agent",
+      "title": "terraform-reviewer",
+      "summary": "Specialist review pass for Terraform changes (state safety, replaces/destroys, IAM, secrets)",
+      "body": "agents/terraform-reviewer.md",
+      "tags": [
+        "review",
+        "terraform",
+        "iac"
+      ],
+      "rationale": "Per-stack reviewers are the canonical appliesWhen fit (ADR-019); only useful where Terraform exists",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "file": "**/*.tf"
+          },
+          {
+            "file": "**/*.tf.json"
+          }
+        ]
+      },
+      "effort": "deep",
+      "readOnly": true,
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash"
+      ],
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:223c3c76f09cb37c225228886260c619851185e27654e1cbac1531cfbd255b0e"
+    },
+    {
+      "id": "agent/typescript-builder",
+      "surface": "agent",
+      "title": "typescript-builder",
+      "summary": "Implements TypeScript changes (write code, typecheck, lint, test, draft PR) with a human gate before merge",
+      "body": "agents/typescript-builder.md",
+      "tags": [
+        "typescript",
+        "implement"
+      ],
+      "rationale": "A builder that owns a TypeScript change end-to-end under a human gate, where write/typecheck/lint/test add real value",
+      "stability": "experimental",
+      "appliesWhen": {
+        "any": [
+          {
+            "file": "**/tsconfig.json"
+          },
+          {
+            "file": "**/package.json"
+          },
+          {
+            "lang": "typescript"
+          }
+        ]
+      },
+      "effort": "deep",
+      "readOnly": false,
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "Edit",
+        "Write"
+      ],
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:99a82524888bf33bd32d9d6d88f6889f035effcf7cede76f6e5bf6ede8031903"
+    },
+    {
+      "id": "agent/typescript-reviewer",
+      "surface": "agent",
+      "title": "typescript-reviewer",
+      "summary": "Specialist review pass for TS/JS changes (type safety, async, Node/web security)",
+      "body": "agents/typescript-reviewer.md",
+      "tags": [
+        "review",
+        "typescript",
+        "javascript"
+      ],
+      "rationale": "Per-stack reviewers are the canonical appliesWhen fit (ADR-019); only useful where TS/JS exists",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "lang": "typescript"
+          },
+          {
+            "lang": "javascript"
+          },
+          {
+            "file": "**/tsconfig.json"
+          }
+        ]
+      },
+      "effort": "deep",
+      "readOnly": true,
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash"
+      ],
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:88be9062d43fbcf0e0402dea1c881f85dee158a61150412d778934ba738a362e"
+    },
+    {
+      "id": "mcp/atlassian",
+      "surface": "mcp",
+      "title": "Atlassian (Jira / Confluence)",
+      "summary": "Atlassian remote MCP server. OAuth 2.1 on first use. (Old /v1/sse endpoint dies 2026-06-30.)",
+      "tags": [
+        "jira",
+        "confluence",
+        "tickets"
+      ],
+      "rationale": "Ticket and docs access for the work chain (ticket-create/clarify); broadly applicable",
+      "stability": "stable",
+      "server": {
+        "type": "http",
+        "url": "https://mcp.atlassian.com/v1/mcp/authv2"
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:e0ab16273117e78d065d31f13e4e2664d369f9919e64fe7b89b33a973646fcfd"
+    },
+    {
+      "id": "mcp/bitbucket",
+      "surface": "mcp",
+      "title": "Bitbucket (community)",
+      "summary": "Bitbucket Cloud MCP via community server (local stdio). Repos, branches, PRs, comments. Needs workspace + app-password credentials.",
+      "tags": [
+        "git",
+        "bitbucket",
+        "ci"
+      ],
+      "rationale": "Bitbucket is the workspace's git host, but no official remote MCP server exists; this community stdio server fills the gap. Experimental — opt-in, until an official server ships",
+      "stability": "experimental",
+      "server": {
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "-y",
+          "bitbucket-mcp@latest"
+        ],
+        "env": {
+          "BITBUCKET_URL": "https://api.bitbucket.org/2.0",
+          "BITBUCKET_WORKSPACE": "${BITBUCKET_WORKSPACE}",
+          "BITBUCKET_USERNAME": "${BITBUCKET_USERNAME}",
+          "BITBUCKET_PASSWORD": "${BITBUCKET_PASSWORD}"
+        }
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:00f41d328f4b429935cf68354d4c7416947c4fd6d4d83ee90f6d7dc6df23b33a"
+    },
+    {
+      "id": "mcp/circleci",
+      "surface": "mcp",
+      "title": "CircleCI",
+      "summary": "CircleCI official MCP server (local stdio). Builds, failure logs, flaky tests, pipeline status. Needs CIRCLECI_TOKEN.",
+      "tags": [
+        "ci",
+        "circleci"
+      ],
+      "rationale": "CI/CD context (build logs, flaky tests, pipeline status) for projects on CircleCI; official server, run locally via npx",
+      "stability": "stable",
+      "server": {
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "-y",
+          "@circleci/mcp-server-circleci@latest"
+        ],
+        "env": {
+          "CIRCLECI_TOKEN": "${CIRCLECI_TOKEN}"
+        }
+      },
+      "appliesWhen": {
+        "any": [
+          {
+            "file": "**/.circleci/config.yml"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:d5eaa13185c9be2d1ddae0e96f00c5ec051af7dd3bef92b15ac014c9e161e266"
+    },
+    {
+      "id": "mcp/datadog",
+      "surface": "mcp",
+      "title": "Datadog",
+      "summary": "Datadog MCP server (preview). OAuth; non-US1 sites replace the host (e.g. mcp.datadoghq.eu). Covers backend telemetry (APM/logs/metrics) and frontend RUM/browser.",
+      "tags": [
+        "observability",
+        "apm",
+        "logs",
+        "rum",
+        "frontend"
+      ],
+      "rationale": "Observability access for runnable services, pipelines, and frontend apps — backend (APM/logs/metrics) and client-side (RUM/browser) telemetry alike",
+      "stability": "experimental",
+      "server": {
+        "type": "http",
+        "url": "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp"
+      },
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          },
+          {
+            "archetype": "data-pipeline"
+          }
+        ]
+      },
+      "version": "1.0.1",
+      "updated": "2026-06-18",
+      "hash": "sha256:c351659ea76aad1d48cef521eef6d70925f4c14d23c53b4dd78099e2825fb21b"
+    },
+    {
+      "id": "mcp/github",
+      "surface": "mcp",
+      "title": "GitHub",
+      "summary": "GitHub remote MCP server (repos, PRs, issues, actions). OAuth on first use.",
+      "tags": [
+        "git",
+        "github",
+        "ci"
+      ],
+      "rationale": "Repo/PR/issue access from the agent; useful on almost any project under git",
+      "stability": "stable",
+      "server": {
+        "type": "http",
+        "url": "https://api.githubcopilot.com/mcp/"
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:b49da401dd2ae68ebe422117a1d6ec3002cf54b8559bed3d076bf6299df34633"
+    },
+    {
+      "id": "mcp/slack",
+      "surface": "mcp",
+      "title": "Slack",
+      "summary": "Slack official remote MCP server. Search messages/channels/users, read threads, send messages, canvases. OAuth on first use.",
+      "tags": [
+        "slack",
+        "communication"
+      ],
+      "rationale": "Team-communication access (search, threads, post) for the work/incident chains; official hosted remote, useful on almost any team project",
+      "stability": "stable",
+      "server": {
+        "type": "http",
+        "url": "https://mcp.slack.com/mcp"
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:96cd73c397a270769acef554a3bb11bf0975430d40b9a2fffa6fdff056f934fd"
+    },
+    {
+      "id": "rule/accessibility",
+      "surface": "rule",
+      "title": "Accessibility rules",
+      "summary": "Inclusive UI baseline — semantic markup, keyboard/focus, contrast, and target WCAG level",
+      "body": "rules/accessibility.md",
+      "tags": [
+        "accessibility",
+        "frontend",
+        "web"
+      ],
+      "rationale": "Only meaningful for projects with a user-facing UI; gated to frontend workspaces",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "frontend"
+          },
+          {
+            "dep": "react"
+          },
+          {
+            "dep": "next"
+          },
+          {
+            "dep": "vue"
+          },
+          {
+            "dep": "svelte"
+          },
+          {
+            "dep": "@angular/core"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:b4fe724845e269b22cc4a09c8bf4806f2a4b6fcf2250aa693fd83a9bf5250ad4"
+    },
+    {
+      "id": "rule/api-contract",
+      "surface": "rule",
+      "title": "API & contract rules",
+      "summary": "Backward-compatible interfaces, edge validation, stable error shapes for API producers/consumers",
+      "body": "rules/api-contract.md",
+      "tags": [
+        "api",
+        "contract"
+      ],
+      "rationale": "Relevant to projects that expose or consume an API surface",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:fc2cc9d5bc75d0990b01db775e6f5d085d1fb119f8424f535c073425744512b6"
+    },
+    {
+      "id": "rule/ci-gates",
+      "surface": "rule",
+      "title": "CI gates & enforcement rules",
+      "summary": "At least one automated check that fails the build on violation; never merge red, never disable a gate",
+      "body": "rules/ci-gates.md",
+      "tags": [
+        "ci",
+        "gates"
+      ],
+      "rationale": "Enforcement baseline every project needs; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:f2e80517bf375e84e2b68dd4b175963559ab6a4691537d181b9cad3633e34014"
+    },
+    {
+      "id": "rule/code-style",
+      "surface": "rule",
+      "title": "Code style rules",
+      "summary": "Language-neutral baseline — type safety at boundaries, small focused functions, consistent naming",
+      "body": "rules/code-style.md",
+      "tags": [
+        "code-style"
+      ],
+      "rationale": "Universal style floor; ai-init concretizes it per language",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:c1f62761f0c14f611c274e17c8b03ebf4db268350c5b00b4e8aa4218e48d5023"
+    },
+    {
+      "id": "rule/config-secrets",
+      "surface": "rule",
+      "title": "Configuration & secrets rules",
+      "summary": "Env-driven config, startup validation, secrets never committed, rotation without a code change",
+      "body": "rules/config-secrets.md",
+      "tags": [
+        "config",
+        "secrets",
+        "security"
+      ],
+      "rationale": "Relevant to anything with runtime configuration or secret material",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          },
+          {
+            "archetype": "data-pipeline"
+          },
+          {
+            "archetype": "iac"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:7a24d13fe33953ec4760b0b0cae760d087d1b9f8411c76a463e1c7a64958336f"
+    },
+    {
+      "id": "rule/context",
+      "surface": "rule",
+      "title": "Context rules",
+      "summary": "How the AI reads and writes the append-only .context/ project memory (ADRs + AI log)",
+      "body": "rules/context.md",
+      "tags": [
+        "context",
+        "memory"
+      ],
+      "rationale": "Governs the context chain shipped in every install; universal",
+      "stability": "stable",
+      "seed": true,
+      "version": "1.0.1",
+      "updated": "2026-06-17",
+      "hash": "sha256:4792640613afc8a74bf05fe0fbe20b4411b819f414ff19706efbb21690f00ec3"
+    },
+    {
+      "id": "rule/data-privacy",
+      "surface": "rule",
+      "title": "Data privacy rules",
+      "summary": "Minimize and retain deliberately, protect PII in transit and at rest, never log it, honor consent",
+      "body": "rules/data-privacy.md",
+      "tags": [
+        "privacy",
+        "pii",
+        "security"
+      ],
+      "rationale": "Relevant to projects that handle personal or sensitive data",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:3e63cc5e9be545fb8bd73c1f901aeea10249be9ef1e87e45d6e045d9cff932a3"
+    },
+    {
+      "id": "rule/dependency",
+      "surface": "rule",
+      "title": "Dependency & supply-chain rules",
+      "summary": "Justify and vet every dependency, pin deliberately, keep the lockfile honest, remove dead deps",
+      "body": "rules/dependency.md",
+      "tags": [
+        "dependency",
+        "supply-chain",
+        "security"
+      ],
+      "rationale": "Supply-chain hygiene applies to every project; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:cbf62e071fc6a25b5d8df46eb7946ad915388e25635c61d4410283545fbbd0eb"
+    },
+    {
+      "id": "rule/dependency-scan",
+      "surface": "rule",
+      "title": "Dependency scan",
+      "summary": "A dependency/SCA scan is a pre-PR gate on changed manifests; findings become tracked tickets, not silent fixes",
+      "body": "rules/dependency-scan.md",
+      "tags": [
+        "security",
+        "dependencies"
+      ],
+      "rationale": "Universal wherever dependencies live; SCA is a routine pre-merge gate, not an afterthought",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "file": "**/package.json"
+          },
+          {
+            "file": "**/package-lock.json"
+          },
+          {
+            "file": "**/yarn.lock"
+          },
+          {
+            "file": "**/go.mod"
+          },
+          {
+            "file": "**/go.sum"
+          },
+          {
+            "file": "**/requirements.txt"
+          },
+          {
+            "file": "**/pyproject.toml"
+          },
+          {
+            "file": "**/Dockerfile"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:bc1207e5b6f13e38290cb051ed0c24134133a07fa52be69041960fbab30ed416"
+    },
+    {
+      "id": "rule/docs",
+      "surface": "rule",
+      "title": "Documentation rules",
+      "summary": "Keep docs in sync with the change, document the non-obvious, record decisions as ADRs",
+      "body": "rules/docs.md",
+      "tags": [
+        "docs"
+      ],
+      "rationale": "Documentation discipline applies to every project; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:3768a14f3fa4950f9aba14340149ac09fc7af42d9882f743bf22cbc4d8195234"
+    },
+    {
+      "id": "rule/git-workflow",
+      "surface": "rule",
+      "title": "Git workflow rules",
+      "summary": "Branch per change, conventional commits, small reviewable PRs, no force-push to shared branches",
+      "body": "rules/git-workflow.md",
+      "tags": [
+        "git",
+        "workflow"
+      ],
+      "rationale": "Version-control discipline applies to every project; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:ce633a8c7499769b02a50d336afb4be37d298aa3fd2fa6182dfd14e5d686e735"
+    },
+    {
+      "id": "rule/i18n",
+      "surface": "rule",
+      "title": "Internationalization (i18n) rules",
+      "summary": "Externalized strings, locale-aware formatting, no concatenated translations",
+      "body": "rules/i18n.md",
+      "tags": [
+        "i18n",
+        "l10n",
+        "frontend"
+      ],
+      "rationale": "Only meaningful once a localization library is in use",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "dep": "i18next"
+          },
+          {
+            "dep": "react-i18next"
+          },
+          {
+            "dep": "next-intl"
+          },
+          {
+            "dep": "react-intl"
+          },
+          {
+            "dep": "vue-i18n"
+          },
+          {
+            "dep": "@formatjs/intl"
+          },
+          {
+            "dep": "@lingui/core"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:d9597d87e3db493c78407da35782b0760acd9874891e3307d9f80c2785fb378e"
+    },
+    {
+      "id": "rule/incident-response",
+      "surface": "rule",
+      "title": "Incident response",
+      "summary": "On-call readiness — runbooks for critical paths, severity definitions, comms cadence, a practiced rollback; optional module for deployed runtimes",
+      "body": "rules/incident-response.md",
+      "tags": [
+        "incident",
+        "operations",
+        "on-call"
+      ],
+      "rationale": "On-call readiness only matters for deployed runtimes; optional — adopt when the system is on-call",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          },
+          {
+            "archetype": "data-pipeline"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:6fcbb8fbe9b2a8c57ff906a3e754f50a9e0d292b0361008183351c331ee7add0"
+    },
+    {
+      "id": "rule/messaging",
+      "surface": "rule",
+      "title": "Messaging: async",
+      "summary": "Idempotent consumers, versioned schemas, dead-letter handling, correlation/trace propagation, bounded queues",
+      "body": "rules/messaging.md",
+      "tags": [
+        "messaging",
+        "async",
+        "kafka",
+        "pubsub"
+      ],
+      "rationale": "Async-messaging conventions the core rules can't carry generically; applies wherever a producer/consumer exists",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "dep": "kafkajs"
+          },
+          {
+            "dep": "@google-cloud/pubsub"
+          },
+          {
+            "dep": "amqplib"
+          },
+          {
+            "dep": "rascal"
+          },
+          {
+            "dep": "kafka-python"
+          },
+          {
+            "contains": "kafka"
+          },
+          {
+            "contains": "pubsub"
+          },
+          {
+            "contains": "consumer"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:0ca96eba31e699a39edc365c7a6e517f270cbfe6fe6ee7c0a0bfb8b55871d3e5"
+    },
+    {
+      "id": "rule/multi-tenant",
+      "surface": "rule",
+      "title": "Multi-tenant",
+      "summary": "Tenant isolation is first-class — no shared-default cross-tenant leak, scope enforced everywhere, isolation tested as a gate",
+      "body": "rules/multi-tenant.md",
+      "tags": [
+        "multi-tenant",
+        "security",
+        "architecture"
+      ],
+      "rationale": "Applies wherever more than one tenant shares a system; a shared-system isolation bug is every tenant's incident",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "contains": "tenant"
+          },
+          {
+            "contains": "multi-tenant"
+          },
+          {
+            "contains": "workspac"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:ac14500fd448eaefa3326798a464552497b95d4803d5d3e4e31a6c19800bae4e"
+    },
+    {
+      "id": "rule/no-touch",
+      "surface": "rule",
+      "title": "No-touch zones",
+      "summary": "Files that must not change without explicit human approval — secrets, lockfiles, generated, state",
+      "body": "rules/no-touch.md",
+      "tags": [
+        "no-touch",
+        "safety"
+      ],
+      "rationale": "Protected-zone safety baseline every project needs; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:d52e037146c56ab23c5f3494162dfb717741935cbf9b4c467111f89cbb396d52"
+    },
+    {
+      "id": "rule/observability",
+      "surface": "rule",
+      "title": "Observability rules",
+      "summary": "Structured logs with correlation ids, metrics and tracing, honest health — no silent failures",
+      "body": "rules/observability.md",
+      "tags": [
+        "observability",
+        "logging",
+        "metrics"
+      ],
+      "rationale": "Relevant to software that runs and must be debuggable in production",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          },
+          {
+            "archetype": "data-pipeline"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:8e3f8a4b09c43c3ddebb736255d585986a2660f9ad79e361e9e2642aa89dd446"
+    },
+    {
+      "id": "rule/openapi-contract",
+      "surface": "rule",
+      "title": "OpenAPI: contract",
+      "summary": "The OpenAPI spec is the source of truth — never drifts from the implementation, breaking changes are versioned, clients regenerated",
+      "body": "rules/openapi-contract.md",
+      "tags": [
+        "api",
+        "openapi",
+        "contract"
+      ],
+      "rationale": "Specializes the generic api-contract rule for OpenAPI; applies wherever an OpenAPI spec exists",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "file": "**/openapi.yaml"
+          },
+          {
+            "file": "**/openapi.json"
+          },
+          {
+            "file": "**/swagger.yaml"
+          },
+          {
+            "file": "**/swagger.json"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:9f6814f1958337a94480582edd58a8df12ae08a58662a12d9f98139385cb478f"
+    },
+    {
+      "id": "rule/performance",
+      "surface": "rule",
+      "title": "Performance & scalability rules",
+      "summary": "Avoid N+1, paginate unbounded lists, parallelize independent I/O, respect explicit budgets",
+      "body": "rules/performance.md",
+      "tags": [
+        "performance",
+        "scalability"
+      ],
+      "rationale": "Performance discipline applies to every project; ai-init sets real budgets",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:f538baefd6ab7785cc1cfca0468b9e8617c075715efddb58ecf907eba8f53940"
+    },
+    {
+      "id": "rule/resilience",
+      "surface": "rule",
+      "title": "Resilience & reliability rules",
+      "summary": "Timeouts on every external call, capped retries on idempotent ops only, honest degradation",
+      "body": "rules/resilience.md",
+      "tags": [
+        "resilience",
+        "reliability"
+      ],
+      "rationale": "Relevant to software that crosses network or process boundaries",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          },
+          {
+            "archetype": "data-pipeline"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:0ed031e56ed40dfaa84dc2bc2d28593799f8b2ad957ceb9a26f10d96e7d2eef2"
+    },
+    {
+      "id": "rule/security",
+      "surface": "rule",
+      "title": "Security rules",
+      "summary": "Secrets hygiene, input validation at trust boundaries, parameterized queries, safe error handling",
+      "body": "rules/security.md",
+      "tags": [
+        "security"
+      ],
+      "rationale": "Transversal security baseline every project needs; universal (no appliesWhen)",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:8c82d53639a90bf8ec06506232ff1810349db950879fa4983a799a942d9dfb68"
+    },
+    {
+      "id": "rule/stack-go",
+      "surface": "rule",
+      "title": "Stack: Go",
+      "summary": "Idiomatic Go — error handling, concurrency, layout cmd/pkg, context propagation",
+      "body": "rules/stack-go.md",
+      "tags": [
+        "stack",
+        "go"
+      ],
+      "rationale": "Go-specific conventions the core rules can't carry generically; applies wherever Go exists",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "file": "**/go.mod"
+          },
+          {
+            "lang": "go"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:29b8137e1441f5d18c7a2403737780b029ca724d23898239fd7633608984a564"
+    },
+    {
+      "id": "rule/stack-nextjs",
+      "surface": "rule",
+      "title": "Stack: Next.js",
+      "summary": "Next.js conventions and pitfalls: server/client boundaries, caching, hydration, env exposure",
+      "body": "rules/stack-nextjs.md",
+      "tags": [
+        "stack",
+        "nextjs",
+        "react",
+        "frontend"
+      ],
+      "rationale": "Next.js-specific conventions the core rules can't carry generically",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "dep": "next"
+          },
+          {
+            "framework": "next"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:8b34c91ae96912d8abf59fe999dc6c187c984f8605d47572467468c031110893"
+    },
+    {
+      "id": "rule/stack-node-express",
+      "surface": "rule",
+      "title": "Stack: Node + Express",
+      "summary": "Express service conventions: one error middleware, edge validation, middleware order, graceful shutdown, event-loop discipline",
+      "body": "rules/stack-node-express.md",
+      "tags": [
+        "stack",
+        "node",
+        "express",
+        "backend"
+      ],
+      "rationale": "Express-specific conventions the core rules can't carry generically",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "dep": "express"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:4c33391d964903b8f2c6f8bd9756dac652ec39f9c8f53fb30c4e3a5b4d1955ac"
+    },
+    {
+      "id": "rule/stack-python",
+      "surface": "rule",
+      "title": "Stack: Python",
+      "summary": "Idiomatic Python — packaging, explicit typing, dependency hygiene, dependency injection at boundaries",
+      "body": "rules/stack-python.md",
+      "tags": [
+        "stack",
+        "python"
+      ],
+      "rationale": "Python-specific conventions the core rules can't carry generically; applies wherever Python exists",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "file": "**/pyproject.toml"
+          },
+          {
+            "file": "**/requirements.txt"
+          },
+          {
+            "file": "**/setup.py"
+          },
+          {
+            "lang": "python"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:6a390a89f9d2375687f236f0895e0b6809f81f55c5485df66edab7e9cf8b9dde"
+    },
+    {
+      "id": "rule/stack-terraform",
+      "surface": "rule",
+      "title": "Stack: Terraform",
+      "summary": "HCL conventions, least-privilege IAM, state safety, and plan-before-apply discipline for IaC",
+      "body": "rules/stack-terraform.md",
+      "tags": [
+        "stack",
+        "terraform",
+        "iac"
+      ],
+      "rationale": "Terraform-specific conventions the core rules can't carry generically; applies wherever HCL exists",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "file": "**/*.tf"
+          },
+          {
+            "file": "**/*.tf.json"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:c77581bfe84ce554ded3539dbcf8311067773cce8ece06659a423c28d9289df3"
+    },
+    {
+      "id": "rule/test-strategy",
+      "surface": "rule",
+      "title": "Test strategy rules",
+      "summary": "TDD by default, a test pyramid, mock only true boundaries, coverage is a floor on changed code",
+      "body": "rules/test-strategy.md",
+      "tags": [
+        "testing",
+        "tdd"
+      ],
+      "rationale": "Testing discipline applies to every project; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:936d69cae9818165e4b6c6fdb8e3687d6e1303d790256a651815ba25b689030d"
+    },
+    {
+      "id": "skill/adr-write",
+      "surface": "skill",
+      "title": "adr-write",
+      "summary": "Record a significant technical decision as a complete ADR and refresh the index",
+      "body": "skills/context/adr-write.md",
+      "tags": [
+        "context",
+        "adr",
+        "decisions"
+      ],
+      "rationale": "Decision-capture step of the context chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:32a9a5c85349b92b87dc60260370f4e958cf48f327db711de6bd2d4dae1d5c53"
+    },
+    {
+      "id": "skill/ai-init",
+      "surface": "skill",
+      "title": "ai-init",
+      "summary": "Analyze a real codebase and concretize the generic scaffold into project-specific context",
+      "body": "skills/ai-init.md",
+      "tags": [
+        "scaffold",
+        "onboarding"
+      ],
+      "rationale": "The keystone bootstrap skill every project runs once; universal",
+      "stability": "stable",
+      "seed": true,
+      "version": "1.0.6",
+      "updated": "2026-06-22",
+      "hash": "sha256:83af1e061ec90e9377bc7fdf6d89fe9bd9c127aff5142bbfb62f9bcf067ee3f4"
+    },
+    {
+      "id": "skill/ai-log-write",
+      "surface": "skill",
+      "title": "ai-log-write",
+      "summary": "Append an AI session log entry after committed code, with context for future sessions",
+      "body": "skills/context/ai-log-write.md",
+      "tags": [
+        "context",
+        "logging"
+      ],
+      "rationale": "Session-memory step of the context chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:8efc7484951317852f2ad6b7dd2eeaa6c149351a4b859ff28393177f3aa5df01"
+    },
+    {
+      "id": "skill/context-update",
+      "surface": "skill",
+      "title": "context-update",
+      "summary": "Regenerate .context/INDEX.md from sources and surface pending rule updates",
+      "body": "skills/context/context-update.md",
+      "tags": [
+        "context",
+        "index"
+      ],
+      "rationale": "Index-maintenance step of the context chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:afd19e72782100ab4951065916120679592cda2d2c885ccdc98cbb72f736eca5"
+    },
+    {
+      "id": "skill/debug",
+      "surface": "skill",
+      "title": "debug",
+      "summary": "Find a bug's root cause with evidence before proposing any fix",
+      "body": "skills/debug.md",
+      "tags": [
+        "debugging"
+      ],
+      "rationale": "Root-cause discipline applies to any project; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:982d9d5eeb706e3708a83ce91df7a72219e4fc340a2b803ea4042818961e9dc9"
+    },
+    {
+      "id": "skill/e2e-test-gen",
+      "surface": "skill",
+      "title": "e2e-test-gen",
+      "summary": "Generate E2E tests for a critical user flow (happy path + failure modes), stable and anti-flake",
+      "body": "skills/e2e-test-gen.md",
+      "tags": [
+        "testing",
+        "e2e"
+      ],
+      "rationale": "E2E authoring for the critical flows only useful where there is a runnable user-facing surface; complements unit test-gen, doesn't replace it",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "app"
+          },
+          {
+            "archetype": "service"
+          },
+          {
+            "contains": "e2e"
+          },
+          {
+            "contains": "playwright"
+          },
+          {
+            "contains": "cypress"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:1c5500dce80ce03b847520ef58286c6e48279b2aafbb2318610222f0581e88bf"
+    },
+    {
+      "id": "skill/incident",
+      "surface": "skill",
+      "title": "incident",
+      "summary": "Mitigate a production incident first, then hotfix (post-deploy chain entry → postmortem-write → prevent-tickets)",
+      "body": "skills/incident.md",
+      "tags": [
+        "incident",
+        "operations",
+        "post-deploy"
+      ],
+      "rationale": "Production incident response, only relevant for deployed runtimes; entry of the post-deploy learning chain",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          },
+          {
+            "archetype": "data-pipeline"
+          }
+        ]
+      },
+      "version": "1.0.1",
+      "updated": "2026-06-18",
+      "hash": "sha256:2cd39963690ab31188664f0a663f380e70cf9e9b1bf552f163de4d8ecd9818d7"
+    },
+    {
+      "id": "skill/migration",
+      "surface": "skill",
+      "title": "migration",
+      "summary": "Safe expand-contract DB/data migrations with a rollback path",
+      "body": "skills/migration.md",
+      "tags": [
+        "database",
+        "migration"
+      ],
+      "rationale": "DB migration discipline, only relevant when the project has a database",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "dep": "pg"
+          },
+          {
+            "dep": "mysql2"
+          },
+          {
+            "dep": "kysely"
+          },
+          {
+            "dep": "sequelize"
+          },
+          {
+            "dep": "@prisma/client"
+          },
+          {
+            "dep": "prisma"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:9397c2a3b7ca87bda9409ff7a73ef0296ca3f3d91eb25b146aab6159edff7190"
+    },
+    {
+      "id": "skill/new-endpoint",
+      "surface": "skill",
+      "title": "new-endpoint",
+      "summary": "Scaffold a new HTTP endpoint following the project's existing pattern",
+      "body": "skills/new-endpoint.md",
+      "tags": [
+        "api",
+        "scaffolding"
+      ],
+      "rationale": "Endpoint scaffolding, only relevant where there is an HTTP surface",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:1df6fd80a76e55f3ef8e58a9554e13d0f3b94b5787831f7085ee9121364e4e42"
+    },
+    {
+      "id": "skill/obs-audit",
+      "surface": "skill",
+      "title": "obs-audit",
+      "summary": "Read-only audit of observability coverage (gaps in logs/metrics/traces, silent failures, PII) → findings via ticket-from-finding",
+      "body": "skills/obs-audit.md",
+      "tags": [
+        "observability"
+      ],
+      "rationale": "Audit op of the observability chain; activates the observability rule into a concrete coverage check, only for runtimes",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          },
+          {
+            "archetype": "data-pipeline"
+          },
+          {
+            "contains": "observability"
+          },
+          {
+            "contains": "debuggable"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:774d52db8d05e7206686af25700abf50fc21a6f71c12f40f8f8e6a30a9c82513"
+    },
+    {
+      "id": "skill/obs-instrument",
+      "surface": "skill",
+      "title": "obs-instrument",
+      "summary": "Add missing observability (structured logs, correlation ids, page-on metrics, trace propagation, error reporting) for a path",
+      "body": "skills/obs-instrument.md",
+      "tags": [
+        "observability"
+      ],
+      "rationale": "Implement op of the observability chain; closes the gaps that obs-audit finds, per the observability rule",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          },
+          {
+            "archetype": "data-pipeline"
+          },
+          {
+            "contains": "instrument"
+          },
+          {
+            "contains": "telemetry"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:cdf1cbf1811b1bb32aa4a8f95e225605560d6a218d261e2a709bda1857a37df9"
+    },
+    {
+      "id": "skill/openapi",
+      "surface": "skill",
+      "title": "openapi",
+      "summary": "Keep OpenAPI the source of truth (generate/validate/drift-check/regenerate clients), gated by the openapi-contract rule",
+      "body": "skills/openapi.md",
+      "tags": [
+        "api",
+        "openapi",
+        "contract"
+      ],
+      "rationale": "Runs the openapi-contract rule into practice; only useful where an OpenAPI spec exists or is being introduced",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "file": "**/openapi.yaml"
+          },
+          {
+            "file": "**/openapi.json"
+          },
+          {
+            "file": "**/swagger.yaml"
+          },
+          {
+            "file": "**/swagger.json"
+          },
+          {
+            "contains": "openapi"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:a93722f0a48edc0ed2c6d6bbf58a3c3a8f60d62c160a508f7ae2c06de47edcbd"
+    },
+    {
+      "id": "skill/perf-budget",
+      "surface": "skill",
+      "title": "perf-budget",
+      "summary": "Set/record/enforce explicit perf budgets (latency, query count, bundle) so regressions are conscious, not silent",
+      "body": "skills/perf-budget.md",
+      "tags": [
+        "performance"
+      ],
+      "rationale": "Budget op of the performance chain; makes the performance rule's \"respect budgets\" clause concrete and enforceable",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          },
+          {
+            "archetype": "data-pipeline"
+          },
+          {
+            "contains": "budget"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:e1546e5c7ea855ca98f41db277bb57718ddab5ed29add4a9c1116f207e3d7d2b"
+    },
+    {
+      "id": "skill/perf-investigate",
+      "surface": "skill",
+      "title": "perf-investigate",
+      "summary": "Investigate a perf regression/complaint — reproduce, profile, isolate root cause, quantify, hand off the fix",
+      "body": "skills/perf-investigate.md",
+      "tags": [
+        "performance",
+        "observability"
+      ],
+      "rationale": "Investigate op of the performance chain; activates the performance rule into a reproducible method, only for runtimes",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          },
+          {
+            "archetype": "data-pipeline"
+          },
+          {
+            "contains": "slow"
+          },
+          {
+            "contains": "latency"
+          },
+          {
+            "contains": "regression"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:273af11584f34f861429dca8be11935b71f441b22ebd92e910c88b6f1dd84710"
+    },
+    {
+      "id": "skill/postmortem-write",
+      "surface": "skill",
+      "title": "postmortem-write",
+      "summary": "Author a blameless postmortem from an incident (timeline, root cause, contributing factors, prevention), gate before publishing",
+      "body": "skills/postmortem-write.md",
+      "tags": [
+        "incident",
+        "operations",
+        "post-deploy"
+      ],
+      "rationale": "Post-deploy chain authoring op; separates postmortem authoring from the heat of incident response, only relevant for deployed runtimes",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "archetype": "service"
+          },
+          {
+            "archetype": "app"
+          },
+          {
+            "archetype": "data-pipeline"
+          },
+          {
+            "contains": "incident"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:983e9cea7ddf77b1f8a29646966245fa6ddfc41ea08cf6abe1067dab4695dcb3"
+    },
+    {
+      "id": "skill/pr-review",
+      "surface": "skill",
+      "title": "pr-review",
+      "summary": "Review a diff in seven structured passes with actionable findings",
+      "body": "skills/workflow/pr-review.md",
+      "tags": [
+        "review",
+        "pr",
+        "workflow"
+      ],
+      "rationale": "Final review step of the work chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:59a8043b462a56cc10f6d109539842073877bb18712757f526f57ca70b2b252a"
+    },
+    {
+      "id": "skill/pr-write",
+      "surface": "skill",
+      "title": "pr-write",
+      "summary": "Generate a conventional-commits PR description from the diff and brief",
+      "body": "skills/workflow/pr-write.md",
+      "tags": [
+        "pr",
+        "workflow"
+      ],
+      "rationale": "PR-authoring step of the work chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:4845782098e319dd2d763ece23a482f6c7076a8e54e07d0bc9a790d57f511a72"
+    },
+    {
+      "id": "skill/prevent-tickets",
+      "surface": "skill",
+      "title": "prevent-tickets",
+      "summary": "Turn prevention actions from an incident/postmortem into a batch of tracked tickets (closing the learning loop)",
+      "body": "skills/prevent-tickets.md",
+      "tags": [
+        "incident",
+        "operations",
+        "post-deploy",
+        "requirements"
+      ],
+      "rationale": "The loop-closing op of the post-deploy chain; batch-extracts systemic prevention actions into tracked work so incidents don't recur silently",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "contains": "postmortem"
+          },
+          {
+            "contains": "incident"
+          },
+          {
+            "contains": "prevention"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:40c4f1e00633e510cdc70be4d7326e794aaeee186808ab48eabc3ed88a23d274"
+    },
+    {
+      "id": "skill/refactor",
+      "surface": "skill",
+      "title": "refactor",
+      "summary": "Improve structure without changing behavior, tests-first",
+      "body": "skills/refactor.md",
+      "tags": [
+        "refactoring"
+      ],
+      "rationale": "Behavior-preserving refactoring applies to any project; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:34c82a18aa34a3c1b07859ef2537fcbe0eca045bc9ae5c63f783129d44f6fdcc"
+    },
+    {
+      "id": "skill/review",
+      "surface": "skill",
+      "title": "review",
+      "summary": "Quick review of a diff for rule violations, edge cases, security and tests",
+      "body": "skills/review.md",
+      "tags": [
+        "review"
+      ],
+      "rationale": "Lightweight self-review applies to any change; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:1810a4efb149683810c7cff69802ba075435ec6dee72ec94d8df64936b3b05ec"
+    },
+    {
+      "id": "skill/security-review",
+      "surface": "skill",
+      "title": "security-review",
+      "summary": "Threat-model-style security pass — authz, injection, SSRF, secrets, crypto",
+      "body": "skills/security-review.md",
+      "tags": [
+        "security",
+        "review"
+      ],
+      "rationale": "Security review applies to every project; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:dec13150c23350a6911df5c4f290d08babb335a6586dd04e902699f3a907107b"
+    },
+    {
+      "id": "skill/snyk-scan",
+      "surface": "skill",
+      "title": "snyk-scan",
+      "summary": "Run Snyk, triage findings, remediate at the gate, convert real hits into tracked tickets",
+      "body": "skills/snyk-scan.md",
+      "tags": [
+        "security",
+        "dependencies"
+      ],
+      "rationale": "The run-and-remediate op of the security chain; activates the dependency-scan rule into actual practice",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "file": "**/package.json"
+          },
+          {
+            "file": "**/go.mod"
+          },
+          {
+            "file": "**/requirements.txt"
+          },
+          {
+            "file": "**/pyproject.toml"
+          },
+          {
+            "file": "**/Dockerfile"
+          },
+          {
+            "contains": "snyk"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:d2e17995e1f363c064458da42d1217c8c6150226bccecfda280806539359e762"
+    },
+    {
+      "id": "skill/task-implement",
+      "surface": "skill",
+      "title": "task-implement",
+      "summary": "Execute an approved plan test-first (TDD), without silent deviation",
+      "body": "skills/workflow/task-implement.md",
+      "tags": [
+        "implementation",
+        "tdd",
+        "workflow"
+      ],
+      "rationale": "Implementation step of the work chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:c15db1efff160ce5846adffb58d599821e167e0599cbbb15034b4f280faa7c0f"
+    },
+    {
+      "id": "skill/task-plan",
+      "surface": "skill",
+      "title": "task-plan",
+      "summary": "Produce a file-level technical plan from an approved brief",
+      "body": "skills/workflow/task-plan.md",
+      "tags": [
+        "planning",
+        "workflow"
+      ],
+      "rationale": "Planning step of the work chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:7d0295b6bef2e230bae57173f70ca40ded5c5a27d5410245e4085da50f5cac93"
+    },
+    {
+      "id": "skill/tenant-build",
+      "surface": "skill",
+      "title": "tenant-build",
+      "summary": "Onboard a new tenant end-to-end (config, isolation, provisioning, verify) under the multi-tenant rule",
+      "body": "skills/tenant-build.md",
+      "tags": [
+        "multi-tenant",
+        "provisioning"
+      ],
+      "rationale": "Provisioning op of the multi-tenant chain; runs the multi-tenant rule into the concrete act of standing up a tenant safely",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "contains": "tenant"
+          },
+          {
+            "contains": "multi-tenant"
+          },
+          {
+            "contains": "onboard"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:3c31fa336a2bb08087ed84b8b415f7cd58201449ca888ccad8ae25a4e39afcee"
+    },
+    {
+      "id": "skill/terraform-plan",
+      "surface": "skill",
+      "title": "terraform-plan",
+      "summary": "Run terraform fmt/validate/plan safely and report the plan for human review",
+      "body": "skills/terraform-plan.md",
+      "tags": [
+        "terraform",
+        "iac",
+        "planning"
+      ],
+      "rationale": "IaC changes need a reviewed plan; only relevant where Terraform exists",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "file": "**/*.tf"
+          },
+          {
+            "file": "**/*.tf.json"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:e541919f3860e407f9771f40465ca7705455bd5356dd2d547888aa9638fa0465"
+    },
+    {
+      "id": "skill/test-gen",
+      "surface": "skill",
+      "title": "test-gen",
+      "summary": "Write tests for a function or module following the project's test conventions",
+      "body": "skills/test-gen.md",
+      "tags": [
+        "testing"
+      ],
+      "rationale": "Test authoring applies to any project; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:7163b76bc1e6b51d5caf664037b70608691098219a835b40a128cc4a8e1769e6"
+    },
+    {
+      "id": "skill/ticket-clarify",
+      "surface": "skill",
+      "title": "ticket-clarify",
+      "summary": "Turn any input into a structured technical brief, marking gaps",
+      "body": "skills/workflow/ticket-clarify.md",
+      "tags": [
+        "requirements",
+        "workflow"
+      ],
+      "rationale": "Clarification step of the work chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:62a09210e005efb3f9e610ed461d4fd9476edba4a25255aa170cdccb5700d4d3"
+    },
+    {
+      "id": "skill/ticket-create",
+      "surface": "skill",
+      "title": "ticket-create",
+      "summary": "Author a complete ticket from a rough idea by asking the right questions first",
+      "body": "skills/workflow/ticket-create.md",
+      "tags": [
+        "requirements",
+        "workflow"
+      ],
+      "rationale": "Ticket-authoring entry of the work chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:4aedddfce7576e0c1676807b80dba3a6d7057019770606611378643ad8d759ab"
+    },
+    {
+      "id": "skill/ticket-from-finding",
+      "surface": "skill",
+      "title": "ticket-from-finding",
+      "summary": "Convert a structured finding into a remediation ticket (map fields, preserve severity & evidence, gate before filing)",
+      "body": "skills/workflow/ticket-from-finding.md",
+      "tags": [
+        "requirements",
+        "workflow",
+        "security",
+        "performance"
+      ],
+      "rationale": "Structured bridge from the perf/security/observability chains into the work chain; findings carry severity+evidence that must survive into the ticket",
+      "stability": "stable",
+      "appliesWhen": {
+        "any": [
+          {
+            "contains": "finding"
+          },
+          {
+            "contains": "vulnerability"
+          },
+          {
+            "contains": "regression"
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:8bbca66597fdf104e606e5beb0930110e6a2bd23cd2bd4f6b2d23a240842ed75"
+    },
+    {
+      "id": "skill/ticket-from-report",
+      "surface": "skill",
+      "title": "ticket-from-report",
+      "summary": "Convert a report into a complete ticket (extract, mark gaps, ask minimally, gate before filing)",
+      "body": "skills/workflow/ticket-from-report.md",
+      "tags": [
+        "requirements",
+        "workflow"
+      ],
+      "rationale": "Bridges ad-hoc/external reports into the work chain; universal entry for unstructured input that already describes a problem",
+      "stability": "stable",
+      "appliesWhen": {
+        "contains": "report"
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:c738023e6fd2a4c9543917c6b6e986b58fe4c14cbc30043102e6c9e2c25c21e8"
+    },
+    {
+      "id": "skill/ticket-refine",
+      "surface": "skill",
+      "title": "ticket-refine",
+      "summary": "Refine an existing ticket in place (sharpen, fill, split), with asks and a gate before filing",
+      "body": "skills/workflow/ticket-refine.md",
+      "tags": [
+        "requirements",
+        "workflow"
+      ],
+      "rationale": "Maintenance op on the work chain; rescues stale/vague/too-big tickets so they can re-enter planning",
+      "stability": "stable",
+      "appliesWhen": {
+        "contains": "ticket",
+        "file": "**/TASK.md"
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:47d09b4f7a81ab5735ceee8e94b32aa2882b61c018c0118844919d4531c05d5b"
+    },
+    {
+      "id": "skill/ticket-update",
+      "surface": "skill",
+      "title": "ticket-update",
+      "summary": "Reflect real work progress back onto an existing ticket (status + evidence), with a gate before filing",
+      "body": "skills/workflow/ticket-update.md",
+      "tags": [
+        "requirements",
+        "workflow"
+      ],
+      "rationale": "The close-the-loop reflection op of the work chain; only useful where a ticket/tracker context exists",
+      "stability": "stable",
+      "appliesWhen": {
+        "contains": "ticket",
+        "file": "**/TASK.md"
+      },
+      "version": "1.0.0",
+      "updated": "2026-06-18",
+      "hash": "sha256:51955680f53ca013303baa40ce5c5da3474225e7762b503ccfc4635fb879f5ac"
+    },
+    {
+      "id": "skill/verify",
+      "surface": "skill",
+      "title": "verify",
+      "summary": "Run build, tests, lint, coverage and audit to prove a change before a PR",
+      "body": "skills/workflow/verify.md",
+      "tags": [
+        "verification",
+        "workflow"
+      ],
+      "rationale": "Verification gate of the work chain; universal",
+      "stability": "stable",
+      "version": "1.0.0",
+      "updated": "2026-06-17",
+      "hash": "sha256:d2714cfd54a1bb0f206cf0f77dda4d6dc05b8d01091cf2718a8be851956d7847"
+    }
+  ]
+}

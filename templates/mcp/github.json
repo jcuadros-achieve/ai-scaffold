@@ -1,0 +1,13 @@
+{
+  "id": "mcp/github",
+  "surface": "mcp",
+  "title": "GitHub",
+  "summary": "GitHub remote MCP server (repos, PRs, issues, actions). OAuth on first use.",
+  "tags": ["git", "github", "ci"],
+  "rationale": "Repo/PR/issue access from the agent; useful on almost any project under git",
+  "stability": "stable",
+  "server": {
+    "type": "http",
+    "url": "https://api.githubcopilot.com/mcp/"
+  }
+}

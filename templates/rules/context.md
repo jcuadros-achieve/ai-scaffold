@@ -1,3 +1,14 @@
+---
+id: rule/context
+surface: rule
+title: Context rules
+summary: How the AI reads and writes the append-only .context/ project memory (ADRs + AI log)
+tags: [context, memory]
+rationale: Governs the context chain shipped in every install; universal
+seed: true
+stability: stable
+---
+
 # Context rules
 
 Rules governing how the AI reads and writes `.context/`.

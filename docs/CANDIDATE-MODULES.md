@@ -1,6 +1,12 @@
-# Candidate optional modules (future backlog)
+# Candidate catalog entries (future backlog)
 
-A curated catalog of optional modules we may add later. **None of these are
+> **Note (redesign):** the `optional module` / `scaffold.manifest.json` model
+> this doc was written against is **retired** (ADR-018). Each item below is now a
+> future **catalog entry** with an `appliesWhen` predicate, compiled into
+> `catalog.index.json`. The backlog of *what to add* still stands; only the
+> mechanism changed (one frontmatter `.md` per entry, not a manifest row).
+
+A curated catalog of entries we may add later. **None of these are
 implemented.** They are mapped here so the idea isn't lost and so anyone can pick
 one up with a clear scope.
 

@@ -2,141 +2,117 @@ import path from 'path'
 import chalk from 'chalk'
 import prompts from 'prompts'
 import {
-  planInstall, applyAction, writeVersionFile,
-  readInstalledSelection, readInstalledMcp, readVersionFile,
-  changelogSince, FileAction,
+  apply as applyPlan,
+  getRemoteVersion,
+  getCurrentPackageVersion,
+  loadCatalogIndex,
+  readState,
+  readVersion,
+  reconcile,
+  writeVersion
 } from '../installer.js'
-import { renderDiff } from '../differ.js'
+import type { ApplyItem } from '../installer.js'
 
-/** `update` is its own operation, distinct from `install` (ADR-017): it pulls
- *  upstream changes to the *already-installed* selection — no module/MCP wizard,
- *  no commit prompt. Seed templates (CLAUDE.md, rules) are install-once and never
- *  reconciled here; their upstream changes surface only in the changelog. To add
- *  or drop a module, re-run `install`. */
+/**
+ * `update` reconciles the installed entries against the latest catalog (ADR-017
+ * §3): the catalog moved on, so re-apply each installed id through the single
+ * writer. Clean changes fast-forward; customized files are left untouched;
+ * conflicts are never auto-applied (and re-recording the base means a declined
+ * conflict is not re-nagged until upstream moves again). Detecting *new*
+ * applicable entries (the project changed) is `ai-init`'s job — re-run it.
+ */
 export async function update(): Promise<void> {
-  const root    = process.cwd()
-  const autoYes = process.argv.slice(3).some(a => a === '--yes' || a === '-y')
+  const root = process.cwd()
   console.log(chalk.bold('\nai-scaffold — update\n'))
 
-  const installedVersion = readVersionFile(root)
-  if (!installedVersion) {
-    console.log(chalk.red('  Not installed.'))
+  const state = readState(root)
+  if (!state) {
+    console.log(chalk.red('  Not installed (no .claude/.scaffold-state.json).'))
     console.log(chalk.gray('  Run: npx github:jcuadros-achieve/ai-scaffold install\n'))
     return
   }
 
-  const selected = readInstalledSelection(root) ?? []
-  const mcp      = readInstalledMcp(root)
+  // Check for ai-scaffold version updates
+  const localVersion = readVersion(root)
+  const remoteVersion = await getRemoteVersion()
+  const currentVersion = getCurrentPackageVersion()
 
-  printChangelog(installedVersion)
+  if (localVersion && remoteVersion && currentVersion) {
+    const localVer = localVersion.version
+    console.log(chalk.gray(`  Current version: ${localVer}`))
 
-  const actions   = planInstall(root, selected)
-  const toCreate  = actions.filter(a => a.type === 'create')
-  const updates   = actions.filter(a => a.type === 'update')
-  const toUpdate  = updates.filter(a => a.merge !== 'conflict')
-  const conflicts = updates.filter(a => a.merge === 'conflict')
+    if (remoteVersion !== localVer) {
+      console.log(chalk.yellow(`  New version available: ${remoteVersion}`))
 
-  if (!toCreate.length && !updates.length) {
-    console.log(chalk.green('  No new or changed files to apply.'))
-    console.log(chalk.gray('  (Seed files like CLAUDE.md and rules are yours — never overwritten by update.)\n'))
-    writeVersionFile(root, selected, mcp)   // re-record the latest catalog base
+      const autoApply = !process.stdin.isTTY
+      if (!autoApply) {
+        const { upgrade } = await prompts({
+          type: 'confirm',
+          name: 'upgrade',
+          message: '\nUpgrade ai-scaffold to the latest version?',
+          initial: true,
+        })
+        if (!upgrade) {
+          console.log(chalk.gray('\nSkipping ai-scaffold upgrade. Continuing with catalog update...\n'))
+        } else {
+          // Update the version file
+          writeVersion(root, {
+            version: remoteVersion,
+            installedAt: new Date().toISOString()
+          })
+          console.log(chalk.green(`\n  Upgraded to version ${remoteVersion}`))
+          console.log(chalk.yellow('  Note: Use npx github:jcuadros-achieve/ai-scaffold#latest for commands\n'))
+        }
+      }
+    } else {
+      console.log(chalk.green('  ai-scaffold is up to date'))
+    }
+  }
+
+  console.log('')
+
+  const catalog = loadCatalogIndex()
+  const recon   = reconcile(root, catalog)
+  const changed   = recon.filter(r => r.type === 'update' && r.merge === 'clean')
+  const conflicts = recon.filter(r => r.merge === 'conflict')
+  const missing   = recon.filter(r => r.type === 'missing')
+
+  if (!changed.length && !conflicts.length) {
+    console.log(chalk.green('  All installed entries are up to date.'))
+    if (missing.length)
+      console.log(chalk.gray(`  ${missing.length} installed id(s) no longer in the catalog (left in place).`))
+    console.log(chalk.gray('\n  Re-run ai-init to pick up entries newly applicable to the project.\n'))
     return
   }
 
-  console.log(chalk.green(`  ${toCreate.length} new files`))
-  console.log(chalk.yellow(`  ${toUpdate.length} files with changes`))
-  if (conflicts.length)
-    console.log(chalk.red(`  ${conflicts.length} conflicts (customized locally AND changed upstream)`))
-  console.log()
-
-  const autoApply = autoYes || !process.stdin.isTTY
-
-  if (toUpdate.length) {
-    console.log(chalk.bold('Files with changes:\n'))
-    for (const a of toUpdate) {
-      console.log(chalk.yellow(`  ${path.relative(root, a.dest)}`))
-      console.log(renderDiff(a.diff!))
-      console.log()
-    }
-  }
-
+  console.log(chalk.yellow(`  ${changed.length} entr(ies) with upstream changes`))
+  changed.forEach(r => console.log(chalk.yellow(`    ${r.id}`) + (r.dest ? chalk.gray(`  ${path.relative(root, r.dest)}`) : '')))
   if (conflicts.length) {
-    console.log(chalk.bold(chalk.red('Conflicts — customized locally AND changed upstream:\n')))
-    for (const a of conflicts) {
-      console.log(chalk.red(`  ${path.relative(root, a.dest)}`) +
-        chalk.gray('  (diff is local vs incoming; merge manually if you want both)'))
-      console.log(renderDiff(a.diff!))
-      console.log()
-    }
+    console.log(chalk.red(`\n  ${conflicts.length} conflict(s) (customized locally AND changed upstream) — kept, never auto-applied:`))
+    conflicts.forEach(r => console.log(chalk.red(`    ${r.id}`)))
   }
 
-  const approved: FileAction[] = [...toCreate]
-
-  for (const a of toUpdate) {
-    if (autoApply) { approved.push(a); continue }
-    const { choice } = await prompts({
-      type: 'select', name: 'choice',
-      message: `  ${path.relative(root, a.dest)}:`,
-      choices: [
-        { title: 'Apply incoming version', value: 'apply' },
-        { title: 'Keep current version',   value: 'keep'  },
-      ],
+  const autoApply = !process.stdin.isTTY
+  if (!autoApply) {
+    const { proceed } = await prompts({
+      type: 'confirm', name: 'proceed',
+      message: '\nApply the clean upstream changes?', initial: true,
     })
-    if (choice === 'apply') approved.push(a)
+    if (!proceed) { console.log(chalk.gray('\nAborted.')); return }
   }
 
-  // Conflicts are never auto-applied (ADR-006): a known customization is
-  // overwritten only by an explicit, per-file human choice.
-  for (const a of conflicts) {
-    if (autoApply) {
-      console.log(chalk.gray(`  kept (conflict): ${path.relative(root, a.dest)}`))
-      continue
-    }
-    const { choice } = await prompts({
-      type: 'select', name: 'choice',
-      message: `  ${path.relative(root, a.dest)} ${chalk.red('(conflict)')}:`,
-      choices: [
-        { title: 'Keep current version (recommended — merge manually)', value: 'keep'  },
-        { title: 'Overwrite with incoming (discards local changes)',    value: 'apply' },
-      ],
-    })
-    if (choice === 'apply') approved.push(a)
+  // Re-apply every installed id still in the catalog. The single writer skips
+  // customized/conflict on its own; clean changes fast-forward.
+  const byId  = new Map(catalog.map(e => [e.id, e]))
+  const items: ApplyItem[] = []
+  for (const [id, entry] of Object.entries(state.installed)) {
+    const cat = byId.get(id)
+    if (cat) items.push({ entry: cat, workspaces: entry.workspaces })
   }
+  const result = applyPlan(root, items)
 
-  for (const a of approved) {
-    applyAction(a)
-    const icon = a.type === 'create' ? chalk.green('  created') : chalk.yellow('  updated')
-    console.log(`${icon}  ${path.relative(root, a.dest)}`)
-  }
-
-  writeVersionFile(root, selected, mcp)
-  console.log(chalk.bold('\nDone.\n'))
-}
-
-/** Print the file changes between the installed version and the latest (ADR-017),
- *  calling out seed-file changes the update will deliberately not apply. */
-function printChangelog(installedVersion: string): void {
-  const releases = changelogSince(installedVersion)
-  if (!releases.length) return
-
-  console.log(chalk.bold(`What changed since ${installedVersion}:\n`))
-  for (const r of releases) {
-    console.log(chalk.cyan(`  ${r.version}`) + chalk.gray(`  (${r.date})`))
-    for (const c of r.changes) {
-      const tag  = c.track === 'seed' ? chalk.magenta('[seed]') : chalk.gray('[reconcile]')
-      const verb = c.kind === 'added'   ? chalk.green('added   ')
-                 : c.kind === 'removed' ? chalk.red('removed ')
-                 :                        chalk.yellow('modified')
-      console.log(`    ${verb} ${tag} ${c.path}`)
-    }
-  }
-
-  const changedSeed = releases
-    .flatMap(r => r.changes)
-    .filter(c => c.track === 'seed' && c.kind === 'modified')
-  if (changedSeed.length)
-    console.log(chalk.gray(
-      `\n  ${changedSeed.length} seed file(s) changed upstream. Your copies are kept untouched —\n` +
-      '  review the changelog and pull anything you want by hand.'))
-  console.log()
+  const updated = result.actions.filter(a => a.type === 'update')
+  for (const a of updated)
+    console.log(chalk.yellow('  updated') + `  ${a.id}`)
+  console.log(chalk.bold(`\nDone. ${updated.length} updated.\n`))
 }
