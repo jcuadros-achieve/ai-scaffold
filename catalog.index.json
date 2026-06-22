@@ -1219,9 +1219,9 @@
       "rationale": "The keystone bootstrap skill every project runs once; universal",
       "stability": "stable",
       "seed": true,
-      "version": "1.0.5",
-      "updated": "2026-06-18",
-      "hash": "sha256:ef17195033f2b7e24a3b7c7a1ebe0af2e18b6f7e9b1ce94e95c676ea67884e63"
+      "version": "1.0.6",
+      "updated": "2026-06-22",
+      "hash": "sha256:83af1e061ec90e9377bc7fdf6d89fe9bd9c127aff5142bbfb62f9bcf067ee3f4"
     },
     {
       "id": "skill/ai-log-write",

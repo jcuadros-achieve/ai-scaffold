@@ -44,7 +44,8 @@ Phase 5  Write            → write CLAUDE.md (+ nested per-workspace files)
 ```
 
 The CLI is the only writer of payload (`apply`); you decide, it executes. The
-three `.scaffold/*.json` files are ephemeral (gitignored) — re-running is safe.
+three `.scaffold/*.json` files are ephemeral (gitignored) — re-running is safe,
+and you remove the whole `.scaffold/` directory at the end of Phase 5 (ADR-022).
 
 ---
 
@@ -346,6 +347,12 @@ When done, output exactly:
 - Do **not** duplicate the context into tool-specific files
   (`.github/copilot-instructions.md`, `AGENTS.md`) — the content lives in
   `CLAUDE.md` and `.claude/` only; a tool pointer is the team's to maintain.
+- As the last action of the run, remove the `.scaffold/` directory (ADR-022).
+  It is your ephemeral handoff workspace — not payload and not state. Nothing
+  reads it after the run: `update`/`status`/`diff` key off
+  `.claude/.scaffold-state.json`, and re-running ai-init regenerates it in
+  Phase 1. If the run is interrupted before this step, the directory stays in
+  place, so re-running `apply` mid-flow without re-scanning still works.
 
 ---
 
@@ -368,6 +375,10 @@ installed (e.g. a stack with no `stack-*` rule), say so and suggest re-running
   or the catalog match is wrong. Never invent a dependency to force a match.
 - `apply` is the only writer of payload; never write a rule/skill the plan did
   not install, and never hand-edit `.claude/.scaffold-state.json`.
+- Remove `.scaffold/` as the last action of Phase 5 (ADR-022). It is your
+  ephemeral workspace, not durable state — the install state lives in
+  `.claude/.scaffold-state.json`. Never clean it up earlier; mid-flow re-runs of
+  `apply` depend on it being present.
 - Curation has exactly one human ask-point (the plan confirmation); the scan and
   generation run without further confirmation. Flag anything unverifiable with
   `# TODO: verify this` rather than guessing.
